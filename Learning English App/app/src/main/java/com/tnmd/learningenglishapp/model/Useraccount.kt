@@ -2,14 +2,40 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.tnmd.learningenglishapp.model.Learner
 
 class Useraccount {
-    private lateinit var id : String
-    private lateinit var email : String
-    private lateinit var password : String
-    private lateinit var avatar : String
-    private lateinit var status : String
+    private var id : String
+    private var email : String
+    private var password : String
+    private var avatar : String
+    private var status : Boolean = false
 
     //@get:JsonIgnore
-    private lateinit var learner: Learner
+    private var learnerId: String
+
+    constructor(
+        id: String,
+        email: String,
+        password: String,
+        avatar: String,
+        status: Boolean,
+        learnerId: String
+    ) {
+        this.id = id
+        this.email = email
+        this.password = password
+        this.avatar = avatar
+        this.status = status
+        this.learnerId = learnerId
+    }
+
+    constructor(
+    ) {
+        this.id = ""
+        this.email = ""
+        this.password = ""
+        this.avatar = ""
+        this.status = false
+        this.learnerId = ""
+    }
 
     // Getter and Setter for id
     fun getId(): String {
@@ -48,19 +74,19 @@ class Useraccount {
     }
 
     // Getter and Setter for status
-    fun getStatus(): String {
+    fun getStatus(): Boolean {
         return status
     }
 
-    fun setStatus(newStatus: String) {
+    fun setStatus(newStatus: Boolean) {
         status = newStatus
     }
 
-    fun getLearner(): Learner {
-        return learner
+    fun getLearner(): String {
+        return learnerId
     }
 
-    fun setLearner(newLearner: Learner) {
-        learner = newLearner
+    fun setLearner(newLearner: String) {
+        learnerId = newLearner
     }
 }

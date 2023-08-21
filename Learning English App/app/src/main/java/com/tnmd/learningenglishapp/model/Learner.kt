@@ -1,6 +1,12 @@
 package com.tnmd.learningenglishapp.model
 
 class Learner {
-    private lateinit var id: String
-    private lateinit var username: String
+    private var id: String
+    private var username: String
+
+    constructor(
+    ) {
+        this.id = ""
+        this.username = ""
+    }
 }
