@@ -27,7 +27,7 @@ This is an English learning app built using the Kotlin programming language and 
 
 ## Installation
 
-1. Clone this repository: `git clone https://github.com/your-username/learn-english-app.git`
+1. Clone this repository: `git clone https://github.com/your-username/LearningEngishApplication.git`
 2. Open Android Studio.
 3. Open the project by selecting **File** > **Open** and choosing the repository folder.
 4. Wait for synchronization and installation of dependencies.
@@ -44,8 +44,8 @@ We welcome contributions from the community. If you'd like to contribute to the 
 
 ## Author
 
-- Your Name
-- Contact: your@email.com
+- Tran DatK and PenZ7
+- Contact: trannhatminhdat1103@gmail.com
 
 ## License
 
