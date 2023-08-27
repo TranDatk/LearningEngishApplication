@@ -2,7 +2,9 @@ package com.tnmd.learningenglishapp.model
 
 import com.google.firebase.firestore.DocumentId
 
-data class Learner (
+data class Chat(
     @DocumentId val id: String = "",
-    val username: String = ""
+    val message : String = "",
+    val dateSend : String = "",
+    val accountId : String = ""
 )

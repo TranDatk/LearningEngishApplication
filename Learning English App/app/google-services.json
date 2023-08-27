@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1076872189567",
+    "project_id": "learningenglishapp-1e3bd",
+    "storage_bucket": "learningenglishapp-1e3bd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1076872189567:android:ee689d4308c69b52bb114a",
+        "android_client_info": {
+          "package_name": "com.tnmd.learningenglishapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1076872189567-5s06rt8vb6igs6hsp14ovu2jgdq57628.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDENiktwSQJYrNaCKfh5k_tha1PV32ueD4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1076872189567-5s06rt8vb6igs6hsp14ovu2jgdq57628.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
