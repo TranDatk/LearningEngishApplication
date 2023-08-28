@@ -1,18 +1,3 @@
-/*
-Copyright 2022 Google LLC
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    https://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
- */
 
 package com.tnmd.learningenglishapp.screens.login
 
@@ -20,8 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import com.tnmd.learningenglishapp.LOGIN_SCREEN
 import com.tnmd.learningenglishapp.R.string as AppText
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
-import com.example.makeitso.screens.login.LoginUiState
-import com.tnmd.learningenglishapp.Screens.LearningEnglishAppViewModel
+import com.tnmd.learningenglishapp.SETTINGS_SCREEN
+import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
 import com.tnmd.learningenglishapp.common.ext.isValidEmail
 import com.tnmd.learningenglishapp.model.service.AccountService
 import com.tnmd.learningenglishapp.model.service.LogService
@@ -60,6 +45,10 @@ class LoginViewModel @Inject constructor(
       return
     }
 
+    launchCatching {
+      accountService.authenticate(email, password)
+      openAndPopUp(SETTINGS_SCREEN, LOGIN_SCREEN)
+    }
   }
 
   fun onForgotPasswordClick() {

@@ -24,8 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.tnmd.learningenglishapp.R.string as AppText
-import com.tnmd.learningenglishapp.common.composable.*
-import com.tnmd.learningenglishapp.screens.sign_up.SignUpViewModel
 import com.tnmd.learningenglishapp.common.composable.BasicToolbar
 import com.tnmd.learningenglishapp.common.composable.EmailField
 import com.tnmd.learningenglishapp.common.composable.PasswordField

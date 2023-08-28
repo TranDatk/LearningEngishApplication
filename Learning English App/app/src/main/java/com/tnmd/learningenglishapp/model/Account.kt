@@ -1,5 +1,6 @@
-import com.google.firebase.firestore.DocumentId
+package com.tnmd.learningenglishapp.model
 
+import com.google.firebase.firestore.DocumentId
 
 
 data class Account (

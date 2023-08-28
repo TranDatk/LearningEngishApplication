@@ -14,36 +14,40 @@ See the License for the specific language governing permissions and
 limitations under the License.
  */
 
-package com.tnmd.learningenglishapp.screens.splash
+package com.tnmd.learningenglishapp.screens.settings
 
 import androidx.compose.runtime.mutableStateOf
-
-
-
-import com.google.firebase.auth.FirebaseAuthException
 import com.tnmd.learningenglishapp.LOGIN_SCREEN
+import com.tnmd.learningenglishapp.SIGN_UP_SCREEN
 import com.tnmd.learningenglishapp.SPLASH_SCREEN
-import com.tnmd.learningenglishapp.Screens.LearningEnglishAppViewModel
+import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
 import com.tnmd.learningenglishapp.model.service.AccountService
 import com.tnmd.learningenglishapp.model.service.LogService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.flow.map
 
 @HiltViewModel
-class SplashViewModel @Inject constructor(
-  private val accountService: AccountService,
-  logService: LogService
+class SettingsViewModel @Inject constructor(
+  logService: LogService,
+  private val accountService: AccountService
 ) : LearningEnglishAppViewModel(logService) {
-  val showError = mutableStateOf(false)
 
-  init {
-    launchCatching {  }
+  fun onLoginClick(openScreen: (String) -> Unit) = openScreen(LOGIN_SCREEN)
+
+  fun onSignUpClick(openScreen: (String) -> Unit) = openScreen(SIGN_UP_SCREEN)
+
+  fun onSignOutClick(restartApp: (String) -> Unit) {
+    launchCatching {
+      accountService.signOut()
+      restartApp(SPLASH_SCREEN)
+    }
   }
 
-  fun onAppStart(openAndPopUp: (String, String) -> Unit) {
-
-    showError.value = false
-    if (accountService.hasUser) openAndPopUp(LOGIN_SCREEN, SPLASH_SCREEN)
+  fun onDeleteMyAccountClick(restartApp: (String) -> Unit) {
+    launchCatching {
+      accountService.deleteAccount()
+      restartApp(SPLASH_SCREEN)
+    }
   }
-
 }

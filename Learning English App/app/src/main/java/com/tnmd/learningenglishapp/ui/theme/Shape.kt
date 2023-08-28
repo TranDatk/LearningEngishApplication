@@ -14,10 +14,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
  */
 
-package com.tnmd.learningenglishapp.screens.sign_up
+package com.tnmd.learningenglishapp.ui.theme
 
-data class SignUpUiState(
-  val email: String = "",
-  val password: String = "",
-  val repeatPassword: String = ""
-)
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Shapes
+import androidx.compose.ui.unit.dp
+
+val Shapes =
+  Shapes(
+    small = RoundedCornerShape(4.dp),
+    medium = RoundedCornerShape(4.dp),
+    large = RoundedCornerShape(0.dp)
+  )

@@ -5,14 +5,7 @@ import android.content.res.Resources
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.Snackbar
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.Surface
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
@@ -26,19 +19,19 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
-import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
+import com.tnmd.learningenglishapp.screens.settings.SettingsScreen
 import com.tnmd.learningenglishapp.common.composable.PermissionDialog
 import com.tnmd.learningenglishapp.common.composable.RationaleDialog
+import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
 import com.tnmd.learningenglishapp.screens.login.LoginScreen
 import com.tnmd.learningenglishapp.screens.sign_up.SignUpScreen
-import com.tnmd.learningenglishapp.screens.splash.SplashScreen
 import com.tnmd.learningenglishapp.ui.theme.LearningEnglishAppTheme
 import kotlinx.coroutines.CoroutineScope
+
 
 @Composable
 @ExperimentalMaterialApi
@@ -65,10 +58,10 @@ fun LearningEnglishApp() {
             ) { innerPaddingModifier ->
                 NavHost(
                     navController = appState.navController,
-                    startDestination = SPLASH_SCREEN,
+                    startDestination = SETTINGS_SCREEN,
                     modifier = Modifier.padding(innerPaddingModifier)
                 ) {
-                    makeItSoGraph(appState)
+                    learningEnglishGraph(appState)
                 }
             }
         }
@@ -107,10 +100,8 @@ fun resources(): Resources {
 }
 
 @ExperimentalMaterialApi
-fun NavGraphBuilder.makeItSoGraph(appState: LearningEnglishAppState) {
-    composable(SPLASH_SCREEN) {
-       SplashScreen(openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })
-    }
+fun NavGraphBuilder.learningEnglishGraph(appState: LearningEnglishAppState) {
+
     composable(LOGIN_SCREEN) {
         LoginScreen(openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })
     }
@@ -119,6 +110,12 @@ fun NavGraphBuilder.makeItSoGraph(appState: LearningEnglishAppState) {
         SignUpScreen(openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })
     }
 
+    composable(SETTINGS_SCREEN) {
+        SettingsScreen(
+            restartApp = { route -> appState.clearAndNavigate(route) },
+            openScreen = { route -> appState.navigate(route) }
+        )
+    }
 
 }
 

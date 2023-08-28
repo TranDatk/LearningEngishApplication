@@ -17,15 +17,17 @@ limitations under the License.
 package com.tnmd.learningenglishapp.screens.sign_up
 
 import androidx.compose.runtime.mutableStateOf
+import com.tnmd.learningenglishapp.SETTINGS_SCREEN
 import com.tnmd.learningenglishapp.R.string as AppText
 import com.tnmd.learningenglishapp.SIGN_UP_SCREEN
-import com.tnmd.learningenglishapp.Screens.LearningEnglishAppViewModel
+import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
 import com.tnmd.learningenglishapp.common.ext.isValidEmail
 import com.tnmd.learningenglishapp.common.ext.isValidPassword
 import com.tnmd.learningenglishapp.common.ext.passwordMatches
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
 import com.tnmd.learningenglishapp.model.service.AccountService
 import com.tnmd.learningenglishapp.model.service.LogService
+import com.tnmd.learningenglishapp.screens.sign_up.SignUpUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -68,6 +70,11 @@ class SignUpViewModel @Inject constructor(
     if (!password.passwordMatches(uiState.value.repeatPassword)) {
       SnackbarManager.showMessage(AppText.password_match_error)
       return
+    }
+
+    launchCatching {
+      accountService.linkAccount(email, password)
+      openAndPopUp(SETTINGS_SCREEN, SIGN_UP_SCREEN)
     }
   }
 }
