@@ -6,5 +6,6 @@ data class Chat(
     @DocumentId val id: String = "",
     val message : String = "",
     val dateSend : String = "",
-    val accountId : String = ""
+    val accountId : String = "",
+    val conversationId : String = ""
 )
