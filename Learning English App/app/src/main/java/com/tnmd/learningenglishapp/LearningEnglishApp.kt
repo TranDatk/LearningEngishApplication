@@ -29,6 +29,7 @@ import com.tnmd.learningenglishapp.common.composable.RationaleDialog
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
 import com.tnmd.learningenglishapp.screens.login.LoginScreen
 import com.tnmd.learningenglishapp.screens.sign_up.SignUpScreen
+import com.tnmd.learningenglishapp.screens.splash.SplashScreen
 import com.tnmd.learningenglishapp.ui.theme.LearningEnglishAppTheme
 import kotlinx.coroutines.CoroutineScope
 
@@ -58,7 +59,7 @@ fun LearningEnglishApp() {
             ) { innerPaddingModifier ->
                 NavHost(
                     navController = appState.navController,
-                    startDestination = SETTINGS_SCREEN,
+                    startDestination = SPLASH_SCREEN,
                     modifier = Modifier.padding(innerPaddingModifier)
                 ) {
                     learningEnglishGraph(appState)
@@ -101,6 +102,9 @@ fun resources(): Resources {
 
 @ExperimentalMaterialApi
 fun NavGraphBuilder.learningEnglishGraph(appState: LearningEnglishAppState) {
+    composable(SPLASH_SCREEN) {
+        SplashScreen(openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })
+    }
 
     composable(LOGIN_SCREEN) {
         LoginScreen(openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })

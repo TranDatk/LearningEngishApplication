@@ -1,6 +1,6 @@
 
 
-package com.example.makeitso.model.service.module
+package com.tnmd.learningenglishapp.model.service.module
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
