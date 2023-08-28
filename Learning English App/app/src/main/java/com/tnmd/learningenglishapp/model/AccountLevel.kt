@@ -6,5 +6,5 @@ data class AccountLevel(
     @DocumentId val id : String = "",
     val level : String = "",
     val descriptionLevel : String = "",
-    val validityPeriod : String
+    val validityPeriod : Int = 0
 )
