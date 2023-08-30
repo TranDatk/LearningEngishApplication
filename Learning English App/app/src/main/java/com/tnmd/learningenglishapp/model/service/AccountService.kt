@@ -11,9 +11,11 @@ interface AccountService {
 
   val currentUser: Flow<Account>
 
-  suspend fun authenticate(email: String, password: String)
+  suspend fun authenticate(email: String, password: String) : Boolean
   suspend fun sendRecoveryEmail(email: String)
   suspend fun linkAccount(email: String, password: String)
   suspend fun deleteAccount()
   suspend fun signOut()
 }
+
+

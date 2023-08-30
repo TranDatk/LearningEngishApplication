@@ -1,13 +1,19 @@
 package com.tnmd.learningenglishapp.screens.login
 
+import android.content.Intent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.tnmd.learningenglishapp.activity.MainActivity
 import com.tnmd.learningenglishapp.R.string as AppText
 import com.tnmd.learningenglishapp.common.composable.BasicToolbar
 import com.tnmd.learningenglishapp.common.composable.EmailField
@@ -18,6 +24,8 @@ import com.tnmd.learningenglishapp.common.ext.textButton
 import com.tnmd.learningenglishapp.composable.BasicButton
 import com.tnmd.learningenglishapp.composable.BasicTextButton
 
+
+
 @Composable
 fun LoginScreen(
   openAndPopUp: (String, String) -> Unit,
@@ -25,6 +33,23 @@ fun LoginScreen(
   viewModel: LoginViewModel = hiltViewModel()
 ) {
   val uiState by viewModel.uiState
+
+  val context = LocalContext.current
+
+  // Collect events from the loginEvent flow
+  @OptIn(ExperimentalMaterialApi::class)
+  LaunchedEffect(viewModel.loginEvent) {
+    viewModel.loginEvent.collect { event ->
+      when (event) {
+        is LoginViewModel.LogInEvent.Success -> {
+          val intent = Intent(context, MainActivity::class.java)
+          context.startActivity(intent)
+        }
+        is LoginViewModel.LogInEvent.ErrorLogIn -> {
+        }
+      }
+    }
+  }
 
   BasicToolbar(AppText.login_details)
 

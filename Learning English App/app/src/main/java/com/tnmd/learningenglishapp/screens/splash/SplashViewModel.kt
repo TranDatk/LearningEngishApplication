@@ -41,9 +41,8 @@ class SplashViewModel @Inject constructor(
   }
 
   fun onAppStart(openAndPopUp: (String, String) -> Unit) {
-
     showError.value = false
-    if (true) openAndPopUp(LOGIN_SCREEN, SPLASH_SCREEN)
+    if (accountService.hasUser) openAndPopUp(LOGIN_SCREEN, SPLASH_SCREEN)
   }
 
 }

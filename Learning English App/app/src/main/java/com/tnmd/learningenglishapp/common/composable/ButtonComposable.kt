@@ -22,7 +22,7 @@ fun BasicButton(@StringRes text: Int, modifier: Modifier, action: () -> Unit) {
     modifier = modifier,
     colors =
       ButtonDefaults.buttonColors(
-        backgroundColor = MaterialTheme.colors.onPrimary,
+        backgroundColor = MaterialTheme.colors.primary,
         contentColor = MaterialTheme.colors.onPrimary
       )
   ) {

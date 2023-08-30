@@ -6,5 +6,4 @@ data class Words_Courses(
     @DocumentId val id : String = "",
     val wordsId : String = "",
     val coursesId : String = ""
-
 )

@@ -5,12 +5,15 @@ package com.tnmd.learningenglishapp.model.service.imple
 import com.tnmd.learningenglishapp.model.Account
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.tnmd.learningenglishapp.model.service.AccountService
 import com.tnmd.learningenglishapp.model.service.trace
 import javax.inject.Inject
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 
 class AccountServiceImpl @Inject constructor(private val auth: FirebaseAuth) : AccountService {
@@ -31,8 +34,24 @@ class AccountServiceImpl @Inject constructor(private val auth: FirebaseAuth) : A
       awaitClose { auth.removeAuthStateListener(listener) }
     }
 
-  override suspend fun authenticate(email: String, password: String) {
-    auth.signInWithEmailAndPassword(email, password).await()
+  override suspend fun authenticate(email: String, password: String): Boolean {
+    return suspendCancellableCoroutine { continuation ->
+      auth.signInWithEmailAndPassword(email, password)
+        .addOnCompleteListener { task ->
+          if (task.isSuccessful) {
+            continuation.resume(true) {
+            }
+          } else {
+            continuation.resume(false) {
+
+            }
+          }
+        }
+        .addOnFailureListener {
+          continuation.resume(false) {
+          }
+        }
+    }
   }
 
   override suspend fun sendRecoveryEmail(email: String) {
@@ -59,5 +78,8 @@ class AccountServiceImpl @Inject constructor(private val auth: FirebaseAuth) : A
 
   companion object {
     private const val LINK_ACCOUNT_TRACE = "linkAccount"
+    private const val COMPLETE_AUTH = "Đăng nhập thành công"
+    private const val FAILURE_AUTH_EMAIL = "Email không tồn tại"
+    private const val FAILURE_AUTH_PASS = "Đăng nhập thành công"
   }
 }

@@ -1,16 +1,21 @@
 
 package com.tnmd.learningenglishapp.screens.login
 
+import android.content.Intent
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.content.ContextCompat.startActivity
 import com.tnmd.learningenglishapp.LOGIN_SCREEN
 import com.tnmd.learningenglishapp.R.string as AppText
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
 import com.tnmd.learningenglishapp.SETTINGS_SCREEN
+import com.tnmd.learningenglishapp.activity.MainActivity
 import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
 import com.tnmd.learningenglishapp.common.ext.isValidEmail
 import com.tnmd.learningenglishapp.model.service.AccountService
 import com.tnmd.learningenglishapp.model.service.LogService
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,6 +30,9 @@ class LoginViewModel @Inject constructor(
     get() = uiState.value.email
   private val password
     get() = uiState.value.password
+
+  private val _loginEvent = MutableSharedFlow<LogInEvent>()
+  val loginEvent = _loginEvent.asSharedFlow()
 
   fun onEmailChange(newValue: String) {
     uiState.value = uiState.value.copy(email = newValue)
@@ -46,8 +54,11 @@ class LoginViewModel @Inject constructor(
     }
 
     launchCatching {
-      accountService.authenticate(email, password)
-      openAndPopUp(SETTINGS_SCREEN, LOGIN_SCREEN)
+      if( accountService.authenticate(email, password) == true){
+        _loginEvent.emit(LogInEvent.Success)
+      }else{
+        openAndPopUp(SETTINGS_SCREEN, LOGIN_SCREEN)
+      }
     }
   }
 
@@ -62,4 +73,11 @@ class LoginViewModel @Inject constructor(
       SnackbarManager.showMessage(AppText.recovery_email_sent)
     }
   }
+
+  sealed class LogInEvent {
+    data class ErrorLogIn(val errorLogIn: String): LogInEvent()
+    object Success : LogInEvent()
+  }
 }
+
+

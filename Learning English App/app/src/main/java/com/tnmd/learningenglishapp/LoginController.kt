@@ -35,20 +35,24 @@ import com.tnmd.learningenglishapp.common.composable.PermissionDialog
 import com.tnmd.learningenglishapp.common.composable.RationaleDialog
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
 import com.tnmd.learningenglishapp.screens.login.LoginScreen
-import com.tnmd.learningenglishapp.screens.login.LoginViewModel
 import com.tnmd.learningenglishapp.screens.sign_up.SignUpScreen
 import com.tnmd.learningenglishapp.screens.splash.SplashScreen
 import com.tnmd.learningenglishapp.ui.theme.LearningEnglishAppTheme
 import kotlinx.coroutines.CoroutineScope
+import com.tnmd.learningenglishapp.screens.*
+import com.tnmd.learningenglishapp.screens.login.LoginViewModel
 
 
 @Composable
 @ExperimentalMaterialApi
-fun LearningEnglishApp() {
+fun LoginController() {
     LearningEnglishAppTheme() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            RequestNotificationPermissionDialog()
+        }
 
         Surface(color = MaterialTheme.colors.background) {
-            val appState = rememberAppState()
+            val appState = rememberLoginState()
 
             Scaffold(
                 snackbarHost = {
@@ -60,30 +64,38 @@ fun LearningEnglishApp() {
                         }
                     )
                 },
-                bottomBar = {
-                    // Pass the navController to the bottom navigation composable
-                    SootheBottomNavigation(navController = appState.navController)
-                },
                 scaffoldState = appState.scaffoldState,
             ) { innerPaddingModifier ->
                 NavHost(
                     navController = appState.navController,
-                    startDestination = SPLASH_SCREEN,
+                    startDestination = SETTINGS_SCREEN,
                     modifier = Modifier.padding(innerPaddingModifier)
                 ) {
-                    learningEnglishGraph(appState)
+                    loginGraph(appState)
                 }
             }
         }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun rememberAppState(
+fun RequestNotificationPermissionDialog() {
+    val permissionState = rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
+
+    if (!permissionState.status.isGranted) {
+        if (permissionState.status.shouldShowRationale) RationaleDialog()
+        else PermissionDialog { permissionState.launchPermissionRequest() }
+    }
+}
+
+@Composable
+fun rememberLoginState(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     navController: NavHostController = rememberNavController(),
     snackbarManager: SnackbarManager = SnackbarManager,
-    resources: Resources = resources(),
+    resources: Resources = resourcesLogin(),
     coroutineScope: CoroutineScope = rememberCoroutineScope()
 ) =
     remember(scaffoldState, navController, snackbarManager, resources, coroutineScope) {
@@ -92,57 +104,13 @@ fun rememberAppState(
 
 @Composable
 @ReadOnlyComposable
-fun resources(): Resources {
+fun resourcesLogin(): Resources {
     LocalConfiguration.current
     return LocalContext.current.resources
 }
 
-@Composable
-private fun SootheBottomNavigation(
-    modifier: Modifier = Modifier,
-    navController: NavHostController // Inject the NavHostController
-) {
-    NavigationBar(
-        containerColor = androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant,
-        modifier = modifier
-    ) {
-        NavigationBarItem(
-            icon = {
-                androidx.compose.material3.Icon(
-                    imageVector = Icons.Default.Spa,
-                    contentDescription = null
-                )
-            },
-            label = {
-                androidx.compose.material3.Text(stringResource(R.string.bottom_navigation_home))
-            },
-            selected = true,
-            onClick = {
-                // Navigate to the desired screen when clicked
-                navController.navigate(LOGIN_SCREEN)
-            }
-        )
-        NavigationBarItem(
-            icon = {
-                androidx.compose.material3.Icon(
-                    imageVector = Icons.Default.AccountCircle,
-                    contentDescription = null
-                )
-            },
-            label = {
-                androidx.compose.material3.Text(stringResource(R.string.bottom_navigation_home))
-            },
-            selected = false,
-            onClick = {
-                // Navigate to the desired screen when clicked
-                navController.navigate(SIGN_UP_SCREEN)
-            }
-        )
-    }
-}
-
 @ExperimentalMaterialApi
-fun NavGraphBuilder.learningEnglishGraph(appState: LearningEnglishAppState) {
+fun NavGraphBuilder.loginGraph(appState: LearningEnglishAppState) {
     composable(SPLASH_SCREEN) {
         SplashScreen(openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })
     }

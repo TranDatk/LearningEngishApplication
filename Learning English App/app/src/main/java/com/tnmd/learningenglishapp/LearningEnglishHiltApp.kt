@@ -1,5 +1,4 @@
 
-
 package com.tnmd.learningenglishapp
 
 import android.app.Application
