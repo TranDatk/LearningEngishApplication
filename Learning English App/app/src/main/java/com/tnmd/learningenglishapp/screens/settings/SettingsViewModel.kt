@@ -23,6 +23,7 @@ import com.tnmd.learningenglishapp.SPLASH_SCREEN
 import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
 import com.tnmd.learningenglishapp.model.service.AccountService
 import com.tnmd.learningenglishapp.model.service.LogService
+import com.tnmd.learningenglishapp.screens.login.LoginUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.map
@@ -32,6 +33,7 @@ class SettingsViewModel @Inject constructor(
   logService: LogService,
   private val accountService: AccountService
 ) : LearningEnglishAppViewModel(logService) {
+  val uiState = mutableStateOf(SettingsUiState(isAnonymousAccount = accountService.hasUser))
 
   fun onLoginClick(openScreen: (String) -> Unit) = openScreen(LOGIN_SCREEN)
 

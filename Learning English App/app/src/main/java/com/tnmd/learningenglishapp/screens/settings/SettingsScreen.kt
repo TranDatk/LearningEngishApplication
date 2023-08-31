@@ -33,7 +33,7 @@ fun SettingsScreen(
   modifier: Modifier = Modifier,
   viewModel: SettingsViewModel = hiltViewModel()
 ) {
-
+  val uiState by viewModel.uiState
 
   Column(
     modifier = modifier.fillMaxWidth().fillMaxHeight().verticalScroll(rememberScrollState()),
@@ -43,7 +43,7 @@ fun SettingsScreen(
 
     Spacer(modifier = Modifier.spacer())
 
-    if (true) {
+    if (uiState.isAnonymousAccount) {
       RegularCardEditor(AppText.sign_in, AppIcon.ic_sign_in, "", Modifier.card()) {
         viewModel.onLoginClick(openScreen)
       }
