@@ -21,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 
 
 import com.google.firebase.auth.FirebaseAuthException
+import com.tnmd.learningenglishapp.LIST_COURSES
 import com.tnmd.learningenglishapp.LOGIN_SCREEN
 import com.tnmd.learningenglishapp.SPLASH_SCREEN
 import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
@@ -42,7 +43,7 @@ class SplashViewModel @Inject constructor(
 
   fun onAppStart(openAndPopUp: (String, String) -> Unit) {
     showError.value = false
-    if (accountService.hasUser) openAndPopUp(LOGIN_SCREEN, SPLASH_SCREEN)
+    if (accountService.hasUser) openAndPopUp(LIST_COURSES, SPLASH_SCREEN)
   }
 
 }

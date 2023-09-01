@@ -34,6 +34,7 @@ import com.tnmd.learningenglishapp.screens.settings.SettingsScreen
 import com.tnmd.learningenglishapp.common.composable.PermissionDialog
 import com.tnmd.learningenglishapp.common.composable.RationaleDialog
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
+import com.tnmd.learningenglishapp.screens.list_courses.CoursesScreen
 import com.tnmd.learningenglishapp.screens.login.LoginScreen
 import com.tnmd.learningenglishapp.screens.login.LoginViewModel
 import com.tnmd.learningenglishapp.screens.sign_up.SignUpScreen
@@ -119,7 +120,7 @@ private fun SootheBottomNavigation(
             selected = true,
             onClick = {
                 // Navigate to the desired screen when clicked
-                navController.navigate(LOGIN_SCREEN)
+                navController.navigate(LIST_COURSES)
             }
         )
         NavigationBarItem(
@@ -153,6 +154,10 @@ fun NavGraphBuilder.learningEnglishGraph(appState: LearningEnglishAppState) {
 
     composable(SIGN_UP_SCREEN) {
         SignUpScreen(openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })
+    }
+
+    composable(LIST_COURSES) {
+        CoursesScreen( )
     }
 
     composable(SETTINGS_SCREEN) {
