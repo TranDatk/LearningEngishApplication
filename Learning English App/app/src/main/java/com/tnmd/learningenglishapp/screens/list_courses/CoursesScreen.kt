@@ -39,10 +39,6 @@ fun CoursesScreen(
     modifier: Modifier = Modifier,
     viewModel: CoursesViewModel = hiltViewModel()
 ) {
-    DisposableEffect(viewModel) {
-        viewModel.addListener()
-        onDispose { viewModel.removeListener() }
-    }
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
@@ -55,12 +51,12 @@ fun CoursesScreen(
             }
         }
     ) {
-
+        val courses = viewModel.courses
         Column(modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()) {
             LazyColumn {
-                items(viewModel.courses.values.toList(), key = { it.id }) { coursesItem ->
+                items(courses.toList(), key = { it.id }) { coursesItem ->
                     CoursesItem(
                         courses = coursesItem
                     )
