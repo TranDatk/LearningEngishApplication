@@ -6,5 +6,6 @@ data class Courses(
     @DocumentId val id : String = "",
     val nameCourses : String = "",
     val description : String = "",
-    val topicId : String = ""
+    val topicId : String = "",
+    val image : String = ""
 )
