@@ -28,6 +28,7 @@ import com.tnmd.learningenglishapp.common.composable.BasicToolbar
 import com.tnmd.learningenglishapp.common.composable.EmailField
 import com.tnmd.learningenglishapp.common.composable.PasswordField
 import com.tnmd.learningenglishapp.common.composable.RepeatPasswordField
+import com.tnmd.learningenglishapp.common.composable.UsernameField
 import com.tnmd.learningenglishapp.common.ext.basicButton
 import com.tnmd.learningenglishapp.common.ext.fieldModifier
 import com.tnmd.learningenglishapp.composable.BasicButton
@@ -44,13 +45,19 @@ fun SignUpScreen(
   BasicToolbar(AppText.create_account)
 
   Column(
-    modifier = modifier.fillMaxWidth().fillMaxHeight().verticalScroll(rememberScrollState()),
+    modifier = modifier
+      .fillMaxWidth()
+      .fillMaxHeight()
+      .verticalScroll(rememberScrollState()),
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
     EmailField(uiState.email, viewModel::onEmailChange, fieldModifier)
+    UsernameField(uiState.username, viewModel::onUsernameChange , fieldModifier )
     PasswordField(uiState.password, viewModel::onPasswordChange, fieldModifier)
     RepeatPasswordField(uiState.repeatPassword, viewModel::onRepeatPasswordChange, fieldModifier)
+
+
 
     BasicButton(AppText.create_account, Modifier.basicButton()) {
       viewModel.onSignUpClick(openAndPopUp)

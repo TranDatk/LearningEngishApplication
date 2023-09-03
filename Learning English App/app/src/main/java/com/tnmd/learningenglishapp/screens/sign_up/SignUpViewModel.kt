@@ -43,6 +43,9 @@ class SignUpViewModel @Inject constructor(
   private val password
     get() = uiState.value.password
 
+  private val username
+    get() = uiState.value.username
+
   fun onEmailChange(newValue: String) {
     uiState.value = uiState.value.copy(email = newValue)
   }
@@ -53,6 +56,10 @@ class SignUpViewModel @Inject constructor(
 
   fun onRepeatPasswordChange(newValue: String) {
     uiState.value = uiState.value.copy(repeatPassword = newValue)
+  }
+
+  fun onUsernameChange(newValue: String) {
+    uiState.value = uiState.value.copy(username = newValue)
   }
 
   fun onSignUpClick(openAndPopUp: (String, String) -> Unit) {
@@ -72,7 +79,7 @@ class SignUpViewModel @Inject constructor(
     }
 
     launchCatching {
-      authenticationService.linkAccount(email, password)
+      authenticationService.createAccount(email, password,username)
       openAndPopUp(SETTINGS_SCREEN, SIGN_UP_SCREEN)
     }
   }

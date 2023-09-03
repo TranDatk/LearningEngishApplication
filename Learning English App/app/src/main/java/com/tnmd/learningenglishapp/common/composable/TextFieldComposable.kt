@@ -8,6 +8,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -43,6 +44,17 @@ fun EmailField(value: String, onNewValue: (String) -> Unit, modifier: Modifier =
     onValueChange = { onNewValue(it) },
     placeholder = { Text(stringResource(AppText.email)) },
     leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = "Email") }
+  )
+}
+
+@Composable
+fun UsernameField(value: String, onNewValue: (String) -> Unit, modifier: Modifier) {
+  OutlinedTextField(
+    value = value,
+    modifier = modifier,
+    onValueChange = {onNewValue(it)},
+    placeholder = { Text(stringResource(AppText.username)) },
+    leadingIcon = { Icon(imageVector = Icons.Default.VerifiedUser, contentDescription = "Username") }
   )
 }
 

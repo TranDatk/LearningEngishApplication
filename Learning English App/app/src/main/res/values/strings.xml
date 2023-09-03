@@ -2,6 +2,7 @@
     <string name="app_name">Learning English App</string>
     <!-- Common -->
     <string name="email">Email</string>
+    <string name="username">Nhập tên của bạn: </string>
     <string name="password">Password</string>
     <string name="repeat_password">Repeat password</string>
     <string name="generic_error">Something wrong happened. Please try again.</string>
@@ -21,6 +22,8 @@
     <string name="create_account">Create account</string>
     <string name="password_error">Your password should have at least six digits and include one digit, one lower case letter and one upper case letter.</string>
     <string name="password_match_error">Passwords do not match.</string>
+    <string name="create_error">Đã xảy ra lỗi trong quá trình đăng ký.</string>
+    <string name="create_success">Đăng ký thành công.</string>
 
     <!-- TasksScreen -->
     <string name="tasks">Tasks</string>
