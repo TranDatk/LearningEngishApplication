@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.tnmd.learningenglishapp.activity.LoginActivity
 import com.tnmd.learningenglishapp.activity.MainActivity
 import com.tnmd.learningenglishapp.R.string as AppText
 import com.tnmd.learningenglishapp.common.composable.BasicToolbar
@@ -46,6 +47,8 @@ fun LoginScreen(
           context.startActivity(intent)
         }
         is LoginViewModel.LogInEvent.ErrorLogIn -> {
+          val intent = Intent(context, LoginActivity::class.java)
+          context.startActivity(intent)
         }
       }
     }

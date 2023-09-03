@@ -48,13 +48,11 @@ class AuthenticationServiceImpl @Inject constructor(private val auth: FirebaseAu
             }
           } else {
             continuation.resume(false) {
-
             }
           }
         }
         .addOnFailureListener {
-          continuation.resume(false) {
-          }
+          Log.d("dat", "Đăng nhập thất bại")
         }
     }
   }
@@ -63,7 +61,7 @@ class AuthenticationServiceImpl @Inject constructor(private val auth: FirebaseAu
     auth.sendPasswordResetEmail(email).await()
   }
 
-  override suspend fun createAccount(email: String, password: String, username: String) {
+  override suspend fun createAccount(email: String, password: String, username: String, selectedGender: String) {
     try {
       val authResult = auth.createUserWithEmailAndPassword(email, password).await()
       if (authResult.user != null) {
@@ -71,29 +69,33 @@ class AuthenticationServiceImpl @Inject constructor(private val auth: FirebaseAu
         val learnerUsername = hashMapOf(
           "username" to username
         )
+
+        val imageUrl = if (selectedGender.equals("Nam")) {
+          "https://firebasestorage.googleapis.com/v0/b/learningenglishapp-1e3bd.appspot.com/o/man.png?alt=media&token=c8de7ac0-0fd9-4ace-9d49-43e95221196a"
+        } else {
+          "https://firebasestorage.googleapis.com/v0/b/learningenglishapp-1e3bd.appspot.com/o/woman.png?alt=media&token=66c5fdee-b5f3-4a3e-aa15-15702c615d67"
+        }
+
         val collectionReference = firestore.collection(LEARNER_COLLECTION)
-        collectionReference.add(learnerUsername)
-          .addOnSuccessListener { documentReference ->
-            val learnerID = documentReference.id
-            // Cập nhật thông tin Account
-            val account = Account(userId, "", true, learnerID)
-            firestore.collection(ACCOUNT_COLLECTION).document(userId)
-              .set(account)
-              .addOnSuccessListener {
-                SnackbarManager.showMessage(R.string.create_success)
-              }
-              .addOnFailureListener { e ->
-                Log.d("dat", "Lỗi khi đặt thông tin Account: ${e.message}")
-              }
+        val documentReference = collectionReference.add(learnerUsername).await()
+        val learnerID = documentReference.id
+
+        val account = Account(userId, imageUrl, true, learnerID)
+        val accountCollection = firestore.collection(ACCOUNT_COLLECTION)
+        accountCollection.document(userId)
+          .set(account)
+          .addOnSuccessListener {
+            SnackbarManager.showMessage(R.string.create_success)
           }
           .addOnFailureListener { e ->
-            Log.d("dat", "Lỗi khi thêm tài liệu Learner: ${e.message}")
+            Log.d("dat", "Lỗi khi đặt thông tin Account: ${e.message}")
           }
       }
     } catch (e: FirebaseAuthException) {
       Log.d("dat", "Đăng ký thất bại: ${e.message}")
     }
   }
+
 
   override suspend fun deleteAccount() {
     auth.currentUser!!.delete().await()

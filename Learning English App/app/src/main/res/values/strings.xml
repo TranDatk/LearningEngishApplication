@@ -24,7 +24,7 @@
     <string name="password_match_error">Passwords do not match.</string>
     <string name="create_error">Đã xảy ra lỗi trong quá trình đăng ký.</string>
     <string name="create_success">Đăng ký thành công.</string>
-
+    <string name="gender_choose">Vui lòng chọn giới tính.</string>
     <!-- TasksScreen -->
     <string name="tasks">Tasks</string>
 

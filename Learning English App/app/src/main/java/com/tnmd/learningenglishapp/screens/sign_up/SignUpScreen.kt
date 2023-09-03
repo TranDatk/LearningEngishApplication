@@ -16,12 +16,14 @@ limitations under the License.
 
 package com.tnmd.learningenglishapp.screens.sign_up
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.tnmd.learningenglishapp.R.string as AppText
 import com.tnmd.learningenglishapp.common.composable.BasicToolbar
@@ -32,6 +34,9 @@ import com.tnmd.learningenglishapp.common.composable.UsernameField
 import com.tnmd.learningenglishapp.common.ext.basicButton
 import com.tnmd.learningenglishapp.common.ext.fieldModifier
 import com.tnmd.learningenglishapp.composable.BasicButton
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Text
+import androidx.compose.ui.text.font.FontWeight
 
 @Composable
 fun SignUpScreen(
@@ -41,6 +46,9 @@ fun SignUpScreen(
 ) {
   val uiState by viewModel.uiState
   val fieldModifier = Modifier.fieldModifier()
+
+  // Biến để lưu giới tính được chọn, mặc định là "Nam"
+  var selectedGender by remember { mutableStateOf("Nam") }
 
   BasicToolbar(AppText.create_account)
 
@@ -53,14 +61,45 @@ fun SignUpScreen(
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
     EmailField(uiState.email, viewModel::onEmailChange, fieldModifier)
-    UsernameField(uiState.username, viewModel::onUsernameChange , fieldModifier )
+    UsernameField(uiState.username, viewModel::onUsernameChange, fieldModifier)
     PasswordField(uiState.password, viewModel::onPasswordChange, fieldModifier)
     RepeatPasswordField(uiState.repeatPassword, viewModel::onRepeatPasswordChange, fieldModifier)
 
-
+    RadioButtonGender(
+      selectedGender = selectedGender,
+      onGenderSelected = { gender -> selectedGender = gender },
+      modifier = Modifier.padding(horizontal =20.dp)
+    )
 
     BasicButton(AppText.create_account, Modifier.basicButton()) {
-      viewModel.onSignUpClick(openAndPopUp)
+      viewModel.onSignUpClick(openAndPopUp, selectedGender)
     }
   }
 }
+
+@Composable
+private fun RadioButtonGender(
+  selectedGender: String,
+  onGenderSelected: (String) -> Unit,
+  modifier: Modifier = Modifier
+) {
+  Row(modifier = modifier) {
+
+    val genders = listOf("Nam", "Nữ")
+
+    genders.forEach { gender ->
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.clickable { onGenderSelected(gender) }
+      ) {
+        RadioButton(
+          selected = selectedGender == gender,
+          onClick = { onGenderSelected(gender) }
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(text = gender)
+      }
+    }
+  }
+}
+

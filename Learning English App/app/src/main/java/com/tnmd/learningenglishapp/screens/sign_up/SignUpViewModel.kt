@@ -62,7 +62,11 @@ class SignUpViewModel @Inject constructor(
     uiState.value = uiState.value.copy(username = newValue)
   }
 
-  fun onSignUpClick(openAndPopUp: (String, String) -> Unit) {
+  fun isGenderSelected(selectedGender: String): Boolean {
+    return selectedGender.isNotBlank()
+  }
+
+  fun onSignUpClick(openAndPopUp: (String, String) -> Unit, selectedGender: String) {
     if (!email.isValidEmail()) {
       SnackbarManager.showMessage(AppText.email_error)
       return
@@ -78,8 +82,13 @@ class SignUpViewModel @Inject constructor(
       return
     }
 
+    if (!isGenderSelected(selectedGender)) {
+      SnackbarManager.showMessage(AppText.gender_choose)
+      return
+    }
+
     launchCatching {
-      authenticationService.createAccount(email, password,username)
+      authenticationService.createAccount(email, password,username,selectedGender)
       openAndPopUp(SETTINGS_SCREEN, SIGN_UP_SCREEN)
     }
   }
