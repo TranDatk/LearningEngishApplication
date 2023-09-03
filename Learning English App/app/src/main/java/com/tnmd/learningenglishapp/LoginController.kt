@@ -112,7 +112,7 @@ fun resourcesLogin(): Resources {
 @ExperimentalMaterialApi
 fun NavGraphBuilder.loginGraph(appState: LearningEnglishAppState) {
     composable(SPLASH_SCREEN) {
-        SplashScreen(openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })
+        SplashScreen(openAndClear = { route -> appState.clearAndNavigate(route) })
     }
 
     composable(LOGIN_SCREEN) {

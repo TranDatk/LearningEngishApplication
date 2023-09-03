@@ -1,9 +1,13 @@
 
 package com.tnmd.learningenglishapp.common.ext
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 
 fun Modifier.textButton(): Modifier {
@@ -45,3 +49,24 @@ fun Modifier.spacer(): Modifier {
 fun Modifier.smallSpacer(): Modifier {
   return this.fillMaxWidth().height(8.dp)
 }
+
+/*--------------------------------------
+This is for screen_courses
+*/
+
+fun Modifier.cardCourses(): Modifier {
+  return this.padding(8.dp)
+    .fillMaxWidth()
+    .height(100.dp)
+}
+
+fun Modifier.rowCardCourses(): Modifier {
+  return this.fillMaxSize()
+    .padding(16.dp)
+}
+
+fun Modifier.AsyncImageCardCourses(): Modifier {
+  return this.size(50.dp)
+    .clip(CircleShape)
+}
+/*-----------------------------------*/

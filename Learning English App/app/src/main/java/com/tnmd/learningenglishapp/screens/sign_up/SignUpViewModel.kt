@@ -25,16 +25,15 @@ import com.tnmd.learningenglishapp.common.ext.isValidEmail
 import com.tnmd.learningenglishapp.common.ext.isValidPassword
 import com.tnmd.learningenglishapp.common.ext.passwordMatches
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
-import com.tnmd.learningenglishapp.model.service.AccountService
+import com.tnmd.learningenglishapp.model.service.AuthenticationService
 import com.tnmd.learningenglishapp.model.service.LogService
-import com.tnmd.learningenglishapp.screens.sign_up.SignUpUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-  private val accountService: AccountService,
-  logService: LogService
+    private val authenticationService: AuthenticationService,
+    logService: LogService
 ) : LearningEnglishAppViewModel(logService) {
   var uiState = mutableStateOf(SignUpUiState())
     private set
@@ -73,7 +72,7 @@ class SignUpViewModel @Inject constructor(
     }
 
     launchCatching {
-      accountService.linkAccount(email, password)
+      authenticationService.linkAccount(email, password)
       openAndPopUp(SETTINGS_SCREEN, SIGN_UP_SCREEN)
     }
   }

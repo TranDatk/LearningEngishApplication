@@ -3,6 +3,7 @@ package com.tnmd.learningenglishapp.screens.list_courses
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -33,34 +34,30 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.compose.rememberImagePainter
 import com.tnmd.learningenglishapp.R
+import com.tnmd.learningenglishapp.common.ext.AsyncImageCardCourses
+import com.tnmd.learningenglishapp.common.ext.cardCourses
+import com.tnmd.learningenglishapp.common.ext.rowCardCourses
 import com.tnmd.learningenglishapp.model.Courses
 
 @Composable
 @ExperimentalMaterialApi
 fun CoursesItem(
     courses: Courses,
+    onCourseItemClick: (String) -> Unit
 ) {
     Card(
-        modifier = Modifier
-            .padding(8.dp)
-            .fillMaxWidth()
-            .height(100.dp),
+        modifier = Modifier.cardCourses().clickable { onCourseItemClick("") },
         elevation = 4.dp
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
+            modifier = Modifier.rowCardCourses(),
             verticalAlignment = Alignment.CenterVertically
         ) {
 
             AsyncImage(
                 model = courses.image,
                 contentDescription = null,
-                modifier = Modifier
-                    .size(50.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colors.onPrimary)
+                modifier = Modifier.AsyncImageCardCourses().background(MaterialTheme.colors.onPrimary)
             )
             Spacer(modifier = Modifier.width(16.dp))
             Column(
@@ -98,5 +95,5 @@ fun CoursesItem(
 @Preview
 @Composable
 fun ComposablePreview() {
-    CoursesItem(courses = Courses(description = "Mo ta",nameCourses = "khoa hocj cap toc"))
+    /*CoursesItem(courses = Courses(description = "Mo ta",nameCourses = "khoa hocj cap toc"))*/
 }

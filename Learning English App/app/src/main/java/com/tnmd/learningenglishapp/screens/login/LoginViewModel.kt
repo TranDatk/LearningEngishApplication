@@ -1,17 +1,14 @@
 
 package com.tnmd.learningenglishapp.screens.login
 
-import android.content.Intent
 import androidx.compose.runtime.mutableStateOf
-import androidx.core.content.ContextCompat.startActivity
 import com.tnmd.learningenglishapp.LOGIN_SCREEN
 import com.tnmd.learningenglishapp.R.string as AppText
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
 import com.tnmd.learningenglishapp.SETTINGS_SCREEN
-import com.tnmd.learningenglishapp.activity.MainActivity
 import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
 import com.tnmd.learningenglishapp.common.ext.isValidEmail
-import com.tnmd.learningenglishapp.model.service.AccountService
+import com.tnmd.learningenglishapp.model.service.AuthenticationService
 import com.tnmd.learningenglishapp.model.service.LogService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -20,8 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-  private val accountService: AccountService,
-  logService: LogService
+    private val authenticationService: AuthenticationService,
+    logService: LogService
 ) : LearningEnglishAppViewModel(logService) {
   var uiState = mutableStateOf(LoginUiState())
     private set
@@ -54,7 +51,7 @@ class LoginViewModel @Inject constructor(
     }
 
     launchCatching {
-      if( accountService.authenticate(email, password) == true){
+      if( authenticationService.authenticate(email, password) == true){
         _loginEvent.emit(LogInEvent.Success)
       }else{
         openAndPopUp(SETTINGS_SCREEN, LOGIN_SCREEN)
@@ -69,7 +66,7 @@ class LoginViewModel @Inject constructor(
     }
 
     launchCatching {
-      accountService.sendRecoveryEmail(email)
+      authenticationService.sendRecoveryEmail(email)
       SnackbarManager.showMessage(AppText.recovery_email_sent)
     }
   }

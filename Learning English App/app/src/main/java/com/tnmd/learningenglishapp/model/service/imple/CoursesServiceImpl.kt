@@ -1,21 +1,18 @@
 package com.tnmd.learningenglishapp.model.service.imple
 
-import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.dataObjects
 import com.google.firebase.firestore.ktx.toObject
 import com.tnmd.learningenglishapp.model.Courses
-import com.tnmd.learningenglishapp.model.service.AccountService
+import com.tnmd.learningenglishapp.model.service.AuthenticationService
 import com.tnmd.learningenglishapp.model.service.CoursesService
 import com.tnmd.learningenglishapp.model.service.trace
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class CoursesServiceImpl @Inject
-constructor(private val firestore: FirebaseFirestore, private val auth: AccountService
+constructor(private val firestore: FirebaseFirestore, private val auth: AuthenticationService
 ) : CoursesService {
 
     override val courses: Flow<List<Courses>>

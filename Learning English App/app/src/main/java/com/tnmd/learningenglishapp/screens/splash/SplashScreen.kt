@@ -38,7 +38,7 @@ private const val SPLASH_TIMEOUT = 1000L
 
 @Composable
 fun SplashScreen(
-  openAndPopUp: (String, String) -> Unit,
+  openAndClear: (String) -> Unit,
   modifier: Modifier = Modifier,
   viewModel: SplashViewModel = hiltViewModel()
 ) {
@@ -55,7 +55,7 @@ fun SplashScreen(
     if (viewModel.showError.value) {
       Text(text = stringResource(AppText.generic_error))
 
-      BasicButton(AppText.try_again, Modifier.basicButton()) { viewModel.onAppStart(openAndPopUp) }
+      BasicButton(AppText.try_again, Modifier.basicButton()) { viewModel.onAppStart(openAndClear) }
     } else {
       CircularProgressIndicator(color = MaterialTheme.colors.onBackground)
     }
@@ -63,6 +63,6 @@ fun SplashScreen(
 
   LaunchedEffect(true) {
     delay(SPLASH_TIMEOUT)
-    viewModel.onAppStart(openAndPopUp)
+    viewModel.onAppStart(openAndClear)
   }
 }

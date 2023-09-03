@@ -36,6 +36,7 @@ import kotlinx.coroutines.runBlocking
 @Composable
 @ExperimentalMaterialApi
 fun CoursesScreen(
+    openAndPopUp: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CoursesViewModel = hiltViewModel()
 ) {
@@ -58,7 +59,8 @@ fun CoursesScreen(
             LazyColumn {
                 items(courses.toList(), key = { it.id }) { coursesItem ->
                     CoursesItem(
-                        courses = coursesItem
+                        courses = coursesItem,
+                        onCourseItemClick = openAndPopUp
                     )
                 }
             }

@@ -3,7 +3,6 @@ package com.tnmd.learningenglishapp.screens.list_courses
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.viewModelScope
 import com.tnmd.learningenglishapp.model.Courses
-import com.tnmd.learningenglishapp.model.service.AccountService
 import com.tnmd.learningenglishapp.model.service.CoursesService
 import com.tnmd.learningenglishapp.model.service.LogService
 import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel

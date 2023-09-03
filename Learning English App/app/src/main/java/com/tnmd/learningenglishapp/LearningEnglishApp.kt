@@ -145,7 +145,7 @@ private fun SootheBottomNavigation(
 @ExperimentalMaterialApi
 fun NavGraphBuilder.learningEnglishGraph(appState: LearningEnglishAppState) {
     composable(SPLASH_SCREEN) {
-        SplashScreen(openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })
+        SplashScreen(openAndClear = { route -> appState.clearAndNavigate(route)  })
     }
 
     composable(LOGIN_SCREEN) {
@@ -157,7 +157,7 @@ fun NavGraphBuilder.learningEnglishGraph(appState: LearningEnglishAppState) {
     }
 
     composable(LIST_COURSES) {
-        CoursesScreen( )
+        CoursesScreen( openAndPopUp = {route -> appState.navigate(route)} )
     }
 
     composable(SETTINGS_SCREEN) {

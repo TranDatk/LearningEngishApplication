@@ -19,21 +19,17 @@ package com.tnmd.learningenglishapp.screens.splash
 import androidx.compose.runtime.mutableStateOf
 
 
-
-import com.google.firebase.auth.FirebaseAuthException
 import com.tnmd.learningenglishapp.LIST_COURSES
-import com.tnmd.learningenglishapp.LOGIN_SCREEN
-import com.tnmd.learningenglishapp.SPLASH_SCREEN
 import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
-import com.tnmd.learningenglishapp.model.service.AccountService
+import com.tnmd.learningenglishapp.model.service.AuthenticationService
 import com.tnmd.learningenglishapp.model.service.LogService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-  private val accountService: AccountService,
-  logService: LogService
+    private val authenticationService: AuthenticationService,
+    logService: LogService
 ) : LearningEnglishAppViewModel(logService) {
   val showError = mutableStateOf(false)
 
@@ -41,9 +37,9 @@ class SplashViewModel @Inject constructor(
     launchCatching {  }
   }
 
-  fun onAppStart(openAndPopUp: (String, String) -> Unit) {
+  fun onAppStart(openAndPopUp: (String) -> Unit) {
     showError.value = false
-    if (accountService.hasUser) openAndPopUp(LIST_COURSES, SPLASH_SCREEN)
+    if (authenticationService.hasUser) openAndPopUp(LIST_COURSES)
   }
 
 }

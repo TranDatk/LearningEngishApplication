@@ -21,19 +21,17 @@ import com.tnmd.learningenglishapp.LOGIN_SCREEN
 import com.tnmd.learningenglishapp.SIGN_UP_SCREEN
 import com.tnmd.learningenglishapp.SPLASH_SCREEN
 import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
-import com.tnmd.learningenglishapp.model.service.AccountService
+import com.tnmd.learningenglishapp.model.service.AuthenticationService
 import com.tnmd.learningenglishapp.model.service.LogService
-import com.tnmd.learningenglishapp.screens.login.LoginUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.flow.map
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
   logService: LogService,
-  private val accountService: AccountService
+  private val authenticationService: AuthenticationService
 ) : LearningEnglishAppViewModel(logService) {
-  val uiState = mutableStateOf(SettingsUiState(isAnonymousAccount = accountService.hasUser))
+  val uiState = mutableStateOf(SettingsUiState(isAnonymousAccount = authenticationService.hasUser))
 
   fun onLoginClick(openScreen: (String) -> Unit) = openScreen(LOGIN_SCREEN)
 
@@ -41,14 +39,14 @@ class SettingsViewModel @Inject constructor(
 
   fun onSignOutClick(restartApp: (String) -> Unit) {
     launchCatching {
-      accountService.signOut()
+      authenticationService.signOut()
       restartApp(SPLASH_SCREEN)
     }
   }
 
   fun onDeleteMyAccountClick(restartApp: (String) -> Unit) {
     launchCatching {
-      accountService.deleteAccount()
+      authenticationService.deleteAccount()
       restartApp(SPLASH_SCREEN)
     }
   }
