@@ -6,7 +6,7 @@ import com.tnmd.learningenglishapp.model.Words
 import kotlinx.coroutines.flow.Flow
 
 interface AccountService {
-    val account: Flow<Account?>
+    val account: Flow<Account>
     suspend fun getCurrentAccount(): Account?
-    suspend fun getAccount(accountId : String): Account?
+    suspend fun getAccount(accountId: String): Account?
 }

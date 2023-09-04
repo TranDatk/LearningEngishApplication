@@ -4,5 +4,5 @@ import com.tnmd.learningenglishapp.model.Learner
 import kotlinx.coroutines.flow.Flow
 
 interface LearnerService {
-    val learner: Flow<Learner?>?
+    val learner: Flow<Learner>
 }
