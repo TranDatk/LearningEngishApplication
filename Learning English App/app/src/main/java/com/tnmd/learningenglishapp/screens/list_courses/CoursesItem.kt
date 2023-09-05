@@ -24,6 +24,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.compose.rememberImagePainter
 import com.tnmd.learningenglishapp.R
@@ -43,10 +45,12 @@ import com.tnmd.learningenglishapp.model.Courses
 @ExperimentalMaterialApi
 fun CoursesItem(
     courses: Courses,
-    onCourseItemClick: (String) -> Unit
+    onCourseItemClick: (String) -> Unit,
+    id : String,
+    viewModel: CoursesViewModel = hiltViewModel()
 ) {
     Card(
-        modifier = Modifier.cardCourses().clickable { onCourseItemClick("") },
+        modifier = Modifier.cardCourses().clickable { viewModel.onCourseItemClick(onCourseItemClick,id) },
         elevation = 4.dp
     ) {
         Row(

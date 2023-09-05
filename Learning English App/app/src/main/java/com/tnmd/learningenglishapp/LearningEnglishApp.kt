@@ -1,9 +1,6 @@
 package com.tnmd.learningenglishapp
 
-import android.Manifest
 import android.content.res.Resources
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -20,23 +17,17 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.permissions.shouldShowRationale
+import androidx.navigation.navArgument
 import com.tnmd.learningenglishapp.screens.settings.SettingsScreen
-import com.tnmd.learningenglishapp.common.composable.PermissionDialog
-import com.tnmd.learningenglishapp.common.composable.RationaleDialog
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
 import com.tnmd.learningenglishapp.screens.list_courses.CoursesScreen
+import com.tnmd.learningenglishapp.screens.list_words.WordsScreen
 import com.tnmd.learningenglishapp.screens.login.LoginScreen
-import com.tnmd.learningenglishapp.screens.login.LoginViewModel
 import com.tnmd.learningenglishapp.screens.sign_up.SignUpScreen
 import com.tnmd.learningenglishapp.screens.splash.SplashScreen
 import com.tnmd.learningenglishapp.ui.theme.LearningEnglishAppTheme
@@ -167,5 +158,16 @@ fun NavGraphBuilder.learningEnglishGraph(appState: LearningEnglishAppState) {
         )
     }
 
+    composable(
+        route = "$LIST_WORDS$WORDS_ID_ARG",
+        arguments = listOf(navArgument(COURSES_ID) {
+            nullable = true
+            defaultValue = null
+        })
+    ) {
+        WordsScreen(
+            openScreen = {route -> appState.navigate(route) }
+        )
+    }
 }
 

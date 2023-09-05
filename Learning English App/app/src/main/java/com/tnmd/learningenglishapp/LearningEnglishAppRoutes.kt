@@ -9,4 +9,7 @@ const val ACCOUNT_UPDATE = "AccountUpdateScreen"
 const val LIST_COURSES = "CoursesScreen"
 const val LIST_WORDS = "WordsScreen"
 
+const val COURSES_ID = "coursesId"
+const val WORDS_ID_ARG = "?$COURSES_ID={$COURSES_ID}"
+
 

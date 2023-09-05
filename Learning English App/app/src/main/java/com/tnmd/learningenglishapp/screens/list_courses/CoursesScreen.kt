@@ -60,7 +60,9 @@ fun CoursesScreen(
                 items(courses.toList(), key = { it.id }) { coursesItem ->
                     CoursesItem(
                         courses = coursesItem,
-                        onCourseItemClick = openAndPopUp
+                        onCourseItemClick = openAndPopUp,
+                        id = coursesItem.id,
+                        viewModel = viewModel
                     )
                 }
             }
