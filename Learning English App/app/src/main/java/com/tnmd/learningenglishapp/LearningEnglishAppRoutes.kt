@@ -7,5 +7,6 @@ const val SIGN_UP_SCREEN = "SignUpScreen"
 const val SETTINGS_SCREEN = "SettingsScreen"
 const val ACCOUNT_UPDATE = "AccountUpdateScreen"
 const val LIST_COURSES = "CoursesScreen"
+const val LIST_WORDS = "WordsScreen"
 
 
