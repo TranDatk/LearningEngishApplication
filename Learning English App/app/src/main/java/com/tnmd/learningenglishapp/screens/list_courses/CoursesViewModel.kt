@@ -15,6 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CoursesViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
     private val coursesService: CoursesService,
     logService: LogService
 ) : LearningEnglishAppViewModel(logService){
@@ -31,6 +32,7 @@ class CoursesViewModel @Inject constructor(
 
 
     fun onCourseItemClick(openAndPopUp: (String) -> Unit, id : String) {
+        savedStateHandle.set(COURSES_ID, id)
         openAndPopUp("$LIST_WORDS?$COURSES_ID={${id}}")
     }
 }

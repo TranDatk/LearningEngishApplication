@@ -28,20 +28,15 @@ constructor(private val firestore: FirebaseFirestore, private val auth: Authenti
 
         val listWordsCourses = wordsCoursesQuery.toObjects<Words_Courses>()
 
-        val listWords = mutableListOf<Words?>()
-
-        for (wordsCourses in listWordsCourses) {
+        return listWordsCourses.mapNotNull { wordsCourses ->
             val wordsDocument = firestore.collection(WORDS_COLLECTION)
                 .document(wordsCourses.wordsId)
                 .get()
                 .await()
 
-            val words = wordsDocument.toObject<Words>()
-            listWords.add(words)
+            wordsDocument.toObject<Words>()
         }
-        return listWords
     }
-
 
     companion object {
         private const val WORDS_ID_FIELD = "wordsId"

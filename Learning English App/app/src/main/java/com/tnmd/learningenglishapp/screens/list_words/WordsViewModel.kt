@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.tnmd.learningenglishapp.COURSES_ID
+import com.tnmd.learningenglishapp.common.ext.idFromParameter
 import com.tnmd.learningenglishapp.model.Courses
 import com.tnmd.learningenglishapp.model.Words
 import com.tnmd.learningenglishapp.model.Words_Courses
@@ -35,18 +36,6 @@ class WordsViewModel @Inject constructor(
     var words = mutableStateListOf<Words>()
     private val _uiState = MutableStateFlow(WordsUiState())
     val uiState: StateFlow<WordsUiState> = _uiState.asStateFlow()
-
-    init {
-        val coursesId = savedStateHandle.get<String>(COURSES_ID)
-        if (coursesId != null) {
-            viewModelScope.launch {
-                val wordsList = words_coursesService.getWordsFromCourses(coursesId)
-                words.clear() // Xóa tất cả các phần tử hiện có trong mutableStateListOf<Words>
-                words.addAll(wordsList.filterNotNull()) // Thêm danh sách từ wordsList sau khi loại bỏ các phần tử null
-            }
-        }
-    }
-
     var userGuess by mutableStateOf("")
         private set
 
@@ -55,7 +44,15 @@ class WordsViewModel @Inject constructor(
     private lateinit var currentWord: String
 
     init {
-        resetGame()
+        val coursesId = savedStateHandle.get<String>(COURSES_ID)
+        if (coursesId != null) {
+            viewModelScope.launch {
+                val wordsList = words_coursesService.getWordsFromCourses(coursesId.idFromParameter())
+                words.clear() // Xóa tất cả các phần tử hiện có trong mutableStateListOf<Words>
+                words.addAll(wordsList.filterNotNull()) // Thêm danh sách từ wordsList sau khi loại bỏ các phần tử null
+                resetGame()
+            }
+        }
     }
 
     /*
