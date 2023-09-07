@@ -128,7 +128,7 @@ private fun SootheBottomNavigation(
                     when (index) {
                         0 -> navController.navigate(LIST_COURSES)
                         1 -> navController.navigate(SIGN_UP_SCREEN)
-                        2 -> navController.navigate(LIST_COURSES)
+                        2 -> navController.navigate(SETTINGS_SCREEN)
                         3 -> navController.navigate(CHAT_SCREEN)
                     }
                 }
@@ -155,10 +155,8 @@ fun NavGraphBuilder.learningEnglishGraph(appState: LearningEnglishAppState) {
     }
 
     composable(CHAT_SCREEN) {
-        // Gọi hàm ChatScreen ở đây
         ChatScreen(
-            openAndPopUp = { channelName ->
-                // Khi bấm vào item, chuyển đến màn hình MessageScreen
+            openScreen = { channelName ->
                 appState.navigate("messageScreen/$channelName")
             }
         )
@@ -178,10 +176,7 @@ fun NavGraphBuilder.learningEnglishGraph(appState: LearningEnglishAppState) {
         val channelName = backStackEntry.arguments?.getString("channelName")
         if (channelName != null) {
             // Truyền một hành động kết thúc vào MessageScreen
-            MessageScreen(channelName = channelName, finishAction = {
-                // Thực hiện kết thúc màn hình ở đây
-                appState.popUp()
-            })
+            MessageScreen(channelName = channelName)
         }
     }
 

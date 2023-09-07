@@ -98,7 +98,7 @@ class LoginViewModel @Inject constructor(
 
 
     launchCatching {
-      if( authenticationService.authenticate(email, password) == true){
+      if(authenticationService.authenticate(email, password)){
           LoginRegisteredUser(username, token)
           SnackbarManager.showMessage(AppText.login_success)
       }else{
@@ -106,6 +106,8 @@ class LoginViewModel @Inject constructor(
         SnackbarManager.showMessage(AppText.login_fail)
       }
     }
+
+
   }
 
   fun onForgotPasswordClick() {

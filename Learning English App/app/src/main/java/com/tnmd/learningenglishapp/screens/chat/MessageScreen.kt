@@ -41,7 +41,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 fun MessageScreen(
     channelName: String,
     modifier: Modifier = Modifier,
-    finishAction: () -> Unit
+    
 )
 {
     val context = LocalContext.current

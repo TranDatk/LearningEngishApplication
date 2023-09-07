@@ -41,7 +41,7 @@ class ChannelListViewModal @Inject constructor(
             if (result.isSuccess) {
                 viewModelScope.launch {
                     _createChannelEvent.emit(CreateChannelEvent.Success)
-                    SnackbarManager.showMessage(R.string.createChannel_fail)
+                    SnackbarManager.showMessage(R.string.createChannel_success)
                 }
             } else {
                 viewModelScope.launch {
