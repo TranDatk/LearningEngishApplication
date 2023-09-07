@@ -30,7 +30,7 @@ import io.getstream.chat.android.compose.ui.theme.ChatTheme
 @Composable
 @ExperimentalMaterialApi
 fun ChatScreen(
-    openAndPopUp: (String) -> Unit,
+    openScreen: (String) -> Unit,
     viewModel: ChannelListViewModal = hiltViewModel()
 ) {
     ChatTheme {
@@ -57,7 +57,7 @@ fun ChatScreen(
             ),
             title= "Channel List",
             isShowingHeader = true,
-            onItemClick = { channel -> openAndPopUp(channel.cid)
+            onItemClick = { channel -> openScreen(channel.cid)
             },
             onHeaderActionClick = {
                 showDialog = true
