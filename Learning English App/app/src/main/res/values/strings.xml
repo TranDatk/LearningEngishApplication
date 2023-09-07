@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">Learning English App</string>
+
+<!--    tandat1401-->
+    <string name="api_key">cy6ab6ptzuqh</string>
+    <string name="jwt_token">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidGFuZGF0MTQwMSJ9.S1hjviZbK2ZVliB2YllYJXucCSPeNM3kxccWbRm-QJY</string>
+
     <!-- Common -->
     <string name="email">Email</string>
     <string name="username">Nhập tên của bạn: </string>
@@ -13,7 +18,10 @@
 
     <!-- LoginScreen -->
     <string name="sign_in">Sign in</string>
+    <string name="login_success">Đăng nhập thành công</string>
+    <string name="login_fail">Đăng nhập thất bại</string>
     <string name="login_details">Enter your login details</string>
+    <string name="login_guest">Login as Guest</string>
     <string name="forgot_password">Forgot password? Click to get recovery email</string>
     <string name="recovery_email_sent">Check your inbox for the recovery email.</string>
     <string name="empty_password_error">Password cannot be empty.</string>
@@ -57,4 +65,9 @@
     <string name="notification_permission_settings">The notification permission is important for this app. Please navigate to your device settings and enable notifications for Make it So.</string>
 
     <string name="bottom_navigation_home">Học</string>
+
+<!--    Channel Chat-->
+    <string name="channelName_error">Tên nhóm không được bỏ trống</string>
+    <string name="createChannel_fail">Đã xảy ra lỗi khi tạo nhóm</string>
+    <string name="createChannel_success">Tạo nhóm thành công</string>
 </resources>
