@@ -77,6 +77,15 @@ class LoginViewModel @Inject constructor(
       return
     }
 
+      fun LoginRegisteredUser(username: String, token: String) {
+      val user = User(id = username, name = username)
+        _loadingState.value = UiLoadingState.Loading
+      client.connectUser(
+        user = user,
+        token = token
+      )
+    }
+
     launchCatching {
       if(authenticationService.authenticate(email, password)){
         _loginEvent.emit(LogInEvent.Success)

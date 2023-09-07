@@ -43,6 +43,7 @@ fun SettingsScreen(
 
     Spacer(modifier = Modifier.spacer())
 
+
     if (uiState.isAnonymousAccount == false) {
       RegularCardEditor(AppText.sign_in, AppIcon.ic_sign_in, "", Modifier.card()) {
         viewModel.onLoginClick(openScreen)

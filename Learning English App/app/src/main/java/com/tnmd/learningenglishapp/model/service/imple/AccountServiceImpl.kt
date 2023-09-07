@@ -19,7 +19,6 @@ import javax.inject.Inject
 
 class AccountServiceImpl @Inject
 constructor(private val firestore: FirebaseFirestore, private val auth: AuthenticationService,
-            private val firestorage : FirebaseStorage
 ) : AccountService {
     @OptIn(ExperimentalCoroutinesApi::class)
     override val account: Flow<Account>
