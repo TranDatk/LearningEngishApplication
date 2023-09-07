@@ -15,7 +15,7 @@ class SettingsViewModel @Inject constructor(
   logService: LogService,
   private val authenticationService: AuthenticationService
 ) : LearningEnglishAppViewModel(logService) {
-  val uiState = mutableStateOf(SettingsUiState(hasUser = authenticationService.hasUser))
+  val uiState = mutableStateOf(SettingsUiState(isAnonymousAccount = authenticationService.hasUser))
 
   fun onLoginClick(openScreen: (String) -> Unit) = openScreen(LOGIN_SCREEN)
 
