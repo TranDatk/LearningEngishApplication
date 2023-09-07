@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.tnmd.learningenglishapp.LIST_WORDS
 import com.tnmd.learningenglishapp.COURSES_ID
 import com.tnmd.learningenglishapp.model.Courses
+import com.tnmd.learningenglishapp.model.service.AuthenticationService
 import com.tnmd.learningenglishapp.model.service.CoursesService
 import com.tnmd.learningenglishapp.model.service.LogService
 import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
@@ -20,6 +21,9 @@ class CoursesViewModel @Inject constructor(
     logService: LogService
 ) : LearningEnglishAppViewModel(logService){
     val courses = mutableStateListOf<Courses>()
+
+
+
 
     init {
             viewModelScope.launch {

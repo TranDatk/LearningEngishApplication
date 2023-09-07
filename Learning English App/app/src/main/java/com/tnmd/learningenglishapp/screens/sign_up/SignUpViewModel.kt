@@ -16,6 +16,7 @@ limitations under the License.
 
 package com.tnmd.learningenglishapp.screens.sign_up
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.tnmd.learningenglishapp.SETTINGS_SCREEN
 import com.tnmd.learningenglishapp.R.string as AppText

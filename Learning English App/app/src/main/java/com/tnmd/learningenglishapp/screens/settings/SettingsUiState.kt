@@ -16,4 +16,6 @@ limitations under the License.
 
 package com.tnmd.learningenglishapp.screens.settings
 
-data class SettingsUiState(val isAnonymousAccount: Boolean = false)
+data class SettingsUiState(
+    val isAnonymousAccount: Boolean = false
+)

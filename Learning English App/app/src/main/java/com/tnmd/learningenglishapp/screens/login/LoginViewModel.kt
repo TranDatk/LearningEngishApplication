@@ -44,6 +44,7 @@ class LoginViewModel @Inject constructor(
 
   private val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidGFuZGF0a3QwMDIifQ.eW1kkDTwiOGTmMeVkTrLgtG_xeAzCs66Y_jC2MDrLcg"
 
+
   val username: String
     get() {
       return if (email.contains("@")) {
@@ -76,29 +77,9 @@ class LoginViewModel @Inject constructor(
       return
     }
 
-      @SuppressLint("SuspiciousIndentation")
-      fun LoginRegisteredUser(username: String, token: String) {
-      val user = User(id = username, name = username)
-        _loadingState.value = UiLoadingState.Loading
-      client.connectUser(
-        user = user,
-        token = token
-      ).enqueue { result ->
-        _loadingState.value = UiLoadingState.NotLoading
-
-          if (result.isSuccess) {
-            launchCatching {_loginEvent.emit(LogInEvent.Success)  }
-            Log.d("dat123456", "đăng ký người dùng thành công")
-          } else {
-            Log.d("dat12345", "đăng ký người dùng thất bại")
-            launchCatching { openAndPopUp(SETTINGS_SCREEN, LOGIN_SCREEN) }
-          }
-      }
-    }
-
-
     launchCatching {
       if(authenticationService.authenticate(email, password)){
+        _loginEvent.emit(LogInEvent.Success)
           LoginRegisteredUser(username, token)
           SnackbarManager.showMessage(AppText.login_success)
       }else{
@@ -119,6 +100,21 @@ class LoginViewModel @Inject constructor(
     launchCatching {
       authenticationService.sendRecoveryEmail(email)
       SnackbarManager.showMessage(AppText.recovery_email_sent)
+    }
+  }
+
+  fun LoginRegisteredUser(username: String, token: String) {
+    val user = User(id = username, name = username)
+    _loadingState.value = UiLoadingState.Loading
+    client.connectUser(
+      user = user,
+      token = token
+    ).enqueue { result ->
+      if (result.isSuccess) {
+        Log.d("dat123456", "đăng ký người dùng thành công")
+      } else {
+        Log.d("dat12345", "đăng ký người dùng thất bại")
+      }
     }
   }
 
