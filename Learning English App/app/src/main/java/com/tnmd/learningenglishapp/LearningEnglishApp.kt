@@ -128,7 +128,7 @@ private fun SootheBottomNavigation(
                     when (index) {
                         0 -> navController.navigate(LIST_COURSES)
                         1 -> navController.navigate(SIGN_UP_SCREEN)
-                        2 -> navController.navigate(LIST_COURSES)
+                        2 -> navController.navigate(SETTINGS_SCREEN)
                         3 -> navController.navigate(CHAT_SCREEN)
                     }
                 }

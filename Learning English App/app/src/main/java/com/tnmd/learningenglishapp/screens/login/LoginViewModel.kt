@@ -84,7 +84,7 @@ class LoginViewModel @Inject constructor(
         user = user,
         token = token
       ).enqueue { result ->
-        _loadingState.value = UiLoadingState.NotLoading
+
 
           if (result.isSuccess) {
             launchCatching {_loginEvent.emit(LogInEvent.Success)  }
