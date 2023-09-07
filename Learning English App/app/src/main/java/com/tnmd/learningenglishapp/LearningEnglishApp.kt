@@ -24,13 +24,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.tnmd.learningenglishapp.screens.settings.SettingsScreen
+
 import com.tnmd.learningenglishapp.common.composable.RationaleDialog
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
 import com.tnmd.learningenglishapp.screens.chat.ChatScreen
 import com.tnmd.learningenglishapp.screens.chat.MessageScreen
 import com.tnmd.learningenglishapp.screens.list_courses.CoursesScreen
+import com.tnmd.learningenglishapp.screens.list_words.WordsScreen
 import com.tnmd.learningenglishapp.screens.login.LoginScreen
-import com.tnmd.learningenglishapp.screens.login.LoginViewModel
 import com.tnmd.learningenglishapp.screens.sign_up.SignUpScreen
 import com.tnmd.learningenglishapp.screens.splash.SplashScreen
 import com.tnmd.learningenglishapp.ui.theme.LearningEnglishAppTheme
@@ -182,6 +183,18 @@ fun NavGraphBuilder.learningEnglishGraph(appState: LearningEnglishAppState) {
                 appState.popUp()
             })
         }
+    }
+
+    composable(
+        route = "$LIST_WORDS$WORDS_ID_ARG",
+        arguments = listOf(navArgument(COURSES_ID) {
+            nullable = true
+            defaultValue = null
+        })
+    ) {
+        WordsScreen(
+            openScreen = {route -> appState.navigate(route) }
+        )
     }
 
 }
