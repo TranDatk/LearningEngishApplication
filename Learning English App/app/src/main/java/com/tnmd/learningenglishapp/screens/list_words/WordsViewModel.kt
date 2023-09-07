@@ -36,12 +36,10 @@ class WordsViewModel @Inject constructor(
     var words = mutableStateListOf<Words>()
     private val _uiState = MutableStateFlow(WordsUiState())
     val uiState: StateFlow<WordsUiState> = _uiState.asStateFlow()
-    var userGuess by mutableStateOf("")
-        private set
 
     // Set of words used in the game
-    private var usedWords: MutableSet<String> = mutableSetOf()
-    private lateinit var currentWord: String
+    private var usedWords: MutableSet<Words> = mutableSetOf()
+    private lateinit var currentWord: Words
 
     init {
         val coursesId = savedStateHandle.get<String>(COURSES_ID)
@@ -60,43 +58,16 @@ class WordsViewModel @Inject constructor(
      */
     fun resetGame() {
         usedWords.clear()
-        _uiState.value = WordsUiState(currentdWord = pickRandomWordAndShuffle())
+        _uiState.value = WordsUiState(currentdWord = pickRandomWord())
     }
 
-    /*
-     * Update the user's guess
-     */
-    fun updateUserGuess(guessedWord: String){
-        userGuess = guessedWord
-    }
-
-    /*
-     * Checks if the user's guess is correct.
-     * Increases the score accordingly.
-     */
-    fun checkUserGuess() {
-        if (userGuess.equals(currentWord, ignoreCase = true)) {
-            // User's guess is correct, increase the score
-            // and call updateGameState() to prepare the game for next round
-            val updatedScore = _uiState.value.score.plus(SCORE_INCREASE)
-            updateGameState(updatedScore)
-        } else {
-            // User's guess is wrong, show an error
-            _uiState.update { currentState ->
-                currentState.copy(isGuessedWordWrong = true)
-            }
-        }
-        // Reset user guess
-        updateUserGuess("")
-    }
 
     /*
      * Skip to next word
      */
     fun skipWord() {
         updateGameState(_uiState.value.score)
-        // Reset user guess
-        updateUserGuess("")
+        _uiState.value.score.plus(SCORE_INCREASE)
     }
 
     /*
@@ -118,7 +89,7 @@ class WordsViewModel @Inject constructor(
             _uiState.update { currentState ->
                 currentState.copy(
                     isGuessedWordWrong = false,
-                    currentdWord = pickRandomWordAndShuffle(),
+                    currentdWord = pickRandomWord(),
                     currentWordCount = currentState.currentWordCount.inc(),
                     score = updatedScore
                 )
@@ -126,24 +97,15 @@ class WordsViewModel @Inject constructor(
         }
     }
 
-    private fun shuffleCurrentWord(word: String): String {
-        val tempWord = word.toCharArray()
-        // Scramble the word
-        tempWord.shuffle()
-        while (String(tempWord) == word) {
-            tempWord.shuffle()
-        }
-        return String(tempWord)
-    }
 
-    private fun pickRandomWordAndShuffle(): String {
+    private fun pickRandomWord(): Words {
         // Continue picking up a new random word until you get one that hasn't been used before
-        currentWord = words.toList().random().name
+        currentWord = words.toList().random()
         return if (usedWords.contains(currentWord)) {
-            pickRandomWordAndShuffle()
+            pickRandomWord()
         } else {
             usedWords.add(currentWord)
-            shuffleCurrentWord(currentWord)
+            return currentWord
         }
     }
 }

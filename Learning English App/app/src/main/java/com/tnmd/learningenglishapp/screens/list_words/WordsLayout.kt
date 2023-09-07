@@ -27,22 +27,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tnmd.learningenglishapp.R
 import com.tnmd.learningenglishapp.model.Courses
+import com.tnmd.learningenglishapp.model.Words
 
 @Composable
-@ExperimentalMaterialApi
 fun WordsLayout(
-    currentScrambledWord: String,
+    currentWord: Words,
     wordCount: Int,
-    isGuessWrong: Boolean,
-    userGuess: String,
-    onUserGuessChanged: (String) -> Unit,
-    onKeyboardDone: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
 
     Card(
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
             .background(Color.Blue, shape = RoundedCornerShape(10.dp)),
         elevation = 5.dp
     ) {
@@ -53,7 +49,7 @@ fun WordsLayout(
         ) {
             Text(
                 modifier = Modifier
-                    .clip(shapes.medium)
+                    .clip(RoundedCornerShape(10.dp))
                     .background(MaterialTheme.colorScheme.surface)
                     .padding(horizontal = 10.dp, vertical = 4.dp)
                     .align(alignment = Alignment.End),
@@ -62,40 +58,28 @@ fun WordsLayout(
                 color = MaterialTheme.colorScheme.onPrimary
             )
             Text(
-                text = currentScrambledWord,
+                text = currentWord.name,
                 style = MaterialTheme.typography.displayMedium
             )
+            Text(
+                text = currentWord.pronounce,
+                style = MaterialTheme.typography.bodySmall
+            )
+            Text(
+                text = currentWord.means,
+                style = MaterialTheme.typography.bodySmall
+            )
+            AudioPlayer(currentWord.audioURL)
             Text(
                 text = stringResource(R.string.instructions),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleMedium
             )
-            OutlinedTextField(
-                value = userGuess,
-                singleLine = true,
-                shape = shapes.large,
-                modifier = Modifier.fillMaxWidth(),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = MaterialTheme.colorScheme.surface,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.surface,
-                    disabledLabelColor = MaterialTheme.colorScheme.surface,
-                ),
-                onValueChange = onUserGuessChanged,
-                label = {
-                    if (isGuessWrong) {
-                        Text(stringResource(R.string.wrong_guess))
-                    } else {
-                        Text(stringResource(R.string.enter_your_word))
-                    }
-                },
-                isError = isGuessWrong,
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = { onKeyboardDone() }
-                )
-            )
         }
     }
 }
+
+
+
+
+

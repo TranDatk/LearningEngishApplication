@@ -32,7 +32,6 @@ class CoursesViewModel @Inject constructor(
 
 
     fun onCourseItemClick(openAndPopUp: (String) -> Unit, id : String) {
-        savedStateHandle.set(COURSES_ID, id)
         openAndPopUp("$LIST_WORDS?$COURSES_ID={${id}}")
     }
 }

@@ -51,12 +51,8 @@ fun WordsScreen(
         )
 
         WordsLayout(
-            onUserGuessChanged = { viewModel.updateUserGuess(it) },
             wordCount = gameUiState.currentWordCount,
-            userGuess = viewModel.userGuess,
-            onKeyboardDone = { viewModel.checkUserGuess() },
-            currentScrambledWord = gameUiState.currentdWord,
-            isGuessWrong = gameUiState.isGuessedWordWrong,
+            currentWord = gameUiState.currentdWord,
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
@@ -70,15 +66,6 @@ fun WordsScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = { viewModel.checkUserGuess() }
-            ) {
-                Text(
-                    text = stringResource(R.string.submit),
-                    fontSize = 16.sp
-                )
-            }
 
             OutlinedButton(
                 onClick = { viewModel.skipWord() },
