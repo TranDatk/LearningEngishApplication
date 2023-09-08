@@ -36,8 +36,8 @@ fun DialogConfirmButton(@StringRes text: Int, action: () -> Unit) {
     onClick = action,
     colors =
       ButtonDefaults.buttonColors(
-        backgroundColor = MaterialTheme.colors.onPrimary,
-        contentColor = MaterialTheme.colors.onPrimary
+        backgroundColor = MaterialTheme.colors.background,
+        contentColor = MaterialTheme.colors.background
       )
   ) {
     Text(text = stringResource(text))

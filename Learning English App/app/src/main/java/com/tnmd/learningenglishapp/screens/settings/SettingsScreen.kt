@@ -2,6 +2,7 @@
 
 package com.tnmd.learningenglishapp.screens.settings
 
+import android.content.Intent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -9,8 +10,11 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.core.content.ContextCompat.startActivity
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.tnmd.learningenglishapp.activity.MainActivity
 import com.tnmd.learningenglishapp.R.drawable as AppIcon
 import com.tnmd.learningenglishapp.R.string as AppText
 import com.tnmd.learningenglishapp.common.composable.*
@@ -53,8 +57,8 @@ fun SettingsScreen(
         viewModel.onSignUpClick(openScreen)
       }
     } else {
-      SignOutCard { viewModel.onSignOutClick(restartApp) }
-      DeleteMyAccountCard { viewModel.onDeleteMyAccountClick(restartApp) }
+      val intent = Intent(LocalContext.current, MainActivity::class.java)
+      LocalContext.current.startActivity(intent)
     }
   }
 }
