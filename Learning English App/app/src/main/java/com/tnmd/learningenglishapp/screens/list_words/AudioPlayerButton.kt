@@ -8,34 +8,31 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun AudioPlayer(url: String,
-                modifier: Modifier = Modifier) {
+fun AudioPlayer(url: String, modifier: Modifier = Modifier) {
     val ctx = LocalContext.current
-    val mediaPlayer = MediaPlayer()
+    val mediaPlayer = remember { MediaPlayer() } // Sử dụng remember để giữ nguyên MediaPlayer giữa các lần render
+
     Button(
         modifier = Modifier
             .width(300.dp)
             .padding(7.dp),
         onClick = {
-            var audioUrl = url
+            mediaPlayer.reset() // Đặt lại MediaPlayer trước khi phát âm thanh
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
             try {
-                mediaPlayer.setDataSource(audioUrl)
+                mediaPlayer.setDataSource(url)
                 mediaPlayer.prepare()
                 mediaPlayer.start()
-
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-            Toast.makeText(ctx, "Audio started playing..", Toast.LENGTH_SHORT).show()
         }) {
-        // on below line we are specifying
-        // text for button.
         Text(text = "Play Audio")
     }
 }

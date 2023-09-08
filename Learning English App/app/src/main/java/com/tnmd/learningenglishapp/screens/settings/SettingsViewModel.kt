@@ -2,6 +2,7 @@ package com.tnmd.learningenglishapp.screens.settings
 
 import androidx.compose.runtime.mutableStateOf
 import com.tnmd.learningenglishapp.LOGIN_SCREEN
+import com.tnmd.learningenglishapp.SETTINGS_SCREEN
 import com.tnmd.learningenglishapp.SIGN_UP_SCREEN
 import com.tnmd.learningenglishapp.SPLASH_SCREEN
 import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
@@ -24,7 +25,7 @@ class SettingsViewModel @Inject constructor(
   fun onSignOutClick(restartApp: (String) -> Unit) {
     launchCatching {
       authenticationService.signOut()
-      restartApp(SPLASH_SCREEN)
+      restartApp(SETTINGS_SCREEN)
     }
   }
 

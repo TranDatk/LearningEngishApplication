@@ -66,8 +66,7 @@ class WordsViewModel @Inject constructor(
      * Skip to next word
      */
     fun skipWord() {
-        updateGameState(_uiState.value.score)
-        _uiState.value.score.plus(SCORE_INCREASE)
+        updateGameState(_uiState.value.score.plus(SCORE_INCREASE))
     }
 
     /*

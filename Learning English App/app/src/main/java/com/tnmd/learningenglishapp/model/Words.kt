@@ -7,5 +7,6 @@ data class Words(
     val name : String = "",
     val means : String = "",
     val pronounce : String = "",
-    val audioURL : String = ""
+    val audioURL : String = "",
+    val example : String = ""
 )

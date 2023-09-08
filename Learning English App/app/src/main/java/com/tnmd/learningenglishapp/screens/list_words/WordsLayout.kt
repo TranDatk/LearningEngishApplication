@@ -59,21 +59,21 @@ fun WordsLayout(
             )
             Text(
                 text = currentWord.name,
-                style = MaterialTheme.typography.displayMedium
+                style = MaterialTheme.typography.displayLarge
             )
             Text(
                 text = currentWord.pronounce,
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodyLarge
             )
             Text(
                 text = currentWord.means,
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodyLarge
             )
             AudioPlayer(currentWord.audioURL)
             Text(
-                text = stringResource(R.string.instructions),
+                text = stringResource(R.string.Example, currentWord.example),
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleSmall
             )
         }
     }

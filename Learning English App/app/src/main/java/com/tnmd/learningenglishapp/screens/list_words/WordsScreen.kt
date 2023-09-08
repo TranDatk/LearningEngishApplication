@@ -49,6 +49,7 @@ fun WordsScreen(
             text = stringResource(R.string.app_name),
             style = MaterialTheme.typography.titleLarge,
         )
+        Score(score = gameUiState.score, modifier = Modifier.padding(20.dp))
 
         WordsLayout(
             wordCount = gameUiState.currentWordCount,
@@ -77,8 +78,6 @@ fun WordsScreen(
                 )
             }
         }
-
-        Score(score = gameUiState.score, modifier = Modifier.padding(20.dp))
 
         if (gameUiState.isGameOver) {
             ScoreDialog(
