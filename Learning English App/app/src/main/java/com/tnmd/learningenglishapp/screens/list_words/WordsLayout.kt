@@ -59,7 +59,7 @@ fun WordsLayout(
             )
             Text(
                 text = currentWord.name,
-                style = MaterialTheme.typography.displayLarge
+                style = MaterialTheme.typography.displayMedium
             )
             Text(
                 text = currentWord.pronounce,

@@ -1,6 +1,7 @@
 package com.tnmd.learningenglishapp.screens.list_words
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -50,39 +51,43 @@ fun WordsScreen(
             style = MaterialTheme.typography.titleLarge,
         )
         Score(score = gameUiState.score, modifier = Modifier.padding(20.dp))
-
-        WordsLayout(
-            wordCount = gameUiState.currentWordCount,
-            currentWord = gameUiState.currentdWord,
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(mediumPadding)
-        )
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(mediumPadding),
-            verticalArrangement = Arrangement.spacedBy(mediumPadding),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-
-
-            OutlinedButton(
-                onClick = { viewModel.skipWord() },
-                modifier = Modifier.fillMaxWidth()
+        if(gameUiState.currentWordCount <= gameUiState.maxWordsOfCourse){
+            WordsLayout(
+                wordCount = gameUiState.currentWordCount,
+                currentWord = gameUiState.currentdWord,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(mediumPadding)
+            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(mediumPadding),
+                verticalArrangement = Arrangement.spacedBy(mediumPadding),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = stringResource(R.string.skip),
-                    fontSize = 16.sp
-                )
+
+
+                OutlinedButton(
+                    onClick = { viewModel.skipWord() },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = stringResource(R.string.skip),
+                        fontSize = 16.sp
+                    )
+                }
             }
+        }else{
+            QuizGame(words = viewModel.words)
         }
 
         if (gameUiState.isGameOver) {
             ScoreDialog(
                 score = gameUiState.score,
-                onPlayAgain = { viewModel.resetGame() }
+                onPlayAgain = { viewModel.resetGame() },
+                openScreen = openScreen
             )
         }
     }

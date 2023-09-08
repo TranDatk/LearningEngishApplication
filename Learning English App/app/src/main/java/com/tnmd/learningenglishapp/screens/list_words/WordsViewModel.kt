@@ -30,6 +30,7 @@ class WordsViewModel @Inject constructor(
     private val words_coursesService: Words_CoursesService,
     logService: LogService
 ) : LearningEnglishAppViewModel(logService){
+
     val SCORE_INCREASE = 20
     var words = mutableStateListOf<Words>()
     private val _uiState = MutableStateFlow(WordsUiState())
@@ -56,7 +57,7 @@ class WordsViewModel @Inject constructor(
      */
     fun resetGame() {
         usedWords.clear()
-        _uiState.value = WordsUiState(currentdWord = pickRandomWord())
+        _uiState.value = WordsUiState(currentdWord = pickRandomWord(), maxWordsOfCourse = words.size)
     }
 
 
@@ -72,15 +73,13 @@ class WordsViewModel @Inject constructor(
      * current game state.
      */
     private fun updateGameState(updatedScore: Int) {
-        Log.d("trandatk",usedWords.size.toString() +" "+ words.size)
         if (usedWords.size == words.size){
             //Last round in the game, update isGameOver to true, don't pick a new word
-
             _uiState.update { currentState ->
                 currentState.copy(
                     isGuessedWordWrong = false,
-                    score = updatedScore,
-                    isGameOver = true
+                    currentWordCount = currentState.currentWordCount.inc(),
+                    score = updatedScore
                 )
             }
         } else{

@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import com.tnmd.learningenglishapp.LIST_COURSES
 import com.tnmd.learningenglishapp.R
 
 @Composable
@@ -16,6 +17,7 @@ import com.tnmd.learningenglishapp.R
 fun ScoreDialog(
     score: Int,
     onPlayAgain: () -> Unit,
+    openScreen: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val activity = (LocalContext.current as Activity)
@@ -32,7 +34,7 @@ fun ScoreDialog(
         dismissButton = {
             TextButton(
                 onClick = {
-                    activity.finish()
+                    openScreen(LIST_COURSES)
                 }
             ) {
                 Text(text = stringResource(R.string.exit))
