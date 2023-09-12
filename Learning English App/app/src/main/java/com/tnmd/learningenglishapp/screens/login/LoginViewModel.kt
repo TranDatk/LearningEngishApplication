@@ -83,7 +83,13 @@ class LoginViewModel @Inject constructor(
       client.connectUser(
         user = user,
         token = token
-      )
+      ).enqueue { result ->
+        if (result.isSuccess) {
+          Log.d("dat123456", "đăng ký người dùng thành công")
+        } else {
+          Log.d("dat12345", "đăng ký người dùng thất bại")
+        }
+      }
     }
 
     launchCatching {

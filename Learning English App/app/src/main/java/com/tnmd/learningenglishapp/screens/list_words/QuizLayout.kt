@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,32 +26,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.tnmd.learningenglishapp.model.Words
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun QuizGame(words: List<Words>, openScreen: (String) -> Unit) {
-    var usedWords: MutableSet<Words> by remember { mutableStateOf(mutableSetOf()) }
-    var questionWord: Words by remember { mutableStateOf(getNextWord(words, usedWords)) }
-    var answerOptions: List<Words> by remember { mutableStateOf(generateAnswerOptions(words, questionWord)) }
-    var selectedOption: Words? by remember { mutableStateOf(null) }
-    var correctAnswerSelected: Boolean by remember { mutableStateOf(false) }
-    var answered: Boolean by remember { mutableStateOf(false) }
-    var score: Int by remember { mutableStateOf(0) }
+fun QuizGame(words: List<Words>,
+             openScreen: (String) -> Unit,
+             viewModel: QuizViewModel = hiltViewModel()) {
+
+    val uiState by viewModel.uiState.collectAsState()
     val totalQuestions = words.size // Số lượng câu hỏi bạn muốn
-    // Biến để kiểm soát việc hiển thị ScoreDialog
-    val showScoreDialog = remember { mutableStateOf(false) }
+    var questionWord: Words by remember { mutableStateOf(viewModel.getNextWord(words, viewModel.usedWords)) }
+    var answerOptions: List<Words> by remember { mutableStateOf(viewModel.generateAnswerOptions(words, questionWord)) }
+
 
     fun resetGame() {
-        usedWords.clear()
-        questionWord = getNextWord(words, usedWords)
-        answerOptions = generateAnswerOptions(words, questionWord)
-        selectedOption = null
-        correctAnswerSelected = false
-        answered = false
-        score = 0 // Đặt lại điểm số khi chơi lại
-        // Đặt showScoreDialog thành false để ẩn ScoreDialog
-        showScoreDialog.value = false
+        viewModel.usedWords.clear()
+        questionWord = viewModel.getNextWord(words, viewModel.usedWords)
+        answerOptions = viewModel.generateAnswerOptions(words, questionWord)
+        viewModel.selectedOption = null
+        viewModel.updateQuizUiStateAnswerOptions(false,0,false)
+        viewModel.resetScore(0)
+        viewModel.resetScoreDialog(false)
     }
 
     Column(
@@ -59,7 +57,7 @@ fun QuizGame(words: List<Words>, openScreen: (String) -> Unit) {
             .padding(16.dp)
     ) {
 
-        Score(score = score, modifier = Modifier
+        Score(score = uiState.score, modifier = Modifier
             .align(Alignment.CenterHorizontally)
             .padding(20.dp))
 
@@ -73,29 +71,26 @@ fun QuizGame(words: List<Words>, openScreen: (String) -> Unit) {
             AnswerOption(
                 word = word,
                 onOptionSelected = { selectedWord ->
-                    if (!answered) {
+                    if (!uiState.answered) {
                         if (selectedWord == questionWord) {
                             // Handle correct answer
-                            correctAnswerSelected = true
-                            score += 20 // Cộng điểm khi trả lời đúng
+                            viewModel.updateQuizUiStateAnswerOptions(true,20,true)
                         } else {
                             // Handle wrong answer
-                            selectedOption = selectedWord
-                            correctAnswerSelected = false
+                            viewModel.selectedOption = selectedWord
+                            viewModel.updateQuizUiStateAnswerOptions(false,0,true)
                         }
-
-                        answered = true
                     }
                 },
-                selected = selectedOption == word,
-                correct = correctAnswerSelected && word == questionWord
+                selected = viewModel.selectedOption == word,
+                correct = uiState.correctAnswerSelected && word == questionWord
             )
             Spacer(modifier = Modifier.height(8.dp))
         }
 
-        if (correctAnswerSelected) {
+        if (uiState.correctAnswerSelected) {
             Text(text = "Correct!", color = Color.Green)
-        } else if (selectedOption != null && answered) {
+        } else if (viewModel.selectedOption != null && uiState.answered) {
             Text(text = "Wrong! The correct answer is ${questionWord.means}", color = Color.Red)
         }
 
@@ -103,25 +98,24 @@ fun QuizGame(words: List<Words>, openScreen: (String) -> Unit) {
 
         Button(
             onClick = {
-                if (usedWords.size < totalQuestions) {
-                    questionWord = getNextWord(words, usedWords)
-                    usedWords.add(questionWord)
-                    answerOptions = generateAnswerOptions(words, questionWord)
-                    selectedOption = null
-                    correctAnswerSelected = false
-                    answered = false
+                if (viewModel.usedWords.size < totalQuestions) {
+                    questionWord = viewModel.getNextWord(words, viewModel.usedWords)
+                    viewModel.usedWords.add(questionWord)
+                    answerOptions = viewModel.generateAnswerOptions(words, questionWord)
+                    viewModel.selectedOption = null
+                    viewModel.updateQuizUiStateAnswerOptions(false,0,false)
                 } else {
-                    showScoreDialog.value = true
+                    viewModel.resetScoreDialog(true)
                 }
             },
             modifier = Modifier.align(Alignment.CenterHorizontally),
-            enabled = answered && usedWords.size <= totalQuestions // Enable the button when answered and not all questions are answered
+            enabled = uiState.answered && viewModel.usedWords.size <= totalQuestions // Enable the button when answered and not all questions are answered
         ) {
             Text(text = "Next")
         }
         // Hiển thị ScoreDialog nếu showScoreDialog là true
-        if (showScoreDialog.value) {
-            ScoreDialog(score = score, onPlayAgain = { resetGame() }, openScreen = openScreen)
+        if (uiState.showScoreDialog) {
+            ScoreDialog(score = uiState.score, onPlayAgain = { resetGame() }, openScreen = openScreen)
         }
     }
 }
@@ -146,27 +140,4 @@ fun AnswerOption(word: Words, onOptionSelected: (Words) -> Unit, selected: Boole
     }
 }
 
-fun getNextWord(words: List<Words>, usedWords: MutableSet<Words>): Words {
-    val unusedWords = words.filterNot { it in usedWords }
-    return if (unusedWords.isNotEmpty()) {
-        unusedWords.random()
-    } else {
-        words.random()
-    }
-}
 
-fun generateAnswerOptions(words: List<Words>, questionWord: Words): List<Words> {
-    val shuffledWords = words.shuffled()
-    val answerOptions = mutableListOf<Words>()
-
-    // Add the correct answer option (meaning of the question word)
-    answerOptions.add(questionWord)
-
-    // Add 3 random incorrect answer options
-    for (word in shuffledWords) {
-        if (word != questionWord && answerOptions.size < 4) {
-            answerOptions.add(word)
-        }
-    }
-    return answerOptions.shuffled()
-}
