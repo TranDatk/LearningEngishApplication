@@ -41,7 +41,9 @@ fun ScoreDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = onPlayAgain) {
+            TextButton(onClick = {
+                onPlayAgain() // Gọi hàm onPlayAgain để chơi lại
+            }) {
                 Text(text = stringResource(R.string.play_again))
             }
         }

@@ -50,7 +50,6 @@ fun WordsScreen(
             text = stringResource(R.string.app_name),
             style = MaterialTheme.typography.titleLarge,
         )
-        Score(score = gameUiState.score, modifier = Modifier.padding(20.dp))
         if(gameUiState.currentWordCount <= gameUiState.maxWordsOfCourse){
             WordsLayout(
                 wordCount = gameUiState.currentWordCount,
@@ -80,7 +79,7 @@ fun WordsScreen(
                 }
             }
         }else{
-            QuizGame(words = viewModel.words)
+            QuizGame(words = viewModel.words, openScreen = openScreen)
         }
 
         if (gameUiState.isGameOver) {

@@ -1,5 +1,7 @@
 package com.tnmd.learningenglishapp.screens.list_words
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,21 +26,45 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.tnmd.learningenglishapp.model.Words
-
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun QuizGame(words: List<Words>) {
+fun QuizGame(words: List<Words>, openScreen: (String) -> Unit) {
     var usedWords: MutableSet<Words> by remember { mutableStateOf(mutableSetOf()) }
     var questionWord: Words by remember { mutableStateOf(getNextWord(words, usedWords)) }
     var answerOptions: List<Words> by remember { mutableStateOf(generateAnswerOptions(words, questionWord)) }
     var selectedOption: Words? by remember { mutableStateOf(null) }
     var correctAnswerSelected: Boolean by remember { mutableStateOf(false) }
     var answered: Boolean by remember { mutableStateOf(false) }
+    var score: Int by remember { mutableStateOf(0) }
+    val totalQuestions = words.size // Số lượng câu hỏi bạn muốn
+    // Biến để kiểm soát việc hiển thị ScoreDialog
+    val showScoreDialog = remember { mutableStateOf(false) }
+
+    fun resetGame() {
+        usedWords.clear()
+        questionWord = getNextWord(words, usedWords)
+        answerOptions = generateAnswerOptions(words, questionWord)
+        selectedOption = null
+        correctAnswerSelected = false
+        answered = false
+        score = 0 // Đặt lại điểm số khi chơi lại
+        // Đặt showScoreDialog thành false để ẩn ScoreDialog
+        showScoreDialog.value = false
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
+
+        Score(score = score, modifier = Modifier
+            .align(Alignment.CenterHorizontally)
+            .padding(20.dp))
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         Text(text = "What is the meaning of ${questionWord.name}?", style = MaterialTheme.typography.bodyLarge)
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -50,6 +77,7 @@ fun QuizGame(words: List<Words>) {
                         if (selectedWord == questionWord) {
                             // Handle correct answer
                             correctAnswerSelected = true
+                            score += 20 // Cộng điểm khi trả lời đúng
                         } else {
                             // Handle wrong answer
                             selectedOption = selectedWord
@@ -75,18 +103,25 @@ fun QuizGame(words: List<Words>) {
 
         Button(
             onClick = {
-                // Get the next word and update the usedWords set
-                usedWords.clear()
-                questionWord = getNextWord(words, usedWords)
-                answerOptions = generateAnswerOptions(words, questionWord)
-                selectedOption = null
-                correctAnswerSelected = false
-                answered = false
+                if (usedWords.size < totalQuestions) {
+                    questionWord = getNextWord(words, usedWords)
+                    usedWords.add(questionWord)
+                    answerOptions = generateAnswerOptions(words, questionWord)
+                    selectedOption = null
+                    correctAnswerSelected = false
+                    answered = false
+                } else {
+                    showScoreDialog.value = true
+                }
             },
             modifier = Modifier.align(Alignment.CenterHorizontally),
-            enabled = answered // Enable the button only when answered
+            enabled = answered && usedWords.size <= totalQuestions // Enable the button when answered and not all questions are answered
         ) {
             Text(text = "Next")
+        }
+        // Hiển thị ScoreDialog nếu showScoreDialog là true
+        if (showScoreDialog.value) {
+            ScoreDialog(score = score, onPlayAgain = { resetGame() }, openScreen = openScreen)
         }
     }
 }
@@ -116,8 +151,6 @@ fun getNextWord(words: List<Words>, usedWords: MutableSet<Words>): Words {
     return if (unusedWords.isNotEmpty()) {
         unusedWords.random()
     } else {
-        // If all words have been used, reset the usedWords set
-        usedWords.clear()
         words.random()
     }
 }
