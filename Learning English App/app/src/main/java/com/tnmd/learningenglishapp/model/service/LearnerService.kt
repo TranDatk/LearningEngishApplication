@@ -5,4 +5,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface LearnerService {
     val learner: Flow<Learner>
+    suspend fun getLearner() : Learner?
 }

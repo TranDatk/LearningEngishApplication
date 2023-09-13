@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.tnmd.learningenglishapp.COURSES_ID
 import com.tnmd.learningenglishapp.common.ext.idFromParameter
 import com.tnmd.learningenglishapp.model.Courses
+import com.tnmd.learningenglishapp.model.Learner
 import com.tnmd.learningenglishapp.model.Scores
 import com.tnmd.learningenglishapp.model.Words
 import com.tnmd.learningenglishapp.model.Words_Courses
@@ -53,7 +54,8 @@ class WordsViewModel @Inject constructor(
                 words.clear() // Xóa tất cả các phần tử hiện có trong mutableStateListOf<Words>
                 words.addAll(wordsList.filterNotNull()) // Thêm danh sách từ wordsList sau khi loại bỏ các phần tử null
                 resetGame()
-                score.value = scoresService.getScoreByCoursesId(coursesId)!!
+                scoresService.newOrUpdateScore(score.value.copy(coursesId = coursesId.idFromParameter()))
+                score.value = scoresService.getScoreByCoursesId(coursesId.idFromParameter())!!
             }
         }
     }

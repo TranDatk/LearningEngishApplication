@@ -28,18 +28,35 @@ ScoresService {
     override suspend fun getScoreByCoursesId(coursesId: String): Scores? {
         val scores = learnerService.learner.flatMapLatest { learner ->
             firestore.collection(SCORES_COLLECTION)
-                .where(Filter.or(
+                .where(Filter.and(
                     Filter.equalTo(LEARNER_ID_FILED,learner.id),
                     Filter.equalTo(COURSES_ID_FILED,coursesId))
                 )
                 .dataObjects<Scores>()
         }.firstOrNull() // Sử dụng firstOrNull thay vì first để tránh ngoại lệ nếu danh sách rỗng
-        Log.d("trandat",scores?.getOrNull(0).toString())
         return scores?.getOrNull(0) // Sử dụng getOrNull để tránh lỗi nếu danh sách scores rỗng hoặc không có phần tử nào.
     }
 
     override suspend fun updateScore(score: Scores) {
         firestore.collection(SCORES_COLLECTION).document(score.id).set(score).await()
+    }
+
+    override suspend fun newOrUpdateScore(score: Scores){
+        val scores = learnerService.learner.flatMapLatest { learner ->
+            firestore.collection(SCORES_COLLECTION)
+                .where(Filter.and(
+                    Filter.equalTo(LEARNER_ID_FILED,learner.id),
+                    Filter.equalTo(COURSES_ID_FILED,score.coursesId))
+                )
+                .dataObjects<Scores>()
+        }.firstOrNull()
+        if(scores.isNullOrEmpty()){
+            score.copy(learnerId = learnerService.learner.firstOrNull()?.id.orEmpty())
+            Log.d("newOrUpdateScore", score.toString())
+            firestore.collection(SCORES_COLLECTION).add(score).await().id
+        }else{
+            Log.d("newOrUpdateScore", scores.toString())
+        }
     }
 
     companion object {

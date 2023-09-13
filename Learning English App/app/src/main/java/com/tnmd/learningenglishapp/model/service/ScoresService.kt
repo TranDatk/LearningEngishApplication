@@ -6,4 +6,5 @@ interface ScoresService {
     val scores: Flow<List<Scores>>
     suspend fun getScoreByCoursesId(coursesId: String): Scores?
     suspend fun updateScore(score : Scores)
+    suspend fun newOrUpdateScore(score: Scores)
 }
