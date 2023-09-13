@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.tnmd.learningenglishapp.LIST_COURSES
 import com.tnmd.learningenglishapp.R
 
@@ -18,7 +19,8 @@ fun ScoreDialog(
     score: Int,
     onPlayAgain: () -> Unit,
     openScreen: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: WordsViewModel = hiltViewModel()
 ) {
     val activity = (LocalContext.current as Activity)
 
@@ -34,6 +36,7 @@ fun ScoreDialog(
         dismissButton = {
             TextButton(
                 onClick = {
+                    viewModel.updateScoreToFireStore(score)
                     openScreen(LIST_COURSES)
                 }
             ) {

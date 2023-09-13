@@ -10,10 +10,13 @@ import androidx.lifecycle.viewModelScope
 import com.tnmd.learningenglishapp.COURSES_ID
 import com.tnmd.learningenglishapp.common.ext.idFromParameter
 import com.tnmd.learningenglishapp.model.Courses
+import com.tnmd.learningenglishapp.model.Scores
 import com.tnmd.learningenglishapp.model.Words
 import com.tnmd.learningenglishapp.model.Words_Courses
 import com.tnmd.learningenglishapp.model.service.CoursesService
+import com.tnmd.learningenglishapp.model.service.LearnerService
 import com.tnmd.learningenglishapp.model.service.LogService
+import com.tnmd.learningenglishapp.model.service.ScoresService
 import com.tnmd.learningenglishapp.model.service.Words_CoursesService
 import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +31,7 @@ import javax.inject.Inject
 class WordsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val words_coursesService: Words_CoursesService,
+    private val scoresService: ScoresService,
     logService: LogService
 ) : LearningEnglishAppViewModel(logService){
 
@@ -39,6 +43,7 @@ class WordsViewModel @Inject constructor(
     // Set of words used in the game
     private var usedWords: MutableSet<Words> = mutableSetOf()
     private lateinit var currentWord: Words
+    private val score = mutableStateOf(Scores())
 
     init {
         val coursesId = savedStateHandle.get<String>(COURSES_ID)
@@ -48,6 +53,7 @@ class WordsViewModel @Inject constructor(
                 words.clear() // Xóa tất cả các phần tử hiện có trong mutableStateListOf<Words>
                 words.addAll(wordsList.filterNotNull()) // Thêm danh sách từ wordsList sau khi loại bỏ các phần tử null
                 resetGame()
+                score.value = scoresService.getScoreByCoursesId(coursesId)!!
             }
         }
     }
@@ -95,7 +101,6 @@ class WordsViewModel @Inject constructor(
         }
     }
 
-
     private fun pickRandomWord(): Words {
         // Continue picking up a new random word until you get one that hasn't been used before
         currentWord = words.toList().random()
@@ -104,6 +109,13 @@ class WordsViewModel @Inject constructor(
         } else {
             usedWords.add(currentWord)
             return currentWord
+        }
+    }
+
+    fun updateScoreToFireStore(scores : Int){
+        score.value = score.value.copy(score = scores)
+        launchCatching {
+            scoresService.updateScore(score.value)
         }
     }
 }
