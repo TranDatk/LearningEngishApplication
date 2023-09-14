@@ -57,7 +57,7 @@ This is for screen_courses
 fun Modifier.cardCourses(): Modifier {
   return this.padding(8.dp)
     .fillMaxWidth()
-    .height(100.dp)
+    .height(120.dp)
 }
 
 fun Modifier.rowCardCourses(): Modifier {

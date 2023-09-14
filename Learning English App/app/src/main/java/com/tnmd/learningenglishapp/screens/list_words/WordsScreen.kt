@@ -66,8 +66,6 @@ fun WordsScreen(
                 verticalArrangement = Arrangement.spacedBy(mediumPadding),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
-
                 OutlinedButton(
                     onClick = { viewModel.skipWord() },
                     modifier = Modifier.fillMaxWidth()
@@ -81,7 +79,6 @@ fun WordsScreen(
         }else{
             QuizGame(words = viewModel.words, openScreen = openScreen)
         }
-
         if (gameUiState.isGameOver) {
             ScoreDialog(
                 score = gameUiState.score,

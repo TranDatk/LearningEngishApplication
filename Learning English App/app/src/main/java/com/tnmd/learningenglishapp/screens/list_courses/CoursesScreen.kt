@@ -1,6 +1,7 @@
 package com.tnmd.learningenglishapp.screens.list_courses
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -53,20 +54,30 @@ fun CoursesScreen(
         }
     ) {
         val courses = viewModel.courses
+        val processes = viewModel.processes
+
         Column(modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()) {
             LazyColumn {
                 items(courses.toList(), key = { it.id }) { coursesItem ->
-                    CoursesItem(
-                        courses = coursesItem,
-                        onCourseItemClick = openAndPopUp,
-                        id = coursesItem.id,
-                        viewModel = viewModel
-                    )
+                  for(pro in processes){
+                      if (coursesItem.id == pro.coursesId){
+                          CoursesItem(
+                              courses = coursesItem,
+                              onCourseItemClick = openAndPopUp,
+                              id = coursesItem.id,
+                              process = pro,
+                              viewModel = viewModel
+                          )
+                          break
+                      }
+                  }
                 }
+                Log.d("processes", processes.size.toString() + " " + courses.size)
             }
         }
+
     }
 
 
