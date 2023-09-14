@@ -11,12 +11,14 @@ import com.tnmd.learningenglishapp.COURSES_ID
 import com.tnmd.learningenglishapp.common.ext.idFromParameter
 import com.tnmd.learningenglishapp.model.Courses
 import com.tnmd.learningenglishapp.model.Learner
+import com.tnmd.learningenglishapp.model.Processes
 import com.tnmd.learningenglishapp.model.Scores
 import com.tnmd.learningenglishapp.model.Words
 import com.tnmd.learningenglishapp.model.Words_Courses
 import com.tnmd.learningenglishapp.model.service.CoursesService
 import com.tnmd.learningenglishapp.model.service.LearnerService
 import com.tnmd.learningenglishapp.model.service.LogService
+import com.tnmd.learningenglishapp.model.service.ProcessesService
 import com.tnmd.learningenglishapp.model.service.ScoresService
 import com.tnmd.learningenglishapp.model.service.Words_CoursesService
 import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
@@ -33,6 +35,7 @@ class WordsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val words_coursesService: Words_CoursesService,
     private val scoresService: ScoresService,
+    private val processesService: ProcessesService,
     logService: LogService
 ) : LearningEnglishAppViewModel(logService){
 
@@ -45,18 +48,27 @@ class WordsViewModel @Inject constructor(
     private var usedWords: MutableSet<Words> = mutableSetOf()
     private lateinit var currentWord: Words
     private val score = mutableStateOf(Scores())
+    private val process = mutableStateOf(Processes())
 
     init {
         val coursesId = savedStateHandle.get<String>(COURSES_ID)
         if (coursesId != null) {
             viewModelScope.launch {
-                val wordsList = words_coursesService.getWordsFromCourses(coursesId.idFromParameter())
+                val wordsList =
+                    words_coursesService.getWordsFromCourses(coursesId.idFromParameter())
                 words.clear() // Xóa tất cả các phần tử hiện có trong mutableStateListOf<Words>
                 words.addAll(wordsList.filterNotNull()) // Thêm danh sách từ wordsList sau khi loại bỏ các phần tử null
                 resetGame()
+
                 scoresService.newOrUpdateScore(score.value.copy(coursesId = coursesId.idFromParameter()))
                 score.value = scoresService.getScoreByCoursesId(coursesId.idFromParameter())!!
             }
+            launchCatching {
+                processesService.newAndUpdateProcesses(process.value.copy(coursesId = coursesId.idFromParameter()))
+                Log.d("checkCoursesId", process.toString())
+                process.value = processesService.getProcessesByCoursesId(coursesId.idFromParameter())!!
+            }
+
         }
     }
 
@@ -72,8 +84,12 @@ class WordsViewModel @Inject constructor(
     /*
      * Skip to next word
      */
-    fun skipWord() {
+    fun skipWord(currentWordCount : Int) {
         updateGameState(_uiState.value.score.plus(SCORE_INCREASE))
+        launchCatching {
+            processesService.updateProcessesLearn(
+            process.value.copy(processesLearn = process.value.processesLearn + currentWordCount/words.size.toDouble()))
+        }
     }
 
     /*

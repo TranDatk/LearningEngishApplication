@@ -30,6 +30,7 @@ import com.google.firebase.firestore.ktx.dataObjects
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.tnmd.learningenglishapp.model.Courses
+import com.tnmd.learningenglishapp.model.Processes
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
 
@@ -61,7 +62,8 @@ fun CoursesScreen(
             .fillMaxHeight()) {
             LazyColumn {
                 items(courses.toList(), key = { it.id }) { coursesItem ->
-                  for(pro in processes){
+                  var check = true
+                    for(pro in processes){
                       if (coursesItem.id == pro.coursesId){
                           CoursesItem(
                               courses = coursesItem,
@@ -70,9 +72,19 @@ fun CoursesScreen(
                               process = pro,
                               viewModel = viewModel
                           )
+                          check = false
                           break
                       }
                   }
+                    if(check){
+                        CoursesItem(
+                            courses = coursesItem,
+                            onCourseItemClick = openAndPopUp,
+                            id = coursesItem.id,
+                            process = Processes(processesLearn = 0.0),
+                            viewModel = viewModel
+                        )
+                    }
                 }
                 Log.d("processes", processes.size.toString() + " " + courses.size)
             }

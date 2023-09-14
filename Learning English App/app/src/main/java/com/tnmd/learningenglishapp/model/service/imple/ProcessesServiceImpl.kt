@@ -38,17 +38,44 @@ constructor(private val firestore: FirebaseFirestore, private val learnerService
                     Filter.equalTo(LEARNER_ID_FIELD,learner.id),
                     Filter.equalTo(COURSES_ID_FILED,processes.coursesId))
                 )
-                .dataObjects<Scores>()
+                .dataObjects<Processes>()
         }.firstOrNull()
         if(process.isNullOrEmpty()){
-            processes.copy(learnerId = learnerService.learner.firstOrNull()?.id.orEmpty())
-            Log.d("newAndUpdateProcesses", processes.toString())
-            firestore.collection(PROCESSES_COLLECTION).add(processes).await().id
+            val learnerId = learnerService.learner.firstOrNull()?.id.orEmpty()
+            Log.d("checkLearnerId",learnerId)
+            processes.copy(
+                processesCheck = 0.0,
+                processesLearn = 0.0,
+                coursesId = processes.coursesId
+            )
+            firestore.collection(PROCESSES_COLLECTION).add(processes.copy(learnerId = learnerId)).await().id
         }else{
-            Log.d("newAndUpdateProcesses", process.toString())
+            val learnerId = process.get(0).learnerId
+            Log.d("newAndUpdateProcesses", learnerId)
+            processes.copy(
+                processesLearn = 0.0,
+                processesCheck = process.get(0).processesCheck,
+            )
+            firestore.collection(PROCESSES_COLLECTION).document(process.get(0).id).set(processes.copy(learnerId = learnerId))
+            Log.d("newAndUpdateProcesses", processes.toString())
         }
     }
 
+    override suspend fun getProcessesByCoursesId(coursesId: String): Processes? {
+        val process = learnerService.learner.flatMapLatest { learner ->
+            firestore.collection(PROCESSES_COLLECTION)
+                .where(Filter.and(
+                    Filter.equalTo(LEARNER_ID_FIELD,learner.id),
+                    Filter.equalTo(COURSES_ID_FILED,coursesId))
+                )
+                .dataObjects<Processes>()
+        }.firstOrNull() // Sử dụng firstOrNull thay vì first để tránh ngoại lệ nếu danh sách rỗng
+        return process?.getOrNull(0) // Sử dụng getOrNull để tránh lỗi nếu danh sách scores rỗng hoặc không có phần tử nào.
+    }
+
+    override suspend fun updateProcessesLearn(processes: Processes) {
+        firestore.collection(PROCESSES_COLLECTION).document(processes.id).set(processes).await()
+    }
     companion object {
         private const val PROCESSES_COLLECTION = "processes"
         private const val LEARNER_ID_FIELD = "learnerId"

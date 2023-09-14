@@ -67,7 +67,7 @@ fun WordsScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 OutlinedButton(
-                    onClick = { viewModel.skipWord() },
+                    onClick = { viewModel.skipWord(gameUiState.currentWordCount) },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
