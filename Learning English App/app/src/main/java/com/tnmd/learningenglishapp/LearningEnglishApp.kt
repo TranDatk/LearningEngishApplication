@@ -30,6 +30,8 @@ import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
 import com.tnmd.learningenglishapp.screens.chat.ChatScreen
 import com.tnmd.learningenglishapp.screens.chat.MessageScreen
 import com.tnmd.learningenglishapp.screens.list_courses.CoursesScreen
+import com.tnmd.learningenglishapp.screens.list_courses_quizz.CoursesQuizzScreen
+import com.tnmd.learningenglishapp.screens.list_review.ReviewScreen
 import com.tnmd.learningenglishapp.screens.list_words.WordsScreen
 import com.tnmd.learningenglishapp.screens.login.LoginScreen
 import com.tnmd.learningenglishapp.screens.sign_up.SignUpScreen
@@ -127,7 +129,7 @@ private fun SootheBottomNavigation(
                     selectedIndex.value = index
                     when (index) {
                         0 -> navController.navigate(LIST_COURSES)
-                        1 -> navController.navigate(SIGN_UP_SCREEN)
+                        1 -> navController.navigate(LIST_COURSES_QUIZZ)
                         2 -> navController.navigate(SETTINGS_SCREEN)
                         3 -> navController.navigate(CHAT_SCREEN)
                     }
@@ -162,6 +164,10 @@ fun NavGraphBuilder.learningEnglishGraph(appState: LearningEnglishAppState) {
         )
     }
 
+    composable(LIST_COURSES_QUIZZ) {
+        CoursesQuizzScreen( openAndPopUp = {route -> appState.navigate(route)} )
+    }
+
     composable(SETTINGS_SCREEN) {
         SettingsScreen(
             restartApp = { route -> appState.clearAndNavigate(route) },
@@ -192,5 +198,16 @@ fun NavGraphBuilder.learningEnglishGraph(appState: LearningEnglishAppState) {
         )
     }
 
+    composable(
+        route = "$LIST_REVIEW_SCREEN$WORDS_ID_ARG",
+        arguments = listOf(navArgument(COURSES_ID) {
+            nullable = true
+            defaultValue = null
+        })
+    ) {
+        ReviewScreen(
+            openScreen = {route -> appState.navigate(route) }
+        )
+    }
 }
 

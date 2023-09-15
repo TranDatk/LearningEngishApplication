@@ -30,7 +30,7 @@ constructor(private val firestore: FirebaseFirestore, private val learnerService
                 .dataObjects()
         }
 
-    override suspend fun newAndUpdateProcesses(processes: Processes) {
+    override suspend fun newAndUpdateProcessesByLearn(processes: Processes) {
         val process = learnerService.learner.flatMapLatest { learner ->
             firestore.collection(PROCESSES_COLLECTION)
                 .where(
@@ -54,9 +54,9 @@ constructor(private val firestore: FirebaseFirestore, private val learnerService
             Log.d("newAndUpdateProcesses", learnerId)
             processes.copy(
                 processesLearn = 0.0,
-                processesCheck = process.get(0).processesCheck,
             )
-            firestore.collection(PROCESSES_COLLECTION).document(process.get(0).id).set(processes.copy(learnerId = learnerId))
+            firestore.collection(PROCESSES_COLLECTION).document(process.get(0).id).set(processes.copy(learnerId = learnerId,
+                processesCheck = process.get(0).processesCheck))
             Log.d("newAndUpdateProcesses", processes.toString())
         }
     }
@@ -76,6 +76,39 @@ constructor(private val firestore: FirebaseFirestore, private val learnerService
     override suspend fun updateProcessesLearn(processes: Processes) {
         firestore.collection(PROCESSES_COLLECTION).document(processes.id).set(processes).await()
     }
+
+    override suspend fun newAndUpdateProcessesByReview(processes: Processes) {
+        val process = learnerService.learner.flatMapLatest { learner ->
+            firestore.collection(PROCESSES_COLLECTION)
+                .where(
+                    Filter.and(
+                        Filter.equalTo(LEARNER_ID_FIELD,learner.id),
+                        Filter.equalTo(COURSES_ID_FILED,processes.coursesId))
+                )
+                .dataObjects<Processes>()
+        }.firstOrNull()
+        if(process.isNullOrEmpty()){
+            val learnerId = learnerService.learner.firstOrNull()?.id.orEmpty()
+            Log.d("checkLearnerId",learnerId)
+            processes.copy(
+                processesCheck = 0.0,
+                processesLearn = 0.0,
+                coursesId = processes.coursesId
+            )
+            firestore.collection(PROCESSES_COLLECTION).add(processes.copy(learnerId = learnerId)).await().id
+        }else{
+            val learnerId = process.get(0).learnerId
+            Log.d("newAndUpdateProcesses", learnerId)
+            processes.copy(
+                processesCheck = 0.0
+            )
+            firestore.collection(PROCESSES_COLLECTION).document(process.get(0).id).set(processes.copy(learnerId = learnerId,
+                processesLearn = process.get(0).processesLearn,))
+            Log.d("newAndUpdateProcesses", processes.toString())
+        }
+    }
+
+
     companion object {
         private const val PROCESSES_COLLECTION = "processes"
         private const val LEARNER_ID_FIELD = "learnerId"

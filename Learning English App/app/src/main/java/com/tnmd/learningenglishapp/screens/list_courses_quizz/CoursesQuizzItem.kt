@@ -1,12 +1,7 @@
-package com.tnmd.learningenglishapp.screens.list_courses
+package com.tnmd.learningenglishapp.screens.list_courses_quizz
 
-import android.util.Half.toFloat
-import android.util.Log
-import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -29,32 +23,26 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import coil.compose.rememberImagePainter
-import com.tnmd.learningenglishapp.R
 import com.tnmd.learningenglishapp.common.ext.AsyncImageCardCourses
 import com.tnmd.learningenglishapp.common.ext.cardCourses
-import com.tnmd.learningenglishapp.common.ext.rowCardCourses
 import com.tnmd.learningenglishapp.model.Courses
 import com.tnmd.learningenglishapp.model.Processes
 
 @Composable
 @ExperimentalMaterialApi
-fun CoursesItem(
+fun CoursesQuizzItem(
     courses: Courses,
     process: Processes,
     onCourseItemClick: (String) -> Unit,
     id : String,
-    viewModel: CoursesViewModel = hiltViewModel()
+    viewModel: CoursesQuizzViewModel = hiltViewModel()
 ) {
     Card(
         modifier = Modifier
@@ -98,19 +86,18 @@ fun CoursesItem(
                             color = Color.Gray,
                             style = MaterialTheme.typography.body2
                         )
-                        Spacer(Modifier.height(10.dp))
                         Row(
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
-                                ,
+                                .padding(top = 10.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             LinearProgressIndicator(
-                                progress = (process.processesLearn.toFloat()),
+                                progress = (process.processesCheck.toFloat()),
                                 modifier = Modifier.weight(1f)
                             )
                             Text(
-                                text = "${(process.processesLearn * 100).toInt()}%",
+                                text = "${(process.processesCheck * 100).toInt()}%",
                                 color = Color.Black,
                                 style = MaterialTheme.typography.caption,
                                 modifier = Modifier.alignByBaseline()

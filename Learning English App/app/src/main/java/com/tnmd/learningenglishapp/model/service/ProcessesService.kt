@@ -5,7 +5,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface ProcessesService {
     val processes: Flow<List<Processes>>
-    suspend fun newAndUpdateProcesses(processes: Processes)
+    suspend fun newAndUpdateProcessesByLearn(processes: Processes)
     suspend fun getProcessesByCoursesId(coursesId : String) : Processes?
     suspend fun updateProcessesLearn(processes: Processes)
+    suspend fun newAndUpdateProcessesByReview(processes: Processes)
 }

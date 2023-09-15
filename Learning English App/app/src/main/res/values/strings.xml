@@ -87,4 +87,7 @@
 
     <!-- WordsScreen -->
     <string name="Example">Ex: %s</string>
+
+    <!-- ReviewScreen -->
+    <string name="Continue">Tiếp tục</string>
 </resources>

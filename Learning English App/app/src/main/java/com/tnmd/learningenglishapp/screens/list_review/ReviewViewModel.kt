@@ -1,8 +1,10 @@
-package com.tnmd.learningenglishapp.screens.list_words
+package com.tnmd.learningenglishapp.screens.list_review
 
 import android.util.Log
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.tnmd.learningenglishapp.COURSES_ID
@@ -24,24 +26,25 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class WordsViewModel @Inject constructor(
+class ReviewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val words_coursesService: Words_CoursesService,
     private val scoresService: ScoresService,
     private val processesService: ProcessesService,
     logService: LogService
-) : LearningEnglishAppViewModel(logService){
-
+) : LearningEnglishAppViewModel(logService) {
     val SCORE_INCREASE = 20
     var words = mutableStateListOf<Words>()
-    private val _uiState = MutableStateFlow(WordsUiState())
-    val uiState: StateFlow<WordsUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(ReviewUiState())
+    val uiState: StateFlow<ReviewUiState> = _uiState.asStateFlow()
 
     // Set of words used in the game
     private var usedWords: MutableSet<Words> = mutableSetOf()
     private lateinit var currentWord: Words
     private val score = mutableStateOf(Scores())
     private val process = mutableStateOf(Processes())
+    var userGuess by mutableStateOf("")
+        private set
 
     init {
         val coursesId = savedStateHandle.get<String>(COURSES_ID)
@@ -51,65 +54,25 @@ class WordsViewModel @Inject constructor(
                     words_coursesService.getWordsFromCourses(coursesId.idFromParameter())
                 words.clear() // Xóa tất cả các phần tử hiện có trong mutableStateListOf<Words>
                 words.addAll(wordsList.filterNotNull()) // Thêm danh sách từ wordsList sau khi loại bỏ các phần tử null
-                resetGame()
+                newGame()
 
                 scoresService.newOrUpdateScore(score.value.copy(coursesId = coursesId.idFromParameter()))
                 score.value = scoresService.getScoreByCoursesId(coursesId.idFromParameter())!!
             }
             launchCatching {
-                processesService.newAndUpdateProcessesByLearn(process.value.copy(coursesId = coursesId.idFromParameter()))
+                processesService.newAndUpdateProcessesByReview(process.value.copy(coursesId = coursesId.idFromParameter()))
                 Log.d("checkCoursesId", process.toString())
-                process.value = processesService.getProcessesByCoursesId(coursesId.idFromParameter())!!
+                process.value =
+                    processesService.getProcessesByCoursesId(coursesId.idFromParameter())!!
             }
 
         }
     }
 
-    /*
-     * Re-initializes the game data to restart the game.
-     */
-    fun resetGame() {
+    fun newGame() {
         usedWords.clear()
-        _uiState.value = WordsUiState(currentdWord = pickRandomWord(), maxWordsOfCourse = words.size)
-    }
-
-
-    /*
-     * Skip to next word
-     */
-    fun skipWord(currentWordCount : Int) {
-        updateGameState(_uiState.value.score.plus(SCORE_INCREASE))
-        launchCatching {
-            processesService.updateProcessesLearn(
-            process.value.copy(processesLearn = process.value.processesLearn + currentWordCount/words.size.toDouble()))
-        }
-    }
-
-    /*
-     * Picks a new currentWord and currentScrambledWord and updates UiState according to
-     * current game state.
-     */
-    private fun updateGameState(updatedScore: Int) {
-        if (usedWords.size == words.size){
-            //Last round in the game, update isGameOver to true, don't pick a new word
-            _uiState.update { currentState ->
-                currentState.copy(
-                    isGuessedWordWrong = false,
-                    currentWordCount = currentState.currentWordCount.inc(),
-                    score = updatedScore
-                )
-            }
-        } else{
-            // Normal round in the game
-            _uiState.update { currentState ->
-                currentState.copy(
-                    isGuessedWordWrong = false,
-                    currentdWord = pickRandomWord(),
-                    currentWordCount = currentState.currentWordCount.inc(),
-                    score = updatedScore
-                )
-            }
-        }
+        _uiState.value =
+            ReviewUiState(currentdWord = pickRandomWord(), maxWordsOfCourse = words.size)
     }
 
     private fun pickRandomWord(): Words {
@@ -123,10 +86,54 @@ class WordsViewModel @Inject constructor(
         }
     }
 
-    fun updateScoreToFireStore(scores : Int){
-        score.value = score.value.copy(score = scores)
-        launchCatching {
-            scoresService.updateScore(score.value)
+    fun nextQuestion(currentWordCount: Int) {
+        if (_uiState.value.isGuessedWordWrong == false) {
+            updateGameState(_uiState.value.score.plus(SCORE_INCREASE))
+            launchCatching {
+                processesService.updateProcessesLearn(
+                    process.value.copy(processesCheck = process.value.processesCheck + currentWordCount / words.size.toDouble())
+                )
+            }
+        } else {
+            updateGameState(_uiState.value.score.plus(0))
         }
+    }
+
+    private fun updateGameState(updatedScore: Int) {
+        if (usedWords.size == words.size) {
+            //Last round in the game, update isGameOver to true, don't pick a new word
+            _uiState.update { currentState ->
+                currentState.copy(
+                    isGuessedWordWrong = false,
+                    currentWordCount = currentState.currentWordCount.inc(),
+                    score = updatedScore
+                )
+            }
+        } else {
+            // Normal round in the game
+            _uiState.update { currentState ->
+                currentState.copy(
+                    isGuessedWordWrong = false,
+                    currentdWord = pickRandomWord(),
+                    currentWordCount = currentState.currentWordCount.inc(),
+                    score = updatedScore
+                )
+            }
+        }
+    }
+
+    fun checkUserGuess(isCorrect: Boolean) {
+        if (isCorrect == false) {
+            _uiState.update { currentState ->
+                currentState.copy(isGuessedWordWrong = true)
+            }
+        } else {
+            _uiState.update { currentState ->
+                currentState.copy(isGuessedWordWrong = false)
+            }
+        }
+    }
+    fun updateUserGuess(guessedWord: String) {
+        userGuess = guessedWord
     }
 }
