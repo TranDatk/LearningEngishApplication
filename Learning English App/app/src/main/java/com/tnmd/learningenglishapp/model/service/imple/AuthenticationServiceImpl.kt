@@ -61,7 +61,7 @@ class AuthenticationServiceImpl @Inject constructor(private val auth: FirebaseAu
     auth.sendPasswordResetEmail(email).await()
   }
 
-  override suspend fun createAccount(email: String, password: String, username: String, selectedGender: String) {
+  override suspend fun createAccount(email: String, password: String, username: String, selectedGender: String) : Boolean {
     try {
       val authResult = auth.createUserWithEmailAndPassword(email, password).await()
       if (authResult.user != null) {
@@ -90,11 +90,14 @@ class AuthenticationServiceImpl @Inject constructor(private val auth: FirebaseAu
           .addOnFailureListener { e ->
             Log.d("dat", "Lỗi khi đặt thông tin Account: ${e.message}")
           }
+        return true // Đăng ký thành công
       }
     } catch (e: FirebaseAuthException) {
       Log.d("dat", "Đăng ký thất bại: ${e.message}")
     }
+    return false // Xảy ra lỗi hoặc đăng ký thất bại
   }
+
 
 
   override suspend fun deleteAccount() {

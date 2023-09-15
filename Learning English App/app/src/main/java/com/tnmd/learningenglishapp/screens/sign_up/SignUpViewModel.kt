@@ -16,11 +16,10 @@ limitations under the License.
 
 package com.tnmd.learningenglishapp.screens.sign_up
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import com.tnmd.learningenglishapp.LOGIN_SCREEN
 import com.tnmd.learningenglishapp.SETTINGS_SCREEN
 import com.tnmd.learningenglishapp.R.string as AppText
-import com.tnmd.learningenglishapp.SIGN_UP_SCREEN
 import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
 import com.tnmd.learningenglishapp.common.ext.isValidEmail
 import com.tnmd.learningenglishapp.common.ext.isValidPassword
@@ -29,12 +28,14 @@ import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
 import com.tnmd.learningenglishapp.model.service.AuthenticationService
 import com.tnmd.learningenglishapp.model.service.LogService
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.getstream.chat.android.client.ChatClient
 import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    private val authenticationService: AuthenticationService,
-    logService: LogService
+  private val authenticationService: AuthenticationService,
+  logService: LogService,
+  private val chatClient: ChatClient
 ) : LearningEnglishAppViewModel(logService) {
   var uiState = mutableStateOf(SignUpUiState())
     private set
@@ -67,7 +68,10 @@ class SignUpViewModel @Inject constructor(
     return selectedGender.isNotBlank()
   }
 
-  fun onSignUpClick(openAndPopUp: (String, String) -> Unit, selectedGender: String) {
+  fun onSignUpClick(
+    openAndPopUp: (String, String) -> Unit,
+    selectedGender: String
+  ) {
     if (!email.isValidEmail()) {
       SnackbarManager.showMessage(AppText.email_error)
       return
@@ -86,11 +90,11 @@ class SignUpViewModel @Inject constructor(
     if (!isGenderSelected(selectedGender)) {
       SnackbarManager.showMessage(AppText.gender_choose)
       return
-    }
 
-    launchCatching {
-      authenticationService.createAccount(email, password,username,selectedGender)
-      openAndPopUp(SETTINGS_SCREEN, SIGN_UP_SCREEN)
+      launchCatching {
+        authenticationService.createAccount(email, password, username, selectedGender)
+        openAndPopUp(SETTINGS_SCREEN, LOGIN_SCREEN)
+      }
     }
   }
 }
