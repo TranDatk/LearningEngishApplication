@@ -1,19 +1,18 @@
 
 package com.tnmd.learningenglishapp.screens.login
 
-import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import com.tnmd.learningenglishapp.LOGIN_SCREEN
-import com.tnmd.learningenglishapp.R
 import com.tnmd.learningenglishapp.R.string as AppText
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
 import com.tnmd.learningenglishapp.SETTINGS_SCREEN
 import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
 import com.tnmd.learningenglishapp.common.ext.isValidEmail
+import com.tnmd.learningenglishapp.data.StreamTokenApi
 import com.tnmd.learningenglishapp.model.service.AuthenticationService
 import com.tnmd.learningenglishapp.model.service.LogService
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,18 +32,17 @@ class LoginViewModel @Inject constructor(
   var uiState = mutableStateOf(LoginUiState())
     private set
 
+  private val currentUser = FirebaseAuth.getInstance().currentUser
+  private val streamTokenApi = StreamTokenApi()
+
   private val _loadingState = MutableLiveData<UiLoadingState>()
-  val loadingState : LiveData<UiLoadingState>
+  val loadingState: LiveData<UiLoadingState>
     get() = _loadingState
 
   private val email
     get() = uiState.value.email
   private val password
     get() = uiState.value.password
-
-  private val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidGFuZGF0a3QwMDIifQ.eW1kkDTwiOGTmMeVkTrLgtG_xeAzCs66Y_jC2MDrLcg"
-
-
   val username: String
     get() {
       return if (email.contains("@")) {
@@ -53,7 +51,6 @@ class LoginViewModel @Inject constructor(
         ""
       }
     }
-
 
   private val _loginEvent = MutableSharedFlow<LogInEvent>()
   val loginEvent = _loginEvent.asSharedFlow()
@@ -77,33 +74,16 @@ class LoginViewModel @Inject constructor(
       return
     }
 
-      fun LoginRegisteredUser(username: String, token: String) {
-      val user = User(id = username, name = username)
-        _loadingState.value = UiLoadingState.Loading
-      client.connectUser(
-        user = user,
-        token = token
-      ).enqueue { result ->
-        if (result.isSuccess) {
-          Log.d("dat123456", "đăng ký người dùng thành công")
-        } else {
-          Log.d("dat12345", "đăng ký người dùng thất bại")
-        }
-      }
-    }
-
     launchCatching {
-      if(authenticationService.authenticate(email, password)){
+      if (authenticationService.authenticate(email, password)) {
         _loginEvent.emit(LogInEvent.Success)
-          LoginRegisteredUser(username, token)
-          SnackbarManager.showMessage(AppText.login_success)
-      }else{
+        getTokenAndConnectUser(username)
+        SnackbarManager.showMessage(AppText.login_success)
+      } else {
         openAndPopUp(SETTINGS_SCREEN, LOGIN_SCREEN)
         SnackbarManager.showMessage(AppText.login_fail)
       }
     }
-
-
   }
 
   fun onForgotPasswordClick() {
@@ -118,20 +98,42 @@ class LoginViewModel @Inject constructor(
     }
   }
 
-  fun LoginRegisteredUser(username: String, token: String) {
-    val user = User(id = username, name = username)
-    _loadingState.value = UiLoadingState.Loading
-    client.connectUser(
-      user = user,
-      token = token
-    ).enqueue { result ->
-      if (result.isSuccess) {
-        Log.d("dat123456", "đăng ký người dùng thành công")
-      } else {
-        Log.d("dat12345", "đăng ký người dùng thất bại")
+  private suspend fun getTokenAndConnectUser(username: String) {
+    try {
+      _loadingState.value = UiLoadingState.Loading
+
+      val tokenResponse = streamTokenApi.getToken(username)
+      val token = tokenResponse.token
+
+      val user = User(
+        id = username,
+        name = username
+      )
+
+      val connectResult = client.connectUser(
+        user = user,
+        token = token
+      )
+
+      connectResult.enqueue { result ->
+        if (result.isSuccess) {
+          Log.d("dat123456", "đăng nhập người dùng thành công")
+        } else {
+          Log.d("dat12345", "đăng nhập người dùng thất bại")
+        }
+
+        launchCatching {
+          Log.d("token", token)
+        }
+        _loadingState.value = UiLoadingState.NotLoading
       }
+    } catch (e: Exception) {
+      Log.e("Error", "Lỗi khi lấy token và kết nối người dùng", e)
+      _loadingState.value = UiLoadingState.NotLoading
+      // Xử lý lỗi nếu có
     }
   }
+
 
   fun loginGuestUser() {
     _loadingState.value = UiLoadingState.Loading
@@ -146,19 +148,19 @@ class LoginViewModel @Inject constructor(
       } else {
         Log.d("dat12345", "đăng ký người dùng thất bại")
       }
-
     }
   }
 
   sealed class LogInEvent {
-    data class ErrorLogIn(val errorLogIn: String): LogInEvent()
+    data class ErrorLogIn(val errorLogIn: String) : LogInEvent()
     object Success : LogInEvent()
   }
 
   sealed class UiLoadingState {
-    object Loading: UiLoadingState()
-    object NotLoading: UiLoadingState()
+    object Loading : UiLoadingState()
+    object NotLoading : UiLoadingState()
   }
 }
+
 
 

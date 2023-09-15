@@ -37,6 +37,7 @@ import com.tnmd.learningenglishapp.composable.BasicButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.ui.text.font.FontWeight
+import io.getstream.chat.android.client.ChatClient
 
 @Composable
 fun SignUpScreen(

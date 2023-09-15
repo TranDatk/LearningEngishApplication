@@ -13,7 +13,7 @@ interface AuthenticationService {
 
   suspend fun authenticate(email: String, password: String) : Boolean
   suspend fun sendRecoveryEmail(email: String)
-  suspend fun createAccount(email: String, password: String, username: String, selectedGender: String)
+  suspend fun createAccount(email: String, password: String, username: String, selectedGender: String) : Boolean
   suspend fun deleteAccount()
   suspend fun signOut()
 }
