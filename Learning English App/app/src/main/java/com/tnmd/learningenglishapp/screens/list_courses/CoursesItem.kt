@@ -101,8 +101,7 @@ fun CoursesItem(
                         Spacer(Modifier.height(10.dp))
                         Row(
                             modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                ,
+                                .align(Alignment.CenterHorizontally),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             LinearProgressIndicator(

@@ -9,5 +9,8 @@ data class ReviewUiState(
     val isGuessedWordWrong: Boolean = false,
     val isGameOver: Boolean = false,
     val maxWordsOfCourse : Int = 1,
-    val isAnswered : Boolean = false
+    val isAnswered : Boolean = false,
+    val randomGame : Int = 1,
+    val closeScoreDialog : Boolean = true,
+    val isPlayed : Boolean = false
 )

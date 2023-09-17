@@ -90,4 +90,5 @@
 
     <!-- ReviewScreen -->
     <string name="Continue">Tiếp tục</string>
+    <string name="current_words_count">Số từ đã ôn tập: %d</string>
 </resources>

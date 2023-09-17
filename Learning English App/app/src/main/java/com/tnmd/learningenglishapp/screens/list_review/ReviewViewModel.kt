@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.random.Random
 
 @HiltViewModel
 class ReviewViewModel @Inject constructor(
@@ -72,7 +73,17 @@ class ReviewViewModel @Inject constructor(
     fun newGame() {
         usedWords.clear()
         _uiState.value =
-            ReviewUiState(currentdWord = pickRandomWord(), maxWordsOfCourse = words.size)
+            ReviewUiState(
+                currentdWord = pickRandomWord(),
+                maxWordsOfCourse = words.size,
+                randomGame = getRandomGame(),
+                score = 0,
+                isGuessedWordWrong = false,
+                isAnswered = false,
+                currentWordCount = 1,
+                closeScoreDialog = true,
+                isPlayed = false
+            )
     }
 
     private fun pickRandomWord(): Words {
@@ -86,16 +97,15 @@ class ReviewViewModel @Inject constructor(
         }
     }
 
-    fun nextQuestion(currentWordCount: Int) {
+    fun nextQuestion() {
+        userGuess = ""
         if (_uiState.value.isGuessedWordWrong == false) {
             updateGameState(_uiState.value.score.plus(SCORE_INCREASE))
-            launchCatching {
-                processesService.updateProcessesLearn(
-                    process.value.copy(processesCheck = process.value.processesCheck + currentWordCount / words.size.toDouble())
-                )
-            }
         } else {
             updateGameState(_uiState.value.score.plus(0))
+        }
+        _uiState.update { currentState ->
+            currentState.copy(isAnswered = false, randomGame = getRandomGame())
         }
     }
 
@@ -125,15 +135,48 @@ class ReviewViewModel @Inject constructor(
     fun checkUserGuess(isCorrect: Boolean) {
         if (isCorrect == false) {
             _uiState.update { currentState ->
-                currentState.copy(isGuessedWordWrong = true)
+                currentState.copy(isGuessedWordWrong = true, isAnswered = true)
             }
         } else {
+            if(_uiState.value.isPlayed == false){
+                launchCatching {
+                    processesService.updateProcessesLearn(
+                        process.value.copy(
+                            processesCheck =
+                            process.value.processesCheck + _uiState.value.currentWordCount / words.size.toDouble())
+                    )
+                }
+            }
             _uiState.update { currentState ->
-                currentState.copy(isGuessedWordWrong = false)
+                currentState.copy(isGuessedWordWrong = false, isAnswered = true)
             }
         }
     }
+
     fun updateUserGuess(guessedWord: String) {
         userGuess = guessedWord
+    }
+
+    fun getRandomGame(): Int {
+        return Random.nextInt(1, 4) // Chọn số nguyên ngẫu nhiên từ 1 đến 3
+    }
+
+    fun updateScoreDialog() {
+        _uiState.update { currentState ->
+            currentState.copy(closeScoreDialog = false)
+        }
+    }
+
+    fun updateScoreToFireStore(scores : Int){
+        score.value = score.value.copy(score = scores)
+        launchCatching {
+            scoresService.updateScore(score.value)
+        }
+    }
+
+    fun updateIsPlayed() {
+        _uiState.update { currentState ->
+            currentState.copy(isPlayed = true)
+        }
     }
 }
