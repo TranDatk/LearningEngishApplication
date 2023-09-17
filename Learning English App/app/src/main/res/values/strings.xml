@@ -91,4 +91,5 @@
     <!-- ReviewScreen -->
     <string name="Continue">Tiếp tục</string>
     <string name="current_words_count">Số từ đã ôn tập: %d</string>
+    <string name="NotCompleteCourses">Bạn chưa hoàn thành xong khóa học này</string>
 </resources>

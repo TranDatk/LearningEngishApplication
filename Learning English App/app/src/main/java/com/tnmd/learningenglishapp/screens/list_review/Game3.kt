@@ -49,7 +49,7 @@ fun Game3(word: Words, viewModel: ReviewViewModel = hiltViewModel()) {
                 value = viewModel.userGuess,
                 onValueChange = { viewModel.updateUserGuess(it) },
                 readOnly = gameUiState.isAnswered,
-                label = { Text("Nhập từ tiếng Anh sau khi đảo") }
+                label = { Text("Nhập từ trước khi xáo trộn") }
             )
 
             // Xử lý khi người chơi nhấn kiểm tra
