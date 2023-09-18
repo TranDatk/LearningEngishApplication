@@ -2,10 +2,12 @@ package com.tnmd.learningenglishapp.screens.list_review
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color.rgb
 import android.media.MediaPlayer
 import android.util.Log
 import android.widget.Button
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,6 +26,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -71,12 +75,17 @@ fun ReviewScreen(
         }
 
         if (gameUiState.isAnswered == true) {
-            if (gameUiState.currentWordCount <= gameUiState.maxWordsOfCourse) {
+            if (gameUiState.currentWordCount < gameUiState.maxWordsOfCourse) {
                 TextButton(
                     onClick = {
                         viewModel.nextQuestion()
                     },
-                    modifier = Modifier.padding(top = mediumPadding)
+                    modifier = Modifier.padding(top = mediumPadding),
+                    colors =
+                    ButtonDefaults.buttonColors(
+                        containerColor = androidx.compose.material.MaterialTheme.colors.primary,
+                        contentColor = androidx.compose.material.MaterialTheme.colors.onPrimary
+                    )
                 ) {
                     Text(text = stringResource(R.string.Continue))
                 }
