@@ -1,6 +1,8 @@
 package com.tnmd.learningenglishapp
 
 import android.content.res.Resources
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
@@ -25,7 +27,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.tnmd.learningenglishapp.screens.settings.SettingsScreen
 
-import com.tnmd.learningenglishapp.common.composable.RationaleDialog
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
 import com.tnmd.learningenglishapp.screens.chat.ChatScreen
 import com.tnmd.learningenglishapp.screens.chat.MessageScreen
@@ -35,6 +36,7 @@ import com.tnmd.learningenglishapp.screens.list_review.ReviewScreen
 import com.tnmd.learningenglishapp.screens.list_words.WordsScreen
 import com.tnmd.learningenglishapp.screens.login.LoginScreen
 import com.tnmd.learningenglishapp.screens.sign_up.SignUpScreen
+import com.tnmd.learningenglishapp.screens.sign_up.SignUpScreenTwo
 import com.tnmd.learningenglishapp.screens.splash.SplashScreen
 import com.tnmd.learningenglishapp.ui.theme.LearningEnglishAppTheme
 import kotlinx.coroutines.CoroutineScope
@@ -44,7 +46,6 @@ import kotlinx.coroutines.CoroutineScope
 @ExperimentalMaterialApi
 fun LearningEnglishApp() {
     LearningEnglishAppTheme() {
-
         Surface(color = MaterialTheme.colors.background) {
             val appState = rememberAppState()
 
@@ -59,7 +60,6 @@ fun LearningEnglishApp() {
                     )
                 },
                 bottomBar = {
-                    // Pass the navController to the bottom navigation composable
                     SootheBottomNavigation(navController = appState.navController)
                 },
                 scaffoldState = appState.scaffoldState,
@@ -98,7 +98,7 @@ fun resources(): Resources {
 @Composable
 private fun SootheBottomNavigation(
     modifier: Modifier = Modifier,
-    navController: NavHostController // Inject the NavHostController
+    navController: NavHostController
 ) {
     val icons = listOf(
         R.drawable.home_stroke,
@@ -138,10 +138,12 @@ private fun SootheBottomNavigation(
         }
     }
 }
+
+@RequiresApi(Build.VERSION_CODES.P)
 @ExperimentalMaterialApi
 fun NavGraphBuilder.learningEnglishGraph(appState: LearningEnglishAppState) {
     composable(SPLASH_SCREEN) {
-        SplashScreen(openAndClear = { route -> appState.clearAndNavigate(route)  })
+        SplashScreen(openAndClear = { route -> appState.clearAndNavigate(route) })
     }
 
     composable(LOGIN_SCREEN) {
@@ -149,23 +151,25 @@ fun NavGraphBuilder.learningEnglishGraph(appState: LearningEnglishAppState) {
     }
 
     composable(SIGN_UP_SCREEN) {
-        SignUpScreen(openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })
+        SignUpScreen(openScreen = { route -> appState.navigate(route) })
+    }
+
+    composable(SIGN_UP_SCREEN_TWO) {
+        SignUpScreenTwo(openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })
     }
 
     composable(LIST_COURSES) {
-        CoursesScreen( openAndPopUp = {route -> appState.navigate(route)} )
+        CoursesScreen(openAndPopUp = { route -> appState.navigate(route) })
     }
 
     composable(CHAT_SCREEN) {
-        ChatScreen(
-            openScreen = { channelName ->
-                appState.navigate("messageScreen/$channelName")
-            }
-        )
+        ChatScreen(openScreen = { channelName ->
+            appState.navigate("messageScreen/$channelName")
+        })
     }
 
     composable(LIST_COURSES_QUIZZ) {
-        CoursesQuizzScreen( openAndPopUp = {route -> appState.navigate(route)} )
+        CoursesQuizzScreen(openAndPopUp = { route -> appState.navigate(route) })
     }
 
     composable(SETTINGS_SCREEN) {
@@ -181,7 +185,6 @@ fun NavGraphBuilder.learningEnglishGraph(appState: LearningEnglishAppState) {
     ) { backStackEntry ->
         val channelName = backStackEntry.arguments?.getString("channelName")
         if (channelName != null) {
-            // Truyền một hành động kết thúc vào MessageScreen
             MessageScreen(channelName = channelName)
         }
     }
@@ -193,9 +196,7 @@ fun NavGraphBuilder.learningEnglishGraph(appState: LearningEnglishAppState) {
             defaultValue = null
         })
     ) {
-        WordsScreen(
-            openScreen = {route -> appState.navigate(route) }
-        )
+        WordsScreen(openScreen = { route -> appState.navigate(route) })
     }
 
     composable(
@@ -205,9 +206,7 @@ fun NavGraphBuilder.learningEnglishGraph(appState: LearningEnglishAppState) {
             defaultValue = null
         })
     ) {
-        ReviewScreen(
-            openScreen = {route -> appState.navigate(route) }
-        )
+        ReviewScreen(openScreen = { route -> appState.navigate(route) })
     }
 }
 

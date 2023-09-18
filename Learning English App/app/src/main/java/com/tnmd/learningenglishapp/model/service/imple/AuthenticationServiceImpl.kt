@@ -2,6 +2,7 @@
 
 package com.tnmd.learningenglishapp.model.service.imple
 
+import android.net.Uri
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
 import com.tnmd.learningenglishapp.model.Account
@@ -61,7 +62,7 @@ class AuthenticationServiceImpl @Inject constructor(private val auth: FirebaseAu
     auth.sendPasswordResetEmail(email).await()
   }
 
-  override suspend fun createAccount(email: String, password: String, username: String, selectedGender: String) : Boolean {
+  override suspend fun createAccount(email: String, password: String, username: String, selectedGender: String, image: Uri?) : Boolean {
     try {
       val authResult = auth.createUserWithEmailAndPassword(email, password).await()
       if (authResult.user != null) {

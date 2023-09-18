@@ -36,12 +36,12 @@ import com.tnmd.learningenglishapp.common.ext.fieldModifier
 import com.tnmd.learningenglishapp.composable.BasicButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
-import androidx.compose.ui.text.font.FontWeight
-import io.getstream.chat.android.client.ChatClient
+import com.tnmd.learningenglishapp.SIGN_UP_SCREEN_TWO
+import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
 
 @Composable
 fun SignUpScreen(
-  openAndPopUp: (String, String) -> Unit,
+  openScreen: (String) -> Unit,
   modifier: Modifier = Modifier,
   viewModel: SignUpViewModel = hiltViewModel()
 ) {
@@ -50,6 +50,9 @@ fun SignUpScreen(
 
   // Biến để lưu giới tính được chọn, mặc định là "Nam"
   var selectedGender by remember { mutableStateOf("Nam") }
+
+
+
 
   BasicToolbar(AppText.create_account)
 
@@ -72,8 +75,8 @@ fun SignUpScreen(
       modifier = Modifier.padding(horizontal =20.dp)
     )
 
-    BasicButton(AppText.create_account, Modifier.basicButton()) {
-      viewModel.onSignUpClick(openAndPopUp, selectedGender)
+    BasicButton(AppText.next_step, Modifier.basicButton()) {
+        viewModel.onNextStep(openScreen,selectedGender)
     }
   }
 }

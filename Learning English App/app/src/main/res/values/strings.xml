@@ -12,6 +12,8 @@
     <string name="repeat_password">Repeat password</string>
     <string name="generic_error">Something wrong happened. Please try again.</string>
     <string name="email_error">Please insert a valid email.</string>
+    <string name="permission_success">Cho phép thành công.</string>
+    <string name="permission_fail">Cho phép thất bại.</string>
     <string name="cancel">Cancel</string>
     <string name="try_again">Try again</string>
     <string name="ok">OK</string>
@@ -33,6 +35,9 @@
     <string name="create_error">Đã xảy ra lỗi trong quá trình đăng ký.</string>
     <string name="create_success">Đăng ký thành công.</string>
     <string name="gender_choose">Vui lòng chọn giới tính.</string>
+    <string name="next_step">Tiếp tục</string>
+    <string name="complete_sign">Hoàn tất đăng ký</string>
+    <string name="check_step">Vui lòng điền đầy đủ thông tin</string>
     <!-- TasksScreen -->
     <string name="tasks">Tasks</string>
 

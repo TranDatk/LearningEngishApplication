@@ -57,8 +57,8 @@ fun SettingsScreen(
         viewModel.onSignUpClick(openScreen)
       }
     } else {
-      val intent = Intent(LocalContext.current, MainActivity::class.java)
-      LocalContext.current.startActivity(intent)
+      SignOutCard { viewModel.onSignOutClick(restartApp) }
+      DeleteMyAccountCard { viewModel.onDeleteMyAccountClick(restartApp) }
     }
   }
 }

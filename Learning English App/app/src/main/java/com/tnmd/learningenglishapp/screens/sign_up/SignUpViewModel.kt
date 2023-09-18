@@ -16,20 +16,24 @@ limitations under the License.
 
 package com.tnmd.learningenglishapp.screens.sign_up
 
+import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.tnmd.learningenglishapp.LOGIN_SCREEN
 import com.tnmd.learningenglishapp.SETTINGS_SCREEN
-import com.tnmd.learningenglishapp.R.string as AppText
-import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
+import com.tnmd.learningenglishapp.SIGN_UP_SCREEN_TWO
 import com.tnmd.learningenglishapp.common.ext.isValidEmail
 import com.tnmd.learningenglishapp.common.ext.isValidPassword
 import com.tnmd.learningenglishapp.common.ext.passwordMatches
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
+import com.tnmd.learningenglishapp.data.UserData
 import com.tnmd.learningenglishapp.model.service.AuthenticationService
 import com.tnmd.learningenglishapp.model.service.LogService
+import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.getstream.chat.android.client.ChatClient
 import javax.inject.Inject
+import com.tnmd.learningenglishapp.R.string as AppText
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
@@ -37,6 +41,9 @@ class SignUpViewModel @Inject constructor(
   logService: LogService,
   private val chatClient: ChatClient
 ) : LearningEnglishAppViewModel(logService) {
+
+  private val userData = UserData()
+
   var uiState = mutableStateOf(SignUpUiState())
     private set
 
@@ -68,8 +75,8 @@ class SignUpViewModel @Inject constructor(
     return selectedGender.isNotBlank()
   }
 
-  fun onSignUpClick(
-    openAndPopUp: (String, String) -> Unit,
+  fun onNextStep(
+    openScreen: (String) -> Unit,
     selectedGender: String
   ) {
     if (!email.isValidEmail()) {
@@ -90,11 +97,45 @@ class SignUpViewModel @Inject constructor(
     if (!isGenderSelected(selectedGender)) {
       SnackbarManager.showMessage(AppText.gender_choose)
       return
+    }
 
-      launchCatching {
-        authenticationService.createAccount(email, password, username, selectedGender)
-        openAndPopUp(SETTINGS_SCREEN, LOGIN_SCREEN)
-      }
+    launchCatching {
+      saveUserData(email,username,password,selectedGender)
+      Log.d("user1", email + password + username)
+      openScreen(SIGN_UP_SCREEN_TWO)
     }
   }
+
+  fun onSignUp(openAndPopUp: (String, String) -> Unit, ) {
+
+    launchCatching {
+//      if (email != null && password != null && username != null && gender != null && image != null) {
+//        authenticationService.createAccount(email, password, username, gender, image)
+//      }
+//      openAndPopUp(SETTINGS_SCREEN, LOGIN_SCREEN)
+
+      Log.d("user", email + password + username)
+      }
+  }
+
+  private fun saveUserData(
+    email: String,
+    username: String,
+    password: String,
+    gender: String
+  ) {
+    userData.email = email
+    userData.username = username
+    userData.password = password
+    userData.gender = gender
+  }
+
+  fun saveProfileImage(imageUri: Uri?) {
+    userData.imageUri = imageUri
+  }
+
+  private fun getUserData(): UserData {
+    return userData
+  }
 }
+
