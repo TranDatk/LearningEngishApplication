@@ -23,4 +23,6 @@ const val WORDS_ID_ARG = "?$COURSES_ID={$COURSES_ID}"
 const val LIST_COURSES_QUIZZ = "CoursesQuizzScreen"
 const val LIST_REVIEW_SCREEN = "ReviewScreen"
 
+const val EXTENSION_SCREEN = "ExtensionScreen"
+
 

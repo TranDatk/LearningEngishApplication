@@ -29,6 +29,7 @@ import com.tnmd.learningenglishapp.common.composable.RationaleDialog
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
 import com.tnmd.learningenglishapp.screens.chat.ChatScreen
 import com.tnmd.learningenglishapp.screens.chat.MessageScreen
+import com.tnmd.learningenglishapp.screens.extension.ExtensionScreen
 import com.tnmd.learningenglishapp.screens.list_courses.CoursesScreen
 import com.tnmd.learningenglishapp.screens.list_courses_quizz.CoursesQuizzScreen
 import com.tnmd.learningenglishapp.screens.list_review.ReviewScreen
@@ -130,7 +131,7 @@ private fun SootheBottomNavigation(
                     when (index) {
                         0 -> navController.navigate(LIST_COURSES)
                         1 -> navController.navigate(LIST_COURSES_QUIZZ)
-                        2 -> navController.navigate(SETTINGS_SCREEN)
+                        2 -> navController.navigate(EXTENSION_SCREEN)
                         3 -> navController.navigate(CHAT_SCREEN)
                     }
                 }
@@ -208,6 +209,10 @@ fun NavGraphBuilder.learningEnglishGraph(appState: LearningEnglishAppState) {
         ReviewScreen(
             openScreen = {route -> appState.navigate(route) }
         )
+    }
+
+    composable(EXTENSION_SCREEN) {
+        ExtensionScreen()
     }
 }
 

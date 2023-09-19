@@ -124,7 +124,7 @@ class WordsViewModel @Inject constructor(
     }
 
     fun updateScoreToFireStore(scores : Int){
-        score.value = score.value.copy(score = scores)
+        score.value = score.value.copy(score = score.value.score + scores)
         launchCatching {
             scoresService.updateScore(score.value)
         }
