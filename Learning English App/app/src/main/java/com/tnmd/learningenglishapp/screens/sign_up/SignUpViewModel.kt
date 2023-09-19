@@ -26,8 +26,11 @@ import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
 import com.tnmd.learningenglishapp.model.service.AuthenticationService
 import com.tnmd.learningenglishapp.model.service.LogService
 import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
+import com.tnmd.learningenglishapp.screens.login.LoginViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.getstream.chat.android.client.ChatClient
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import javax.inject.Inject
 import com.tnmd.learningenglishapp.R.string as AppText
 
@@ -39,6 +42,9 @@ class SignUpViewModel @Inject constructor(
 ) : LearningEnglishAppViewModel(logService) {
     var uiState = mutableStateOf(SignUpUiState())
         private set
+    private val _loginEvent = MutableSharedFlow<LogInEvent>()
+    val loginEvent = _loginEvent.asSharedFlow()
+
 
     val email
         get() = uiState.value.email
@@ -77,7 +83,7 @@ class SignUpViewModel @Inject constructor(
         uiState.value = uiState.value.copy(isNextStep = isNextStep)
     }
 
-    fun changeGender(gender: String) {
+    private fun changeGender(gender: String) {
         uiState.value = uiState.value.copy(gender = gender)
     }
 
@@ -115,16 +121,27 @@ class SignUpViewModel @Inject constructor(
         image: Uri?
     ) {
         launchCatching {
+            if(
             authenticationService.createAccount(
                 email,
                 password,
                 username,
                 gender,
                 image
-            )
+            )) {
+                _loginEvent.emit(LogInEvent.Success)
+            }
             Log.d("user", email + password + username + gender + image)
         }
     }
+
+    sealed class LogInEvent {
+        data class ErrorLogIn(val errorLogIn: String) : LogInEvent()
+        object Success : LogInEvent()
+    }
 }
+
+
+
 
 

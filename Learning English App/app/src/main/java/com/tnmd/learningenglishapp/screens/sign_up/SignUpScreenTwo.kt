@@ -3,6 +3,7 @@ package com.tnmd.learningenglishapp.screens.sign_up;
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
@@ -22,9 +23,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable;
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +41,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.tnmd.learningenglishapp.R
+import com.tnmd.learningenglishapp.activity.LoginActivity
+import com.tnmd.learningenglishapp.activity.MainActivity
 import com.tnmd.learningenglishapp.common.ext.basicButton
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
 import com.tnmd.learningenglishapp.composable.BasicButton
@@ -52,8 +57,25 @@ fun SignUpScreenTwo(
     viewModel: SignUpViewModel = hiltViewModel()
 ) {
 
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current
+    @OptIn(ExperimentalMaterialApi::class)
+    (LaunchedEffect(viewModel.loginEvent) {
+        viewModel.loginEvent.collect { event ->
+            when (event) {
+                is SignUpViewModel.LogInEvent.Success -> {
+                    val intent = Intent(context, MainActivity::class.java)
+                    context.startActivity(intent)
+                }
+                is SignUpViewModel.LogInEvent.ErrorLogIn -> {
+                    val intent = Intent(context, LoginActivity::class.java)
+                    context.startActivity(intent)
+                }
+            }
+        }
+    })
+
+
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
     val bitmap = remember { mutableStateOf<Bitmap?>(null) }
 
     val galleryLauncher =
