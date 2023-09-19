@@ -2,28 +2,31 @@
 
 package com.tnmd.learningenglishapp.model.service.imple
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
-import androidx.appcompat.widget.AppCompatTextView
-import com.tnmd.learningenglishapp.model.Account
-import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import com.tnmd.learningenglishapp.R
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
-import com.tnmd.learningenglishapp.model.Learner
+import com.tnmd.learningenglishapp.model.Account
 import com.tnmd.learningenglishapp.model.service.AuthenticationService
-import com.tnmd.learningenglishapp.model.service.trace
-import javax.inject.Inject
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
+import java.io.InputStream
+import javax.inject.Inject
 
 class AuthenticationServiceImpl @Inject constructor(private val auth: FirebaseAuth, private val firestore: FirebaseFirestore) : AuthenticationService {
 
+  @ApplicationContext
+  @Inject
+  lateinit var context: Context
   override val currentUserId: String
     get() = auth.currentUser?.uid.orEmpty()
 
@@ -62,20 +65,28 @@ class AuthenticationServiceImpl @Inject constructor(private val auth: FirebaseAu
     auth.sendPasswordResetEmail(email).await()
   }
 
-  override suspend fun createAccount(email: String, password: String, username: String, selectedGender: String, image: Uri?) : Boolean {
+  override suspend fun createAccount(email: String, password: String, username: String, selectedGender: String, imageUri: Uri?): Boolean {
     try {
       val authResult = auth.createUserWithEmailAndPassword(email, password).await()
       if (authResult.user != null) {
         val userId = authResult.user!!.uid
+
+        // Xác định URL ảnh dựa trên giới tính hoặc sử dụng URL mặc định
+        val imageUrl = if (imageUri != null) {
+          // Tải lên hình ảnh lên Firebase Storage và lấy URL sau khi tải lên
+          val imageUrl = uploadImageToFirebaseStorage(userId, imageUri)
+          imageUrl
+        } else {
+          if (selectedGender.equals("Nam")) {
+            "https://firebasestorage.googleapis.com/v0/b/learningenglishapp-1e3bd.appspot.com/o/man.png?alt=media&token=c8de7ac0-0fd9-4ace-9d49-43e95221196a"
+          } else {
+            "https://firebasestorage.googleapis.com/v0/b/learningenglishapp-1e3bd.appspot.com/o/woman.png?alt=media&token=66c5fdee-b5f3-4a3e-aa15-15702c615d67"
+          }
+        }
+
         val learnerUsername = hashMapOf(
           "username" to username
         )
-
-        val imageUrl = if (selectedGender.equals("Nam")) {
-          "https://firebasestorage.googleapis.com/v0/b/learningenglishapp-1e3bd.appspot.com/o/man.png?alt=media&token=c8de7ac0-0fd9-4ace-9d49-43e95221196a"
-        } else {
-          "https://firebasestorage.googleapis.com/v0/b/learningenglishapp-1e3bd.appspot.com/o/woman.png?alt=media&token=66c5fdee-b5f3-4a3e-aa15-15702c615d67"
-        }
 
         val collectionReference = firestore.collection(LEARNER_COLLECTION)
         val documentReference = collectionReference.add(learnerUsername).await()
@@ -91,15 +102,29 @@ class AuthenticationServiceImpl @Inject constructor(private val auth: FirebaseAu
           .addOnFailureListener { e ->
             Log.d("dat", "Lỗi khi đặt thông tin Account: ${e.message}")
           }
-        return true // Đăng ký thành công
+        return true
       }
     } catch (e: FirebaseAuthException) {
       Log.d("dat", "Đăng ký thất bại: ${e.message}")
     }
-    return false // Xảy ra lỗi hoặc đăng ký thất bại
+    return false
   }
 
+  private suspend fun uploadImageToFirebaseStorage(userId: String, imageUri: Uri): String {
+    val storageReference = FirebaseStorage.getInstance().reference.child("images/$userId.jpg")
+    val inputStream: InputStream? = context.contentResolver.openInputStream(imageUri)
 
+    return try {
+      val uploadTask = storageReference.putStream(inputStream!!)
+      uploadTask.await()
+
+      val downloadUrl = storageReference.downloadUrl.await()
+      downloadUrl.toString()
+    } catch (e: Exception) {
+      Log.e("UploadImage", "Lỗi khi tải lên hình ảnh: ${e.message}")
+      ""
+    }
+  }
 
   override suspend fun deleteAccount() {
     auth.currentUser!!.delete().await()
@@ -114,10 +139,7 @@ class AuthenticationServiceImpl @Inject constructor(private val auth: FirebaseAu
   }
 
   companion object {
-    private const val LINK_ACCOUNT_TRACE = "linkAccount"
-    private const val COMPLETE_AUTH = "Đăng nhập thành công"
-    private const val FAILURE_AUTH_EMAIL = "Email không tồn tại"
-    private const val FAILURE_AUTH_PASS = "Đăng nhập thành công"
+
     private const val ACCOUNT_COLLECTION = "account"
     private const val LEARNER_COLLECTION = "learner"
   }

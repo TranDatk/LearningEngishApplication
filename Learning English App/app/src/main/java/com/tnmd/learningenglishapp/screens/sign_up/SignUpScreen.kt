@@ -16,10 +16,13 @@ limitations under the License.
 
 package com.tnmd.learningenglishapp.screens.sign_up
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,9 +39,12 @@ import com.tnmd.learningenglishapp.common.ext.fieldModifier
 import com.tnmd.learningenglishapp.composable.BasicButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
+import com.tnmd.learningenglishapp.LOGIN_SCREEN
+import com.tnmd.learningenglishapp.SETTINGS_SCREEN
 import com.tnmd.learningenglishapp.SIGN_UP_SCREEN_TWO
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
 
+@RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun SignUpScreen(
   openScreen: (String) -> Unit,
@@ -51,32 +57,37 @@ fun SignUpScreen(
   // Biến để lưu giới tính được chọn, mặc định là "Nam"
   var selectedGender by remember { mutableStateOf("Nam") }
 
+    if(uiState.isNextStep == true){
+      SignUpScreenTwo(viewModel = viewModel)
+    }else{
+      BasicToolbar(AppText.create_account)
 
+      Column(
+        modifier = modifier
+          .fillMaxWidth()
+          .fillMaxHeight()
+          .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+      ) {
+        EmailField(uiState.email, viewModel::onEmailChange, fieldModifier)
+        UsernameField(uiState.username, viewModel::onUsernameChange, fieldModifier)
+        PasswordField(uiState.password, viewModel::onPasswordChange, fieldModifier)
+        RepeatPasswordField(uiState.repeatPassword, viewModel::onRepeatPasswordChange, fieldModifier)
 
+        RadioButtonGender(
+          selectedGender = selectedGender,
+          onGenderSelected = { gender -> selectedGender = gender },
+          modifier = Modifier.padding(horizontal =20.dp),
+          viewModel = viewModel
+        )
 
-  BasicToolbar(AppText.create_account)
-
-  Column(
-    modifier = modifier
-      .fillMaxWidth()
-      .fillMaxHeight()
-      .verticalScroll(rememberScrollState()),
-    verticalArrangement = Arrangement.Center,
-    horizontalAlignment = Alignment.CenterHorizontally
-  ) {
-    EmailField(uiState.email, viewModel::onEmailChange, fieldModifier)
-    UsernameField(uiState.username, viewModel::onUsernameChange, fieldModifier)
-    PasswordField(uiState.password, viewModel::onPasswordChange, fieldModifier)
-    RepeatPasswordField(uiState.repeatPassword, viewModel::onRepeatPasswordChange, fieldModifier)
-
-    RadioButtonGender(
-      selectedGender = selectedGender,
-      onGenderSelected = { gender -> selectedGender = gender },
-      modifier = Modifier.padding(horizontal =20.dp)
-    )
-
-    BasicButton(AppText.next_step, Modifier.basicButton()) {
-        viewModel.onNextStep(openScreen,selectedGender)
+        BasicButton(AppText.next_step, Modifier.basicButton()) {
+          viewModel.onNextStep(selectedGender)
+          if(uiState.isValid){
+            viewModel.changeIsNextStep(true)
+          }
+        }
     }
   }
 }
@@ -85,7 +96,8 @@ fun SignUpScreen(
 private fun RadioButtonGender(
   selectedGender: String,
   onGenderSelected: (String) -> Unit,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
+  viewModel : SignUpViewModel = hiltViewModel()
 ) {
   Row(modifier = modifier) {
 
@@ -98,7 +110,7 @@ private fun RadioButtonGender(
       ) {
         RadioButton(
           selected = selectedGender == gender,
-          onClick = { onGenderSelected(gender) }
+          onClick = { onGenderSelected(gender)}
         )
         Spacer(modifier = Modifier.width(4.dp))
         Text(text = gender)

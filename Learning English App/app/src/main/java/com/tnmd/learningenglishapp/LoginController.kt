@@ -36,6 +36,7 @@ import com.tnmd.learningenglishapp.screens.*
 import com.tnmd.learningenglishapp.screens.sign_up.SignUpScreenTwo
 
 
+@RequiresApi(Build.VERSION_CODES.P)
 @Composable
 @ExperimentalMaterialApi
 fun LoginController() {
@@ -118,7 +119,7 @@ fun NavGraphBuilder.loginGraph(appState: LearningEnglishAppState) {
     }
 
     composable(SIGN_UP_SCREEN_TWO) {
-        SignUpScreenTwo(openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })
+        SignUpScreenTwo()
     }
 
     composable(SETTINGS_SCREEN) {

@@ -9,7 +9,6 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -41,7 +40,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.tnmd.learningenglishapp.R
 import com.tnmd.learningenglishapp.common.ext.basicButton
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
-import com.tnmd.learningenglishapp.common.snackbar.SnackbarMessage
 import com.tnmd.learningenglishapp.composable.BasicButton
 import java.io.File
 import java.text.SimpleDateFormat
@@ -50,119 +48,124 @@ import java.util.Date
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun SignUpScreenTwo(
-        openAndPopUp: (String, String) -> Unit,
-        modifier: Modifier = Modifier,
-        viewModel: SignUpViewModel = hiltViewModel()
+    modifier: Modifier = Modifier,
+    viewModel: SignUpViewModel = hiltViewModel()
 ) {
-                var imageUri by remember { mutableStateOf<Uri?>(null) }
-                val context = LocalContext.current
-                val bitmap = remember { mutableStateOf<Bitmap?>(null) }
 
-                val galleryLauncher =
-                        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
-                                imageUri = uri
-                        }
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    val context = LocalContext.current
+    val bitmap = remember { mutableStateOf<Bitmap?>(null) }
 
-                val cameraLauncher =
-                        rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success: Boolean ->
-                                if (success) {
-                                        imageUri?.let { uri ->
-                                                val source = ImageDecoder.createSource(
-                                                        context.contentResolver,
-                                                        uri
-                                                )
-                                                bitmap.value = ImageDecoder.decodeBitmap(source)
-                                        }
-                                }
-                        }
+    val galleryLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
+            imageUri = uri
+        }
 
-                val permissionLauncher = rememberLauncherForActivityResult(
-                        ActivityResultContracts.RequestPermission()
-                ) { isGranted: Boolean ->
-                        if (isGranted) {
-                                SnackbarManager.showMessage(R.string.permission_success)
-                                cameraLauncher.launch(imageUri)
-                        } else {
-                                SnackbarManager.showMessage(R.string.permission_fail)
-                        }
+    val cameraLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success: Boolean ->
+            if (success) {
+                imageUri?.let { uri ->
+                    val source = ImageDecoder.createSource(
+                        context.contentResolver,
+                        uri
+                    )
+                    bitmap.value = ImageDecoder.decodeBitmap(source)
                 }
+            }
+        }
 
-                Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                        imageUri?.let {
-                                if (Build.VERSION.SDK_INT < 28) {
-                                        bitmap.value = MediaStore.Images.Media.getBitmap(
-                                                context.contentResolver,
-                                                it
-                                        )
-                                } else {
-                                        val source = ImageDecoder.createSource(
-                                                context.contentResolver,
-                                                it
-                                        )
-                                        bitmap.value = ImageDecoder.decodeBitmap(source)
-                                }
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            SnackbarManager.showMessage(R.string.permission_success)
+            cameraLauncher.launch(imageUri)
+        } else {
+            SnackbarManager.showMessage(R.string.permission_fail)
+        }
+    }
 
-                                bitmap.value?.let { btm ->
-                                        Image(
-                                                bitmap = btm.asImageBitmap(),
-                                                contentDescription = null,
-                                                modifier = Modifier
-                                                        .size(400.dp)
-                                                        .padding(20.dp)
-                                        )
-                                }
-                        }
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        imageUri?.let {
+            if (Build.VERSION.SDK_INT < 28) {
+                bitmap.value = MediaStore.Images.Media.getBitmap(
+                    context.contentResolver,
+                    it
+                )
+            } else {
+                val source = ImageDecoder.createSource(
+                    context.contentResolver,
+                    it
+                )
+                bitmap.value = ImageDecoder.decodeBitmap(source)
+            }
 
-                        Spacer(modifier = Modifier.height(12.dp))
+            bitmap.value?.let { btm ->
+                Image(
+                    bitmap = btm.asImageBitmap(),
+                    contentDescription = null,
+                    modifier = Modifier
+                            .size(400.dp)
+                            .padding(20.dp)
+                )
+            }
+        }
 
-                        Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                                Button(onClick = { galleryLauncher.launch("image/*") }) {
-                                        Text(text = "Pick Image")
-                                }
+        Spacer(modifier = Modifier.height(12.dp))
 
-                                Button(onClick = {
-                                        val permissionCheckResult =
-                                                ContextCompat.checkSelfPermission(
-                                                        context,
-                                                        Manifest.permission.CAMERA
-                                                )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Button(onClick = { galleryLauncher.launch("image/*") }) {
+                Text(text = "Pick Image")
+            }
 
-                                        if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
-                                                val file = context.createImageFile()
-                                                imageUri = FileProvider.getUriForFile(
-                                                        context,
-                                                        context.packageName + ".provider",
-                                                        file
-                                                )
-                                                cameraLauncher.launch(imageUri)
-                                        } else {
-                                                permissionLauncher.launch(Manifest.permission.CAMERA)
-                                        }
-                                }) {
-                                        Text(text = "Capture Image")
-                                }
-                        }
+            Button(onClick = {
+                val permissionCheckResult =
+                    ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.CAMERA
+                    )
+
+                if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
+                    val file = context.createImageFile()
+                    imageUri = FileProvider.getUriForFile(
+                        context,
+                        context.packageName + ".provider",
+                        file
+                    )
+                    cameraLauncher.launch(imageUri)
+                } else {
+                    permissionLauncher.launch(Manifest.permission.CAMERA)
                 }
+            }) {
+                Text(text = "Capture Image")
+            }
+        }
         BasicButton(R.string.complete_sign, Modifier.basicButton()) {
-                viewModel.saveProfileImage(imageUri)
-                viewModel.onSignUp(openAndPopUp)
-        }
-        }
-fun Context.createImageFile(): File {
-        val timeStamp = SimpleDateFormat("yyyy_MM_dd_HH:mm:ss").format(Date())
-        val imageFileName = "JPEG_" + timeStamp + "_"
-        val image = File.createTempFile(
-                imageFileName,
-                ".jpg",
-                externalCacheDir
-        )
+            if (imageUri != null) {
+                viewModel.onSignUp(imageUri!!)
+            } else {
+                viewModel.onSignUp(null)
+            }
+    }
+    }
 
-        return image
+}
+
+fun Context.createImageFile(): File {
+    val timeStamp = SimpleDateFormat("yyyy_MM_dd_HH:mm:ss").format(Date())
+    val imageFileName = "JPEG_" + timeStamp + "_"
+    val image = File.createTempFile(
+        imageFileName,
+        ".jpg",
+        externalCacheDir
+    )
+
+    return image
 }

@@ -19,14 +19,10 @@ package com.tnmd.learningenglishapp.screens.sign_up
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import com.tnmd.learningenglishapp.LOGIN_SCREEN
-import com.tnmd.learningenglishapp.SETTINGS_SCREEN
-import com.tnmd.learningenglishapp.SIGN_UP_SCREEN_TWO
 import com.tnmd.learningenglishapp.common.ext.isValidEmail
 import com.tnmd.learningenglishapp.common.ext.isValidPassword
 import com.tnmd.learningenglishapp.common.ext.passwordMatches
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
-import com.tnmd.learningenglishapp.data.UserData
 import com.tnmd.learningenglishapp.model.service.AuthenticationService
 import com.tnmd.learningenglishapp.model.service.LogService
 import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
@@ -37,105 +33,98 @@ import com.tnmd.learningenglishapp.R.string as AppText
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-  private val authenticationService: AuthenticationService,
-  logService: LogService,
-  private val chatClient: ChatClient
+    private val authenticationService: AuthenticationService,
+    logService: LogService,
+    private val chatClient: ChatClient
 ) : LearningEnglishAppViewModel(logService) {
+    var uiState = mutableStateOf(SignUpUiState())
+        private set
 
-  private val userData = UserData()
+    val email
+        get() = uiState.value.email
+    val password
+        get() = uiState.value.password
 
-  var uiState = mutableStateOf(SignUpUiState())
-    private set
+    val username
+        get() = uiState.value.username
 
-  private val email
-    get() = uiState.value.email
-  private val password
-    get() = uiState.value.password
+    val isNextStep
+        get() = uiState.value.isNextStep
+    val gender
+        get() = uiState.value.gender
 
-  private val username
-    get() = uiState.value.username
-
-  fun onEmailChange(newValue: String) {
-    uiState.value = uiState.value.copy(email = newValue)
-  }
-
-  fun onPasswordChange(newValue: String) {
-    uiState.value = uiState.value.copy(password = newValue)
-  }
-
-  fun onRepeatPasswordChange(newValue: String) {
-    uiState.value = uiState.value.copy(repeatPassword = newValue)
-  }
-
-  fun onUsernameChange(newValue: String) {
-    uiState.value = uiState.value.copy(username = newValue)
-  }
-
-  fun isGenderSelected(selectedGender: String): Boolean {
-    return selectedGender.isNotBlank()
-  }
-
-  fun onNextStep(
-    openScreen: (String) -> Unit,
-    selectedGender: String
-  ) {
-    if (!email.isValidEmail()) {
-      SnackbarManager.showMessage(AppText.email_error)
-      return
+    fun onEmailChange(newValue: String) {
+        uiState.value = uiState.value.copy(email = newValue)
     }
 
-    if (!password.isValidPassword()) {
-      SnackbarManager.showMessage(AppText.password_error)
-      return
+    fun onPasswordChange(newValue: String) {
+        uiState.value = uiState.value.copy(password = newValue)
     }
 
-    if (!password.passwordMatches(uiState.value.repeatPassword)) {
-      SnackbarManager.showMessage(AppText.password_match_error)
-      return
+    fun onRepeatPasswordChange(newValue: String) {
+        uiState.value = uiState.value.copy(repeatPassword = newValue)
     }
 
-    if (!isGenderSelected(selectedGender)) {
-      SnackbarManager.showMessage(AppText.gender_choose)
-      return
+    fun onUsernameChange(newValue: String) {
+        uiState.value = uiState.value.copy(username = newValue)
     }
 
-    launchCatching {
-      saveUserData(email,username,password,selectedGender)
-      Log.d("user1", email + password + username)
-      openScreen(SIGN_UP_SCREEN_TWO)
+    private fun isGenderSelected(selectedGender: String): Boolean {
+        return selectedGender.isNotBlank()
     }
-  }
 
-  fun onSignUp(openAndPopUp: (String, String) -> Unit, ) {
+    fun changeIsNextStep(isNextStep: Boolean) {
+        uiState.value = uiState.value.copy(isNextStep = isNextStep)
+    }
 
-    launchCatching {
-//      if (email != null && password != null && username != null && gender != null && image != null) {
-//        authenticationService.createAccount(email, password, username, gender, image)
-//      }
-//      openAndPopUp(SETTINGS_SCREEN, LOGIN_SCREEN)
+    fun changeGender(gender: String) {
+        uiState.value = uiState.value.copy(gender = gender)
+    }
 
-      Log.d("user", email + password + username)
-      }
-  }
+    fun onNextStep(
+        selectedGender: String
+    ) {
+        if (!email.isValidEmail()) {
+            SnackbarManager.showMessage(AppText.email_error)
+            return
+        }
 
-  private fun saveUserData(
-    email: String,
-    username: String,
-    password: String,
-    gender: String
-  ) {
-    userData.email = email
-    userData.username = username
-    userData.password = password
-    userData.gender = gender
-  }
+        if (!password.isValidPassword()) {
+            SnackbarManager.showMessage(AppText.password_error)
+            return
+        }
 
-  fun saveProfileImage(imageUri: Uri?) {
-    userData.imageUri = imageUri
-  }
+        if (!password.passwordMatches(uiState.value.repeatPassword)) {
+            SnackbarManager.showMessage(AppText.password_match_error)
+            return
+        }
 
-  private fun getUserData(): UserData {
-    return userData
-  }
+        if (!isGenderSelected(selectedGender)) {
+            SnackbarManager.showMessage(AppText.gender_choose)
+        } else {
+            changeGender(selectedGender)
+        }
+
+        changeIsNextStep(true)
+
+        Log.d("user1", email + password + username + selectedGender)
+
+    }
+
+    fun onSignUp(
+        image: Uri?
+    ) {
+        launchCatching {
+            authenticationService.createAccount(
+                email,
+                password,
+                username,
+                gender,
+                image
+            )
+            Log.d("user", email + password + username + gender + image)
+        }
+    }
 }
+
 
