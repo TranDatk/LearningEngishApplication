@@ -31,8 +31,12 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.SemanticsProperties.ImeAction
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import io.getstream.chat.android.ui.ChatUI.style
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -115,8 +119,32 @@ fun CheckGrammarScreen(viewModel: ExtensionViewModel) {
                     val errors = viewModel.errorList
                     Column {
                         for (error in errors) {
-                            Text("Bạn đã bị lỗi ở câu: ${error.sentence}")
-                            Text("Sửa lỗi: ${error.replacement}")
+                            val sentence = error.sentence.trim()
+                            val annotatedText = buildAnnotatedString {
+                                withStyle(
+                                    style = SpanStyle(color = Color.Black)
+                                ) {
+                                    append("Câu lỗi: ")
+                                    append(sentence.substring(0, error.start))
+                                }
+                                withStyle(
+                                    style = SpanStyle(color = Color.Red)
+                                ) {
+                                    append(sentence.substring(error.start, error.end))
+                                }
+                                withStyle(
+                                    style = SpanStyle(color = Color.Black)
+                                ) {
+                                    append(sentence.substring(error.end))
+                                }
+                            }
+
+                            Text(
+                                text =annotatedText,
+                                modifier = Modifier.padding(4.dp)
+                            )
+
+                            Text(" Sửa lỗi: ${error.replacement}")
                             Spacer(modifier = Modifier.height(10.dp))
                         }
                     }
