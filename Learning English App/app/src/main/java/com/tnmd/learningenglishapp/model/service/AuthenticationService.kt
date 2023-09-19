@@ -2,6 +2,7 @@
 
 package com.tnmd.learningenglishapp.model.service
 
+import android.net.Uri
 import com.tnmd.learningenglishapp.model.Account
 import kotlinx.coroutines.flow.Flow
 
@@ -13,7 +14,7 @@ interface AuthenticationService {
 
   suspend fun authenticate(email: String, password: String) : Boolean
   suspend fun sendRecoveryEmail(email: String)
-  suspend fun createAccount(email: String, password: String, username: String, selectedGender: String) : Boolean
+  suspend fun createAccount(email: String, password: String, username: String, selectedGender: String, image: Uri?) : Boolean
   suspend fun deleteAccount()
   suspend fun signOut()
 }

@@ -33,7 +33,8 @@ class LoginViewModel @Inject constructor(
     private set
 
   private val currentUser = FirebaseAuth.getInstance().currentUser
-  private val streamTokenApi = StreamTokenApi()
+  private val streamApi = StreamTokenApi()
+  private val tokenProvider = StreamTokenProvider(streamApi)
 
   private val _loadingState = MutableLiveData<UiLoadingState>()
   val loadingState: LiveData<UiLoadingState>
@@ -102,8 +103,9 @@ class LoginViewModel @Inject constructor(
     try {
       _loadingState.value = UiLoadingState.Loading
 
-      val tokenResponse = streamTokenApi.getToken(username)
-      val token = tokenResponse.token
+      val tokenProvider = StreamTokenProvider(StreamTokenApi())
+
+      val token = tokenProvider.getTokenProvider(username).loadToken()
 
       val user = User(
         id = username,

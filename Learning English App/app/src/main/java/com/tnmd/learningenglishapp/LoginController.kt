@@ -6,11 +6,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Spa
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
@@ -18,9 +13,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -40,9 +33,10 @@ import com.tnmd.learningenglishapp.screens.splash.SplashScreen
 import com.tnmd.learningenglishapp.ui.theme.LearningEnglishAppTheme
 import kotlinx.coroutines.CoroutineScope
 import com.tnmd.learningenglishapp.screens.*
-import com.tnmd.learningenglishapp.screens.login.LoginViewModel
+import com.tnmd.learningenglishapp.screens.sign_up.SignUpScreenTwo
 
 
+@RequiresApi(Build.VERSION_CODES.P)
 @Composable
 @ExperimentalMaterialApi
 fun LoginController() {
@@ -109,6 +103,7 @@ fun resourcesLogin(): Resources {
     return LocalContext.current.resources
 }
 
+@RequiresApi(Build.VERSION_CODES.P)
 @ExperimentalMaterialApi
 fun NavGraphBuilder.loginGraph(appState: LearningEnglishAppState) {
     composable(SPLASH_SCREEN) {
@@ -120,7 +115,11 @@ fun NavGraphBuilder.loginGraph(appState: LearningEnglishAppState) {
     }
 
     composable(SIGN_UP_SCREEN) {
-        SignUpScreen(openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })
+        SignUpScreen(openScreen = { route -> appState.navigate(route) })
+    }
+
+    composable(SIGN_UP_SCREEN_TWO) {
+        SignUpScreenTwo()
     }
 
     composable(SETTINGS_SCREEN) {

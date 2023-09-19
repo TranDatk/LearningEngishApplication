@@ -8,15 +8,15 @@ interface StreamTokenApi {
     @GET("token")
     suspend fun getToken(
         @Query("user_id") userId: String
-    ) : TokenResponse
+    ): TokenResponse
 
-    companion object{
-        operator fun invoke(): StreamTokenApi{
-            return Retrofit.Builder()
+    companion object {
+        operator fun invoke(): StreamTokenApi {
+            val retrofit = Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl("http://localhost:8080/")
+                .baseUrl("http://192.168.1.9:8080/")
                 .build()
-                .create(StreamTokenApi::class.java)
+            return retrofit.create(StreamTokenApi::class.java)
         }
     }
 }

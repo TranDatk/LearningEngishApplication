@@ -16,85 +16,132 @@ limitations under the License.
 
 package com.tnmd.learningenglishapp.screens.sign_up
 
+import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import com.tnmd.learningenglishapp.LOGIN_SCREEN
-import com.tnmd.learningenglishapp.SETTINGS_SCREEN
-import com.tnmd.learningenglishapp.R.string as AppText
-import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
 import com.tnmd.learningenglishapp.common.ext.isValidEmail
 import com.tnmd.learningenglishapp.common.ext.isValidPassword
 import com.tnmd.learningenglishapp.common.ext.passwordMatches
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
 import com.tnmd.learningenglishapp.model.service.AuthenticationService
 import com.tnmd.learningenglishapp.model.service.LogService
+import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
+import com.tnmd.learningenglishapp.screens.login.LoginViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.getstream.chat.android.client.ChatClient
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import javax.inject.Inject
+import com.tnmd.learningenglishapp.R.string as AppText
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-  private val authenticationService: AuthenticationService,
-  logService: LogService,
-  private val chatClient: ChatClient
+    private val authenticationService: AuthenticationService,
+    logService: LogService,
+    private val chatClient: ChatClient
 ) : LearningEnglishAppViewModel(logService) {
-  var uiState = mutableStateOf(SignUpUiState())
-    private set
+    var uiState = mutableStateOf(SignUpUiState())
+        private set
+    private val _loginEvent = MutableSharedFlow<LogInEvent>()
+    val loginEvent = _loginEvent.asSharedFlow()
 
-  private val email
-    get() = uiState.value.email
-  private val password
-    get() = uiState.value.password
 
-  private val username
-    get() = uiState.value.username
+    val email
+        get() = uiState.value.email
+    val password
+        get() = uiState.value.password
 
-  fun onEmailChange(newValue: String) {
-    uiState.value = uiState.value.copy(email = newValue)
-  }
+    val username
+        get() = uiState.value.username
 
-  fun onPasswordChange(newValue: String) {
-    uiState.value = uiState.value.copy(password = newValue)
-  }
+    val isNextStep
+        get() = uiState.value.isNextStep
+    val gender
+        get() = uiState.value.gender
 
-  fun onRepeatPasswordChange(newValue: String) {
-    uiState.value = uiState.value.copy(repeatPassword = newValue)
-  }
-
-  fun onUsernameChange(newValue: String) {
-    uiState.value = uiState.value.copy(username = newValue)
-  }
-
-  fun isGenderSelected(selectedGender: String): Boolean {
-    return selectedGender.isNotBlank()
-  }
-
-  fun onSignUpClick(
-    openAndPopUp: (String, String) -> Unit,
-    selectedGender: String
-  ) {
-    if (!email.isValidEmail()) {
-      SnackbarManager.showMessage(AppText.email_error)
-      return
+    fun onEmailChange(newValue: String) {
+        uiState.value = uiState.value.copy(email = newValue)
     }
 
-    if (!password.isValidPassword()) {
-      SnackbarManager.showMessage(AppText.password_error)
-      return
+    fun onPasswordChange(newValue: String) {
+        uiState.value = uiState.value.copy(password = newValue)
     }
 
-    if (!password.passwordMatches(uiState.value.repeatPassword)) {
-      SnackbarManager.showMessage(AppText.password_match_error)
-      return
+    fun onRepeatPasswordChange(newValue: String) {
+        uiState.value = uiState.value.copy(repeatPassword = newValue)
     }
 
-    if (!isGenderSelected(selectedGender)) {
-      SnackbarManager.showMessage(AppText.gender_choose)
-      return
-
-      launchCatching {
-        authenticationService.createAccount(email, password, username, selectedGender)
-        openAndPopUp(SETTINGS_SCREEN, LOGIN_SCREEN)
-      }
+    fun onUsernameChange(newValue: String) {
+        uiState.value = uiState.value.copy(username = newValue)
     }
-  }
+
+    private fun isGenderSelected(selectedGender: String): Boolean {
+        return selectedGender.isNotBlank()
+    }
+
+    fun changeIsNextStep(isNextStep: Boolean) {
+        uiState.value = uiState.value.copy(isNextStep = isNextStep)
+    }
+
+    private fun changeGender(gender: String) {
+        uiState.value = uiState.value.copy(gender = gender)
+    }
+
+    fun onNextStep(
+        selectedGender: String
+    ) {
+        if (!email.isValidEmail()) {
+            SnackbarManager.showMessage(AppText.email_error)
+            return
+        }
+
+        if (!password.isValidPassword()) {
+            SnackbarManager.showMessage(AppText.password_error)
+            return
+        }
+
+        if (!password.passwordMatches(uiState.value.repeatPassword)) {
+            SnackbarManager.showMessage(AppText.password_match_error)
+            return
+        }
+
+        if (!isGenderSelected(selectedGender)) {
+            SnackbarManager.showMessage(AppText.gender_choose)
+        } else {
+            changeGender(selectedGender)
+        }
+
+        changeIsNextStep(true)
+
+        Log.d("user1", email + password + username + selectedGender)
+
+    }
+
+    fun onSignUp(
+        image: Uri?
+    ) {
+        launchCatching {
+            if(
+            authenticationService.createAccount(
+                email,
+                password,
+                username,
+                gender,
+                image
+            )) {
+                _loginEvent.emit(LogInEvent.Success)
+            }
+            Log.d("user", email + password + username + gender + image)
+        }
+    }
+
+    sealed class LogInEvent {
+        data class ErrorLogIn(val errorLogIn: String) : LogInEvent()
+        object Success : LogInEvent()
+    }
 }
+
+
+
+
+

@@ -1,5 +1,6 @@
 package com.tnmd.learningenglishapp.model.service.module
 
+import android.app.Application
 import android.content.Context
 import com.tnmd.learningenglishapp.R
 import dagger.Module
@@ -37,4 +38,11 @@ object AppModule {
             .withPlugin(offlinePluginFactory)
             .logLevel(ChatLogLevel.ALL)
             .build()
+
+
+    @Provides
+    @Singleton
+    fun provideContext(application: Application): Context {
+        return application.applicationContext
+    }
 }
