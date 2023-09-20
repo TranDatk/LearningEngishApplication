@@ -12,6 +12,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,10 +52,7 @@ fun ChatScreen(
         }
 
         ChannelsScreen(
-            filters = Filters.`in`(
-                fieldName = "type",
-                values = listOf("gaming", "messaging", "commerce", "team","livestream")
-            ),
+
             title= "Channel List",
             isShowingHeader = true,
             onItemClick = { channel -> openScreen(channel.cid)
