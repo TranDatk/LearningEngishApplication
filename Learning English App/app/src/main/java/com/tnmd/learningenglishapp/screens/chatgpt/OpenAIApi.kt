@@ -1,6 +1,7 @@
 package com.tnmd.learningenglishapp.screens.chatgpt
 
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.lembergsolutions.retrofitretry.api.RetryOnError
 import com.tnmd.learningenglishapp.screens.extension.Message
 import retrofit2.http.Body
 import retrofit2.http.Headers
@@ -8,7 +9,8 @@ import retrofit2.http.POST
 
 
 interface OpenAIApi {
-    @Headers("Content-Type: application/json", "Authorization: Bearer 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")
+    @RetryOnError
+    @Headers("Content-Type: application/json", "Authorization: Bearer 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")
     @POST("v1/chat/completions")
     suspend fun generateResponse(@Body requestBody: OpenAIRequestBody): OpenAIResponse
 }

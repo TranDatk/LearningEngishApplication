@@ -2,7 +2,9 @@ package com.tnmd.learningenglishapp.screens.chat
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.tnmd.learningenglishapp.LOGIN_SCREEN
 import com.tnmd.learningenglishapp.R
+import com.tnmd.learningenglishapp.SETTINGS_SCREEN
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
 import com.tnmd.learningenglishapp.data_streamchat.StreamTokenApi
 import com.tnmd.learningenglishapp.model.service.AuthenticationService
@@ -97,6 +99,13 @@ class ChannelListViewModal @Inject constructor(
             }
 
         }
+        }
+    }
+
+    fun onSignOutClick(openScreen: (String) -> Unit) {
+        launchCatching {
+            authenticationService.signOut()
+            openScreen(LOGIN_SCREEN)
         }
     }
 

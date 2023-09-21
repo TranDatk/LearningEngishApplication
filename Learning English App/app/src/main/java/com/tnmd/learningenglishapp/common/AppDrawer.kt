@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -38,6 +39,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
+import com.tnmd.learningenglishapp.LOGIN_SCREEN
+import com.tnmd.learningenglishapp.SETTINGS_SCREEN
+import com.tnmd.learningenglishapp.model.service.AuthenticationService
 import com.tnmd.learningenglishapp.screens.chat.ChannelListViewModal
 import com.tnmd.learningenglishapp.screens.chat.UrlLauncher
 
@@ -57,12 +61,27 @@ fun AppDrawer(
         DrawerHeader(clickAction = onIconClicked)
         DividerItem()
         DividerItem(modifier = Modifier.padding(horizontal = 28.dp))
-        DrawerItemHeader("Settings")
+        DrawerItemHeader("Author")
         ProfileItem(
-            "lambiengcode (author)",
+            "CapTanDat (author)",
             urlToImageAuthor,
         ) {
             UrlLauncher().openUrl(context = context, urlToGithub)
+        }
+        ProfileItem(
+            "TranDatk (author)",
+            urlToImageAuthor,
+        ) {
+            UrlLauncher().openUrl(context = context, urlToGithub2)
+        }
+        DrawerItemHeader("Settings")
+        ProfileItem(
+            "Đăng xuất",
+            null,
+        ) {
+            viewModal.onSignOutClick {
+                LOGIN_SCREEN
+            }
         }
     }
 }
@@ -89,16 +108,16 @@ private fun DrawerHeader(
             )
             Column(modifier = Modifier.padding(horizontal = 12.dp)) {
                 Text(
-                    "ChatGPT Lite",
+                    "Ứng dụng học tiếng anh",
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.secondary,
                 )
                 Text(
-                    "Powered by OpenAI",
+                    "CapDat & TranDatk",
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Normal,
-                    color = Color.White,
+                    color = Color.Black,
                 )
             }
         }
@@ -109,8 +128,8 @@ private fun DrawerHeader(
             },
         ) {
             Icon(
-                Icons.Filled.WbSunny,
-                "backIcon",
+                Icons.Filled.Settings,
+                "SettingIcon",
                 modifier = Modifier.size(26.dp),
                 tint = MaterialTheme.colorScheme.primary,
             )
