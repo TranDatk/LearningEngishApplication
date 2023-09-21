@@ -1,4 +1,4 @@
-package com.tnmd.learningenglishapp.data
+package com.tnmd.learningenglishapp.data_streamchat
 
 import android.net.Uri
 

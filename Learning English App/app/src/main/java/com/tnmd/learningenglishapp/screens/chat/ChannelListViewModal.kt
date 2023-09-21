@@ -1,23 +1,21 @@
 package com.tnmd.learningenglishapp.screens.chat
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.tnmd.learningenglishapp.R
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
-import com.tnmd.learningenglishapp.data.StreamTokenApi
+import com.tnmd.learningenglishapp.data_streamchat.StreamTokenApi
 import com.tnmd.learningenglishapp.model.service.AuthenticationService
 import com.tnmd.learningenglishapp.model.service.LogService
 import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
 import com.tnmd.learningenglishapp.screens.login.StreamTokenProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.getstream.chat.android.client.ChatClient
-import io.getstream.chat.android.client.api.models.QueryUsersRequest
-import io.getstream.chat.android.client.models.Filters
 import io.getstream.chat.android.client.models.User
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
@@ -31,16 +29,23 @@ class ChannelListViewModal @Inject constructor(
 
     private val _createChannelEvent = MutableSharedFlow<CreateChannelEvent>()
     val createChannelEvent = _createChannelEvent.asSharedFlow()
-    private val _users = MutableLiveData<List<User>>()
-
-    val users: MutableLiveData<List<User>> = MutableLiveData() // Sử dụng MutableLiveData thay vì LiveData
     private val userid = authenticationService.currentUserId
-    val userList: List<User>? = users.value
     init {
         viewModelScope.launch {
             getTokenAndConnectUser(userid)
             Log.d("token",userid)
         }
+    }
+
+    private val _drawerShouldBeOpened = MutableStateFlow(false)
+    val drawerShouldBeOpened = _drawerShouldBeOpened.asStateFlow()
+
+    fun openDrawer() {
+        _drawerShouldBeOpened.value = true
+    }
+
+    fun resetOpenDrawerAction() {
+        _drawerShouldBeOpened.value = false
     }
 
     private suspend fun getTokenAndConnectUser(username: String) {
@@ -99,6 +104,6 @@ class ChannelListViewModal @Inject constructor(
         data class Error(val error: String) : CreateChannelEvent()
         object Success: CreateChannelEvent()
     }
-    
+
 
 }

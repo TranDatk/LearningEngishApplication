@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.icons.Icons
@@ -32,39 +33,31 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.tnmd.learningenglishapp.screens.chatgpt.ChatGPTScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExtensionScreen(viewModel : ExtensionViewModel = hiltViewModel()){
-    val tabs = listOf("Kiểm tra ngữ pháp", "Tra từ", "Lịch học")
+    val tabs = listOf("Kiểm tra ngữ pháp", "Tra từ", "Lịch học", "CHATGPT")
     val uiState by viewModel.uiState.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(12.dp)
     ) {
         // Tab buttons
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            TabButton(
-                text = tabs[0],
-                selected = uiState.currentPage == 0,
-                onClick = { viewModel.changeTab(0) }
-            )
-            TabButton(
-                text = tabs[1],
-                selected = uiState.currentPage == 1,
-                onClick = { viewModel.changeTab(1) }
-            )
-            TabButton(
-                text = tabs[2],
-                selected = uiState.currentPage == 2,
-                onClick = { viewModel.changeTab(2) }
-            )
+            items(tabs.size) { index ->
+                TabButton(
+                    text = tabs[index],
+                    selected = uiState.currentPage == index,
+                    onClick = { viewModel.changeTab(index) }
+                )
+            }
         }
 
         // Content for the selected tab
@@ -73,10 +66,13 @@ fun ExtensionScreen(viewModel : ExtensionViewModel = hiltViewModel()){
                 CheckGrammarScreen(viewModel = viewModel)
             }
             1 -> {
-                // Content for Tab 2
+
             }
             2 -> {
                 // Content for Tab 3
+            }
+            3 -> {
+                ChatGPTScreen(viewModel = viewModel)
             }
         }
     }
