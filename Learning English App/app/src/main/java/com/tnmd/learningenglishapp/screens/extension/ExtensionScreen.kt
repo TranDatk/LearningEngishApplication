@@ -66,7 +66,7 @@ fun ExtensionScreen(viewModel : ExtensionViewModel = hiltViewModel()){
                 CheckGrammarScreen(viewModel = viewModel)
             }
             1 -> {
-
+                SearchEngWords(viewModel = viewModel)
             }
             2 -> {
                 // Content for Tab 3

@@ -1,5 +1,6 @@
 package com.tnmd.learningenglishapp.model.service.imple
 
+import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.dataObjects
 import com.google.firebase.firestore.ktx.toObject
@@ -29,13 +30,14 @@ class WordsServiceImpl @Inject constructor(private val firestore: FirebaseFirest
             // Lấy ra đối tượng đầu tiên từ kết quả truy vấn
             val document = querySnapshot.documents[0]
             // Chuyển đổi dữ liệu từ DocumentSnapshot thành đối tượng Words
+            Log.d("ExtensionViewModel", document.toObject<Words>().toString())
             return document.toObject(Words::class.java)
         }
         return null
     }
 
     companion object {
-        private const val WORDS_COLLECTION = "courses"
+        private const val WORDS_COLLECTION = "words"
         private const val WORDS_NAME_FIELD = "name"
     }
 }
