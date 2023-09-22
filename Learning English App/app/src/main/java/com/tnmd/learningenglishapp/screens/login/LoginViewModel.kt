@@ -12,13 +12,11 @@ import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
 import com.tnmd.learningenglishapp.SETTINGS_SCREEN
 import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
 import com.tnmd.learningenglishapp.common.ext.isValidEmail
-import com.tnmd.learningenglishapp.data.StreamTokenApi
+import com.tnmd.learningenglishapp.data_streamchat.StreamTokenApi
 import com.tnmd.learningenglishapp.model.service.AuthenticationService
 import com.tnmd.learningenglishapp.model.service.LogService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.getstream.chat.android.client.ChatClient
-import io.getstream.chat.android.client.call.enqueue
-import io.getstream.chat.android.client.models.User
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import javax.inject.Inject
@@ -78,7 +76,6 @@ class LoginViewModel @Inject constructor(
     launchCatching {
       if (authenticationService.authenticate(email, password)) {
         _loginEvent.emit(LogInEvent.Success)
-        getTokenAndConnectUser(username)
         SnackbarManager.showMessage(AppText.login_success)
       } else {
         openAndPopUp(SETTINGS_SCREEN, LOGIN_SCREEN)
@@ -99,42 +96,7 @@ class LoginViewModel @Inject constructor(
     }
   }
 
-  private suspend fun getTokenAndConnectUser(username: String) {
-    try {
-      _loadingState.value = UiLoadingState.Loading
 
-      val tokenProvider = StreamTokenProvider(StreamTokenApi())
-
-      val token = tokenProvider.getTokenProvider(username).loadToken()
-
-      val user = User(
-        id = username,
-        name = username
-      )
-
-      val connectResult = client.connectUser(
-        user = user,
-        token = token
-      )
-
-      connectResult.enqueue { result ->
-        if (result.isSuccess) {
-          Log.d("dat123456", "đăng nhập người dùng thành công")
-        } else {
-          Log.d("dat12345", "đăng nhập người dùng thất bại")
-        }
-
-        launchCatching {
-          Log.d("token", token)
-        }
-        _loadingState.value = UiLoadingState.NotLoading
-      }
-    } catch (e: Exception) {
-      Log.e("Error", "Lỗi khi lấy token và kết nối người dùng", e)
-      _loadingState.value = UiLoadingState.NotLoading
-      // Xử lý lỗi nếu có
-    }
-  }
 
 
   fun loginGuestUser() {

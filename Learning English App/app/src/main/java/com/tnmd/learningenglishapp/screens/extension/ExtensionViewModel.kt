@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.internal.network.HttpResponse
 import com.google.gson.Gson
 import com.google.logging.type.HttpRequest
@@ -13,6 +14,8 @@ import com.tnmd.learningenglishapp.model.Words
 import com.tnmd.learningenglishapp.model.service.LogService
 import com.tnmd.learningenglishapp.model.service.WordsService
 import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
+import com.tnmd.learningenglishapp.screens.chatgpt.ApiService
+import com.tnmd.learningenglishapp.screens.chatgpt.OpenAIRequestBody
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -144,6 +147,26 @@ constructor(private val wordsService: WordsService, logService: LogService)
                 e.printStackTrace()
             }
         }
+
+    }
+    val messages = mutableStateListOf<Message>()
+    val isWaitingForResponse = mutableStateOf(false)
+    fun sendMessage(text: String, isUser: Boolean = true) {
+        messages.add(Message(text, "user"))
+        if (isUser) {
+            viewModelScope.launch {
+                val response = ApiService.openAIApi.generateResponse(OpenAIRequestBody(messages = messages))
+                messages.add(response.choices.first().message)
+
+                // Sau khi nhận được phản hồi, cập nhật isWaitingForResponse thành false
+                isWaitingForResponse.value = false
+            }
+        }
     }
 
+}
+
+data class Message(val content: String, val role: String) {
+    val isUser: Boolean
+        get() = role == "user"
 }
