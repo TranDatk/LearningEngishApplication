@@ -205,7 +205,24 @@ constructor(private val wordsService: WordsService, logService: LogService) :
         Log.d("ExtensionViewModel", result.toString())
     }
 
+    fun updateEdit(isChecked : Boolean) {
+        _uiState.update { currentState ->
+            currentState.copy(isEditSchedule = isChecked)
+        }
+    }
 
+    fun updateDayUserChoosen(date: String) {
+        _uiState.update { currentState ->
+            val currentList = currentState.dayUserChoosen
+            if (currentList.contains(date)) {
+                val updatedList = currentList.filter { it != date }
+                currentState.copy(dayUserChoosen = updatedList)
+            } else {
+                val updatedList = currentList + date
+                currentState.copy(dayUserChoosen = updatedList)
+            }
+        }
+    }
 }
 
 data class Message(val content: String, val role: String) {

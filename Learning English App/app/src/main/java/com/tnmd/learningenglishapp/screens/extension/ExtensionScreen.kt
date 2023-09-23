@@ -69,7 +69,7 @@ fun ExtensionScreen(viewModel : ExtensionViewModel = hiltViewModel()){
                 SearchEngWords(viewModel = viewModel)
             }
             2 -> {
-                // Content for Tab 3
+                ScheduleScreen(viewModel = viewModel)
             }
             3 -> {
                 ChatGPTScreen(viewModel = viewModel)
