@@ -15,10 +15,15 @@ This is an English learning app built using the Kotlin programming language and 
 [![Watch the video](https://github.com/TranDatk/LearningEngishApplication/assets/84312661/845ef67b-06bd-40cd-9d9e-1f0c4ac9e4c7)](https://github.com/TranDatk/LearningEngishApplication/assets/84312661/12661cdc-b8d2-4e0f-9240-400340d002e4)
 
 - **Quizzes**: The app provides short quizzes to assess users' knowledge. Results are automatically evaluated and displayed upon completion.
+[![Watch the video](https://github.com/TranDatk/LearningEngishApplication/assets/84312661/845ef67b-06bd-40cd-9d9e-1f0c4ac9e4c7)](https://github.com/TranDatk/LearningEngishApplication/assets/84312661/119300e2-ad8e-49c0-b8ae-9721972566cf)
 
 - **Personal Notes**: Users can create personal notes to save new vocabulary, grammar rules, or any useful information encountered during their learning journey.
 
 - **User-Friendly Interface**: Leveraging Jetpack Compose to create an interactive and user-friendly interface that can be customized according to preferences.
+
+
+
+
 
 ## System Requirements
 
