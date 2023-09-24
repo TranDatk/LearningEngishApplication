@@ -5,9 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.crashlytics.internal.network.HttpResponse
 import com.google.gson.Gson
-import com.google.logging.type.HttpRequest
 import com.tnmd.learningenglishapp.model.Edit
 import com.tnmd.learningenglishapp.model.EditResponse
 import com.tnmd.learningenglishapp.model.Schedule
@@ -21,21 +19,18 @@ import com.tnmd.learningenglishapp.screens.chatgpt.OpenAIRequestBody
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import okhttp3.MediaType
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.io.IOException
-import java.net.URI
 
 import javax.inject.Inject
 
@@ -67,6 +62,9 @@ constructor(
     // Biến để kiểm tra trạng thái xử lý
     private val _isLoading = mutableStateOf(false)
     val isLoading: State<Boolean> = _isLoading
+
+    private val _imageAI = mutableStateOf<String?>(null)
+    val imageAI: State<String?> = _imageAI
 
 
     init {
@@ -284,11 +282,66 @@ constructor(
         }
 
     }
+
+    fun textToImage(inputString: String) {
+        _uiState.update { currentState ->
+            currentState.copy(isOpenDialog = true)
+        }
+        _imageAI.value = null
+
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                val unsplashApiKey = "yNsL2oK20qhiRDCBuGJ4PKbqDxp3JJMFJ2TuiOlGqE8" // Thay YOUR_UNSPLASH_API_KEY bằng API key của bạn
+                val unsplashUrl = "https://api.unsplash.com/photos/random/?query=${inputString}&client_id=${unsplashApiKey}"
+
+                val client = OkHttpClient()
+                val request = Request.Builder()
+                    .url(unsplashUrl)
+                    .get()
+                    .build()
+
+                val response = client.newCall(request).execute()
+
+                if (response.isSuccessful) {
+                    val responseBody = response.body?.string()
+                    val json = JSONObject(responseBody)
+
+                    val imageUrl = json.getString("urls")
+                    val myImage = getFullImageUrl(imageUrl)
+
+                    withContext(Dispatchers.Main) {
+                        _imageAI.value = myImage
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {}
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {}
+            }
+        }
+    }
+
+    fun updateIsOpenDialog(){
+        _uiState.update { currentState ->
+            currentState.copy(isOpenDialog = false)
+        }
+    }
+
 }
 
 data class Message(val content: String, val role: String) {
     val isUser: Boolean
         get() = role == "user"
+}
+
+fun getFullImageUrl(jsonString: String): String? {
+    try {
+        val jsonObject = JSONObject(jsonString)
+        return jsonObject.optString("full")
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+    return null
 }
 
 

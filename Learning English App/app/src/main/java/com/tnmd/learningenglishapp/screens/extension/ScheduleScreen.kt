@@ -1,6 +1,10 @@
 package com.tnmd.learningenglishapp.screens.extension
 
+import android.graphics.Bitmap
+import android.media.Image
+import android.provider.ContactsContract
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -12,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonColors
@@ -35,8 +40,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.input.key.Key.Companion.H
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -44,10 +53,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.tnmd.learningenglishapp.R
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
+import java.util.Calendar
 import com.tnmd.learningenglishapp.R.string as AppText
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,6 +69,7 @@ fun ScheduleScreen(viewModel: ExtensionViewModel = hiltViewModel()) {
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     val uiState by viewModel.uiState.collectAsState()
     val yearMonth = remember { mutableStateOf(YearMonth.now()) }
+
 
     Log.d("checkSelectedDate", selectedDate.toString())
 
@@ -186,8 +200,9 @@ fun ScheduleScreen(viewModel: ExtensionViewModel = hiltViewModel()) {
                             Spacer(modifier = Modifier.padding(2.dp))
                             Button(
                                 onClick = {
-                                    if (day.isNotEmpty() && uiState.isEditSchedule == true) {
-                                        selectedDate = LocalDate.of(yearMonth.value.year, yearMonth.value.monthValue, day.toInt())
+                                    val date = LocalDate.of(yearMonth.value.year, yearMonth.value.monthValue, day.toInt())
+                                    if (day.isNotEmpty() && uiState.isEditSchedule == true && day.toInt() >= Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) {
+                                        selectedDate = date
                                         viewModel.updateDayUserChoosen(selectedDate.toString())
                                     }
                                 },
@@ -246,7 +261,6 @@ fun ToggleExample(viewModel : ExtensionViewModel = hiltViewModel()) {
         }
     }
 }
-
 
 @Preview
 @Composable
