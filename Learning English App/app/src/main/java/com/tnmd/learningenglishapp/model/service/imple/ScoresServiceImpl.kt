@@ -51,9 +51,8 @@ ScoresService {
                 .dataObjects<Scores>()
         }.firstOrNull()
         if(scores.isNullOrEmpty()){
-            score.copy(learnerId = learnerService.learner.firstOrNull()?.id.orEmpty())
             Log.d("newOrUpdateScore", score.toString())
-            firestore.collection(SCORES_COLLECTION).add(score).await().id
+            firestore.collection(SCORES_COLLECTION).add(score.copy(learnerId = learnerService.learner.firstOrNull()?.id.orEmpty())).await().id
         }else{
             Log.d("newOrUpdateScore", scores.toString())
         }
