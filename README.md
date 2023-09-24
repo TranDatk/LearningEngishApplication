@@ -23,6 +23,8 @@ This is an English learning app built using the Kotlin programming language and 
 
 
 - **Extension feature**: Users can check the grammar of the sentences they enter and display errors and correct mistakes. Users can look up words in the application in a dictionary and display an automatically generated image describing it. Users can schedule their own study schedules. Users can text in English with automatic chat bots.
+
+
 [![Watch the video](https://github.com/TranDatk/LearningEngishApplication/assets/84312661/845ef67b-06bd-40cd-9d9e-1f0c4ac9e4c7)](https://github.com/TranDatk/LearningEngishApplication/assets/84312661/7b45e3cc-7fee-4426-af5c-2e0264fa63b4)
 
 - **User-Friendly Interface**: Leveraging Jetpack Compose to create an interactive and user-friendly interface that can be customized according to preferences.
