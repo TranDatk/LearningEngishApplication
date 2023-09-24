@@ -24,19 +24,19 @@ class CoursesViewModel @Inject constructor(
     private val coursesService: CoursesService,
     private val processesService: ProcessesService,
     logService: LogService
-) : LearningEnglishAppViewModel(logService){
+) : LearningEnglishAppViewModel(logService) {
     val courses = mutableStateListOf<Courses>()
     val processes = mutableStateListOf<Processes>()
 
     init {
-            launchCatching {
-                coursesService.courses.collect { courseList ->
-                    courses.clear() // Xóa danh sách hiện tại (nếu cần)
-                    courses.addAll(courseList) // Thêm dữ liệu mới vào danh sách
-                }
-            }
         launchCatching {
-            processesService.processes.collect{processList ->
+            coursesService.courses.collect { courseList ->
+                courses.clear() // Xóa danh sách hiện tại (nếu cần)
+                courses.addAll(courseList) // Thêm dữ liệu mới vào danh sách
+            }
+        }
+        launchCatching {
+            processesService.processes.collect { processList ->
                 processes.clear()
                 processes.addAll(processList)
             }
@@ -44,7 +44,7 @@ class CoursesViewModel @Inject constructor(
     }
 
 
-    fun onCourseItemClick(openAndPopUp: (String) -> Unit, id : String) {
+    fun onCourseItemClick(openAndPopUp: (String) -> Unit, id: String) {
         openAndPopUp("$LIST_WORDS?$COURSES_ID={${id}}")
     }
 }

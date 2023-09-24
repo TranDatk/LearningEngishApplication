@@ -10,8 +10,10 @@ import com.google.gson.Gson
 import com.google.logging.type.HttpRequest
 import com.tnmd.learningenglishapp.model.Edit
 import com.tnmd.learningenglishapp.model.EditResponse
+import com.tnmd.learningenglishapp.model.Schedule
 import com.tnmd.learningenglishapp.model.Words
 import com.tnmd.learningenglishapp.model.service.LogService
+import com.tnmd.learningenglishapp.model.service.ScheduleService
 import com.tnmd.learningenglishapp.model.service.WordsService
 import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
 import com.tnmd.learningenglishapp.screens.chatgpt.ApiService
@@ -19,6 +21,7 @@ import com.tnmd.learningenglishapp.screens.chatgpt.OpenAIRequestBody
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -38,7 +41,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ExtensionViewModel @Inject
-constructor(private val wordsService: WordsService, logService: LogService) :
+constructor(
+    private val wordsService: WordsService,
+    logService: LogService,
+    private val scheduleService: ScheduleService
+) :
     LearningEnglishAppViewModel(logService) {
 
     private val _uiState = MutableStateFlow(ExtensionUiState())
@@ -63,9 +70,20 @@ constructor(private val wordsService: WordsService, logService: LogService) :
 
 
     init {
+        launchCatching {
+            scheduleService.schedule.collect { scheduleList ->
+                newDayUserChoosen(scheduleList)
+            }
+        }
         loadData()
     }
 
+    private fun newDayUserChoosen(scheduleList: List<Schedule>) {
+        Log.d("checkScheduleScreen3", scheduleList.toString())
+        val updatedUiState = _uiState.value.copy(dayUserChoosen = scheduleList)
+        _uiState.value = updatedUiState
+        Log.d("checkScheduleScreen3", _uiState.value.dayUserChoosen.toString())
+    }
     // Hàm để đặt trạng thái xử lý
     private fun setIsLoading(loading: Boolean) {
         _isLoading.value = loading
@@ -172,7 +190,11 @@ constructor(private val wordsService: WordsService, logService: LogService) :
 
     fun wordsSearchChange(string: String) {
         _uiState.update { currentState ->
-            currentState.copy(wordUserSearch = string, hasWordSearch = false, wordSearchResult = Words())
+            currentState.copy(
+                wordUserSearch = string,
+                hasWordSearch = false,
+                wordSearchResult = Words()
+            )
         }
     }
 
@@ -186,7 +208,8 @@ constructor(private val wordsService: WordsService, logService: LogService) :
                 val foundWords = wordsService.findAWordsWithName(_uiState.value.wordUserSearch)
                 _uiState.update { currentState ->
                     val foundWords = wordsService.findAWordsWithName(_uiState.value.wordUserSearch)
-                    val updatedWordSearchResult = foundWords ?: Words() // Tạo một đối tượng Words mặc định nếu foundWords là null
+                    val updatedWordSearchResult = foundWords
+                        ?: Words() // Tạo một đối tượng Words mặc định nếu foundWords là null
                     currentState.copy(wordSearchResult = updatedWordSearchResult)
                 }
             }
@@ -197,7 +220,7 @@ constructor(private val wordsService: WordsService, logService: LogService) :
         } finally {
             setIsLoading(false)
         }
-        if(_uiState.value.wordSearchResult != null){
+        if (_uiState.value.wordSearchResult != null) {
             _uiState.update { currentState ->
                 currentState.copy(hasWordSearch = true)
             }
@@ -205,23 +228,61 @@ constructor(private val wordsService: WordsService, logService: LogService) :
         Log.d("ExtensionViewModel", result.toString())
     }
 
-    fun updateEdit(isChecked : Boolean) {
+    fun updateEdit(isChecked: Boolean) {
         _uiState.update { currentState ->
             currentState.copy(isEditSchedule = isChecked)
         }
     }
 
-    fun updateDayUserChoosen(date: String) {
+    fun updateTempSchedule(schedule: Schedule){
         _uiState.update { currentState ->
-            val currentList = currentState.dayUserChoosen
-            if (currentList.contains(date)) {
-                val updatedList = currentList.filter { it != date }
-                currentState.copy(dayUserChoosen = updatedList)
-            } else {
-                val updatedList = currentList + date
-                currentState.copy(dayUserChoosen = updatedList)
+            currentState.copy(tempSchedule = schedule)
+        }
+    }
+
+    fun updateDayUserChoosen(dateInput: String) {
+        val dateExists = _uiState.value.dayUserChoosen.any { it.date == dateInput }
+
+        if (dateExists == false) {
+            Log.d("dateExists", dateExists.toString())
+            updateTempSchedule(Schedule(date = dateInput))
+            launchCatching {
+                val id = scheduleService.newSchedule(_uiState.value.tempSchedule)
+                // Tìm phần tử có date bằng dateInput và cập nhật id
+                val updatedDayUserChoosen = _uiState.value.dayUserChoosen.map {
+                    if (it.date == dateInput) {
+                        it.copy(id = id) // Cập nhật id ở đây
+                    } else {
+                        it
+                    }
+                }
+                _uiState.update { currentState ->
+                    currentState.copy(dayUserChoosen = updatedDayUserChoosen)
+                }
+            }
+        } else {
+            updateTempSchedule(Schedule(date = dateInput))
+            val dateToRemove = _uiState.value.dayUserChoosen.firstOrNull { it.date.equals(dateInput) }
+            Log.d("dateExists", dateToRemove.toString())
+            Log.d("dateExists", dateInput.toString() + " | check dateInput")
+            Log.d("dateExists", _uiState.value.dayUserChoosen.toString() + " | check dateInput")
+            if (dateToRemove != null) {
+                Log.d("dateExists", dateToRemove.toString())
+                launchCatching { scheduleService.removeSchedule(dateToRemove) }
             }
         }
+
+        Log.d("dateExists", dateExists.toString() + " - check")
+        _uiState.update { currentState ->
+            val currentList = currentState.dayUserChoosen
+            val updatedList = if (currentList.any { it.date == dateInput }) {
+                currentList.filterNot { it.date == dateInput }
+            } else {
+                currentList + Schedule(date = dateInput)
+            }
+            currentState.copy(dayUserChoosen = updatedList)
+        }
+
     }
 }
 

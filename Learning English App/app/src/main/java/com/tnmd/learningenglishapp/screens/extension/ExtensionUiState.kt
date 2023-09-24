@@ -1,5 +1,6 @@
 package com.tnmd.learningenglishapp.screens.extension
 
+import com.tnmd.learningenglishapp.model.Schedule
 import com.tnmd.learningenglishapp.model.Words
 import org.checkerframework.framework.qual.EnsuresQualifier
 
@@ -10,5 +11,6 @@ data class ExtensionUiState(
     val hasWordSearch : Boolean = false,
     val wordSearchResult : Words = Words(),
     val isEditSchedule : Boolean = false,
-    val dayUserChoosen : List<String> = emptyList<String>()
+    val dayUserChoosen : List<Schedule> = emptyList<Schedule>(),
+    val tempSchedule : Schedule = Schedule()
 )

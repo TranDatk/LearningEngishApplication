@@ -147,15 +147,29 @@ fun ScheduleScreen(viewModel: ExtensionViewModel = hiltViewModel()) {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
+                    uiState.dayUserChoosen.forEach { it->
+                        Log.d("checkScheduleScreen1", it.date)
+                    }
 
                     for ((day, isHidden) in week) {
                         if (!isHidden) {
+
                             val isToday = if (day.isNotEmpty()) {
                                 selectedDate == LocalDate.of(yearMonth.value.year, yearMonth.value.monthValue, day.toInt())
                             } else {
                                 false
                             }
-                            val buttonColors = if (isToday) {
+
+                            val dateExists = if(uiState.dayUserChoosen != null && day.isNotEmpty()){
+                                Log.d("checkScheduleScreen", yearMonth.value.year.toString() + "-"
+                                        + yearMonth.value.monthValue + "-" + day + " | date: "
+                                        + uiState.dayUserChoosen.firstOrNull { it.date.equals(yearMonth.value.year.toString() + yearMonth.value.monthValue.toString() +day) })
+                                uiState.dayUserChoosen.any { it.date.equals(LocalDate.of(yearMonth.value.year, yearMonth.value.monthValue, day.toInt()).toString()) }
+                            }else{
+                                false
+                            }
+
+                            val buttonColors = if (dateExists) {
                                 ButtonDefaults.buttonColors(backgroundColor = Color.Yellow)
                             } else {
                                 ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
@@ -167,6 +181,8 @@ fun ScheduleScreen(viewModel: ExtensionViewModel = hiltViewModel()) {
                             } else {
                                 ""
                             }
+
+
                             Spacer(modifier = Modifier.padding(2.dp))
                             Button(
                                 onClick = {

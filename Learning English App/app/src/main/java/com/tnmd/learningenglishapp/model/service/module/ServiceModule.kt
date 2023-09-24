@@ -8,6 +8,7 @@ import com.tnmd.learningenglishapp.model.service.CoursesService
 import com.tnmd.learningenglishapp.model.service.LearnerService
 import com.tnmd.learningenglishapp.model.service.LogService
 import com.tnmd.learningenglishapp.model.service.ProcessesService
+import com.tnmd.learningenglishapp.model.service.ScheduleService
 import com.tnmd.learningenglishapp.model.service.ScoresService
 import com.tnmd.learningenglishapp.model.service.WordsService
 import com.tnmd.learningenglishapp.model.service.Words_CoursesService
@@ -16,6 +17,7 @@ import com.tnmd.learningenglishapp.model.service.imple.AuthenticationServiceImpl
 import com.tnmd.learningenglishapp.model.service.imple.CoursesServiceImpl
 import com.tnmd.learningenglishapp.model.service.imple.LearnerServiceImpl
 import com.tnmd.learningenglishapp.model.service.imple.ProcessesServiceImpl
+import com.tnmd.learningenglishapp.model.service.imple.ScheduleServiceImpl
 import com.tnmd.learningenglishapp.model.service.imple.ScoresServiceImpl
 import com.tnmd.learningenglishapp.model.service.imple.WordsServiceImpl
 import com.tnmd.learningenglishapp.model.service.imple.Words_CoursesServiceImpl
@@ -37,4 +39,5 @@ abstract class ServiceModule {
   @Binds abstract fun provideProcessesService(impl: ProcessesServiceImpl) : ProcessesService
   @Binds abstract fun provideWords_CoursesService(impl: Words_CoursesServiceImpl) : Words_CoursesService
   @Binds abstract fun provideScoreService(impl: ScoresServiceImpl) : ScoresService
+  @Binds abstract fun provideScheduleService(impl: ScheduleServiceImpl) : ScheduleService
 }
