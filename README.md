@@ -12,6 +12,8 @@ This is an English learning app built using the Kotlin programming language and 
 ## Features
 
 - **Lessons**: Users can experience English lessons across various topics. Each lesson comes with examples and audio to enhance understanding of vocabulary and grammar usage.
+https://github.com/TranDatk/LearningEngishApplication/assets/84312661/12661cdc-b8d2-4e0f-9240-400340d002e4
+
 
 - **Quizzes**: The app provides short quizzes to assess users' knowledge. Results are automatically evaluated and displayed upon completion.
 
