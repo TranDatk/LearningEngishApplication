@@ -200,8 +200,9 @@ fun ScheduleScreen(viewModel: ExtensionViewModel = hiltViewModel()) {
                             Spacer(modifier = Modifier.padding(2.dp))
                             Button(
                                 onClick = {
-                                    val date = LocalDate.of(yearMonth.value.year, yearMonth.value.monthValue, day.toInt())
+
                                     if (day.isNotEmpty() && uiState.isEditSchedule == true && day.toInt() >= Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) {
+                                        val date = LocalDate.of(yearMonth.value.year, yearMonth.value.monthValue, day.toInt())
                                         selectedDate = date
                                         viewModel.updateDayUserChoosen(selectedDate.toString())
                                     }
