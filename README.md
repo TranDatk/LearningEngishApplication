@@ -27,8 +27,9 @@ This is an English learning app built using the Kotlin programming language and 
   
 [![Watch the video](https://github.com/TranDatk/LearningEngishApplication/assets/84312661/845ef67b-06bd-40cd-9d9e-1f0c4ac9e4c7)](https://github.com/TranDatk/LearningEngishApplication/assets/84312661/7b45e3cc-7fee-4426-af5c-2e0264fa63b4)
 
-- **User-Friendly Interface**: Leveraging Jetpack Compose to create an interactive and user-friendly interface that can be customized according to preferences.
+- **Features to create chat groups for learning exchange**:
 
+[![Watch the video](https://github.com/TranDatk/LearningEngishApplication/assets/84312661/845ef67b-06bd-40cd-9d9e-1f0c4ac9e4c7)](https://github.com/TranDatk/LearningEngishApplication/assets/84312661/f0ce5c48-4a38-4173-a350-1d49663f9ad6)
 
 
 
@@ -60,6 +61,17 @@ We welcome contributions from the community. If you'd like to contribute to the 
 
 - Tran DatK and PenZ7
 - Contact: trannhatminhdat1103@gmail.com
+
+## Technologies used
+1. **Kotlin + Jetpack Compose** 
+
+2. **Dagger Hilt**
+
+3. **Coroutines Kotlin**
+   
+4. **Firebase storage + store + authentication**
+
+5. **ChatGPT API + Saping API + Unpsplash API + GetStream**
 
 ## License
 
