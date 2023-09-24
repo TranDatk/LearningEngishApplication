@@ -10,11 +10,9 @@
 This is an English learning app built using the Kotlin programming language and utilizing the Jetpack Compose UI library. The app aims to help users improve their English language skills through lessons, quizzes, and interactive learning materials, providing an engaging and enjoyable learning environment.
 
 ## Features
-
 - **Lessons**: Users can experience English lessons across various topics. Each lesson comes with examples and audio to enhance understanding of vocabulary and grammar usage.
-<iframe width="560" height="315" src="https://github.com/TranDatk/LearningEngishApplication/assets/84312661/12661cdc-b8d2-4e0f-9240-400340d002e4" frameborder="0" allowfullscreen></iframe>
 
-
+[![Watch the video](https://github.com/TranDatk/LearningEngishApplication/assets/84312661/845ef67b-06bd-40cd-9d9e-1f0c4ac9e4c7)](https://github.com/TranDatk/LearningEngishApplication/assets/84312661/12661cdc-b8d2-4e0f-9240-400340d002e4)
 
 - **Quizzes**: The app provides short quizzes to assess users' knowledge. Results are automatically evaluated and displayed upon completion.
 
