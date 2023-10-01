@@ -58,7 +58,7 @@ fun SignUpScreen(
   var selectedGender by remember { mutableStateOf("Nam") }
 
     if(uiState.isNextStep == true){
-      SignUpScreenTwo(viewModel = viewModel)
+      SignUpScreenTwo(openScreen = openScreen, viewModel = viewModel)
     }else{
       BasicToolbar(AppText.create_account)
 

@@ -156,7 +156,7 @@ fun NavGraphBuilder.learningEnglishGraph(appState: LearningEnglishAppState) {
     }
 
     composable(SIGN_UP_SCREEN_TWO) {
-        SignUpScreenTwo()
+        SignUpScreenTwo( openScreen = { route -> appState.navigate(route) })
     }
 
     composable(LIST_COURSES) {

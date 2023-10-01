@@ -19,6 +19,8 @@ package com.tnmd.learningenglishapp.screens.sign_up
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import com.tnmd.learningenglishapp.LOGIN_SCREEN
+import com.tnmd.learningenglishapp.SETTINGS_SCREEN
 import com.tnmd.learningenglishapp.common.ext.isValidEmail
 import com.tnmd.learningenglishapp.common.ext.isValidPassword
 import com.tnmd.learningenglishapp.common.ext.passwordMatches
@@ -116,7 +118,7 @@ class SignUpViewModel @Inject constructor(
         Log.d("user1", email + password + username + selectedGender)
 
     }
-
+    fun onLogin(openScreen: (String) -> Unit) = openScreen(LOGIN_SCREEN)
     fun onSignUp(
         image: Uri?
     ) {

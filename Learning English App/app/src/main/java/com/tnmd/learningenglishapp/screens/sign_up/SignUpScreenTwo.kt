@@ -3,13 +3,11 @@ package com.tnmd.learningenglishapp.screens.sign_up;
 
 import android.Manifest
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
-import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -23,15 +21,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable;
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
@@ -40,9 +34,9 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.tnmd.learningenglishapp.LOGIN_SCREEN
 import com.tnmd.learningenglishapp.R
-import com.tnmd.learningenglishapp.activity.LoginActivity
-import com.tnmd.learningenglishapp.activity.MainActivity
+import com.tnmd.learningenglishapp.SETTINGS_SCREEN
 import com.tnmd.learningenglishapp.common.ext.basicButton
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
 import com.tnmd.learningenglishapp.composable.BasicButton
@@ -54,39 +48,24 @@ import java.util.Date
 @Composable
 fun SignUpScreenTwo(
     modifier: Modifier = Modifier,
+    openScreen: (String) -> Unit,
     viewModel: SignUpViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current ?: return
 
-    val context = LocalContext.current
-    @OptIn(ExperimentalMaterialApi::class)
-    (LaunchedEffect(viewModel.loginEvent) {
-        viewModel.loginEvent.collect { event ->
-            when (event) {
-                is SignUpViewModel.LogInEvent.Success -> {
-                    val intent = Intent(context, MainActivity::class.java)
-                    context.startActivity(intent)
-                }
-                is SignUpViewModel.LogInEvent.ErrorLogIn -> {
-                    val intent = Intent(context, LoginActivity::class.java)
-                    context.startActivity(intent)
-                }
-            }
-        }
-    })
-
-
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    val imageUri = remember { mutableStateOf<Uri?>(null) }
     val bitmap = remember { mutableStateOf<Bitmap?>(null) }
+    val hasCameraPermission = remember { mutableStateOf(false) }
 
     val galleryLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
-            imageUri = uri
+            imageUri.value = uri
         }
 
     val cameraLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success: Boolean ->
             if (success) {
-                imageUri?.let { uri ->
+                imageUri.value?.let { uri ->
                     val source = ImageDecoder.createSource(
                         context.contentResolver,
                         uri
@@ -100,9 +79,27 @@ fun SignUpScreenTwo(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
         if (isGranted) {
-            SnackbarManager.showMessage(R.string.permission_success)
-            cameraLauncher.launch(imageUri)
+            // Quyền CAMERA đã được cấp, bạn có thể sử dụng cameraLauncher ở đây
+            hasCameraPermission.value = true
+            val cameraPermission = ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.CAMERA
+            )
+            if (cameraPermission == PackageManager.PERMISSION_GRANTED) {
+                val file = context.createImageFile()
+                imageUri.value = FileProvider.getUriForFile(
+                    context,
+                    "${context.packageName}.provider",
+                    file
+                )
+                cameraLauncher.launch(imageUri.value)
+            } else {
+                // Xử lý trường hợp CAMERA permission không được cấp
+                SnackbarManager.showMessage(R.string.permission_fail)
+            }
         } else {
+            hasCameraPermission.value = false
+            // Xử lý trường hợp người dùng từ chối cấp quyền CAMERA
             SnackbarManager.showMessage(R.string.permission_fail)
         }
     }
@@ -112,27 +109,15 @@ fun SignUpScreenTwo(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        imageUri?.let {
-            if (Build.VERSION.SDK_INT < 28) {
-                bitmap.value = MediaStore.Images.Media.getBitmap(
-                    context.contentResolver,
-                    it
-                )
-            } else {
-                val source = ImageDecoder.createSource(
-                    context.contentResolver,
-                    it
-                )
-                bitmap.value = ImageDecoder.decodeBitmap(source)
-            }
-
+        // Hiển thị hình ảnh đã chọn
+        imageUri.value?.let {
             bitmap.value?.let { btm ->
                 Image(
                     bitmap = btm.asImageBitmap(),
                     contentDescription = null,
                     modifier = Modifier
-                            .size(400.dp)
-                            .padding(20.dp)
+                        .size(400.dp)
+                        .padding(20.dp)
                 )
             }
         }
@@ -143,41 +128,35 @@ fun SignUpScreenTwo(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
+            // Button để chọn hình ảnh từ thư viện
             Button(onClick = { galleryLauncher.launch("image/*") }) {
                 Text(text = "Pick Image")
             }
-
             Button(onClick = {
-                val permissionCheckResult =
-                    ContextCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.CAMERA
-                    )
-
-                if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
-                    val file = context.createImageFile()
-                    imageUri = FileProvider.getUriForFile(
-                        context,
-                        context.packageName + ".provider",
-                        file
-                    )
-                    cameraLauncher.launch(imageUri)
+                if (hasCameraPermission.value) {
+                    // Quyền CAMERA đã được cấp, bạn có thể sử dụng cameraLauncher ở đây
+                    imageUri.value?.let {
+                        cameraLauncher.launch(it)
+                    }
                 } else {
+                    // Quyền CAMERA chưa được cấp, gửi yêu cầu cấp quyền
                     permissionLauncher.launch(Manifest.permission.CAMERA)
                 }
             }) {
                 Text(text = "Capture Image")
             }
         }
+
+        // Button để hoàn thành đăng ký
         BasicButton(R.string.complete_sign, Modifier.basicButton()) {
-            if (imageUri != null) {
-                viewModel.onSignUp(imageUri!!)
+            if (imageUri.value != null) {
+                viewModel.onSignUp(imageUri.value!!)
+                viewModel.onLogin(openScreen)
             } else {
                 viewModel.onSignUp(null)
             }
+        }
     }
-    }
-
 }
 
 fun Context.createImageFile(): File {
