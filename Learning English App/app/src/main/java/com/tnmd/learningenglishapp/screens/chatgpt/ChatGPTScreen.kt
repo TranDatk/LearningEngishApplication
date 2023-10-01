@@ -61,7 +61,8 @@ fun ChatGPTScreen(viewModel: ExtensionViewModel = hiltViewModel()) {
                     modifier = Modifier
                         .padding(16.dp)
                         .fillMaxWidth(),
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    color = Color.Black
                 )
         }
 
