@@ -17,6 +17,8 @@ interface AuthenticationService {
   suspend fun createAccount(email: String, password: String, username: String, selectedGender: String, image: Uri?) : Boolean
   suspend fun deleteAccount()
   suspend fun signOut()
+
+  suspend fun getAccountAvatar(userId: String): String
 }
 
 

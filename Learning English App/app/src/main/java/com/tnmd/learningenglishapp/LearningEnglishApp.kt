@@ -30,6 +30,7 @@ import com.tnmd.learningenglishapp.screens.settings.SettingsScreen
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
 import com.tnmd.learningenglishapp.screens.chat.ChatScreen
 import com.tnmd.learningenglishapp.screens.chat.MessageScreen
+import com.tnmd.learningenglishapp.screens.chat.UserProfileScreen
 import com.tnmd.learningenglishapp.screens.extension.ExtensionScreen
 import com.tnmd.learningenglishapp.screens.list_courses.CoursesScreen
 import com.tnmd.learningenglishapp.screens.list_courses_quizz.CoursesQuizzScreen
@@ -212,6 +213,10 @@ fun NavGraphBuilder.learningEnglishGraph(appState: LearningEnglishAppState) {
 
     composable(EXTENSION_SCREEN) {
         ExtensionScreen()
+    }
+
+    composable(USERPROFILE_SCREEN) {
+        UserProfileScreen()
     }
 }
 

@@ -126,6 +126,21 @@ class AuthenticationServiceImpl @Inject constructor(private val auth: FirebaseAu
     }
   }
 
+  override suspend fun getAccountAvatar(userId: String): String {
+    return try {
+      val document = firestore.collection(ACCOUNT_COLLECTION).document(userId).get().await()
+      if (document.exists()) {
+        val account = document.toObject(Account::class.java)
+        account?.avatar ?: "" // Trả về URL ảnh hoặc chuỗi trống nếu không tìm thấy
+      } else {
+        "" // Trả về chuỗi trống nếu không tìm thấy tài khoản với userId tương ứng
+      }
+    } catch (e: Exception) {
+      Log.e("GetAccountAvatar", "Lỗi khi lấy URL ảnh: ${e.message}")
+      ""
+    }
+  }
+
   override suspend fun deleteAccount() {
     auth.currentUser!!.delete().await()
   }

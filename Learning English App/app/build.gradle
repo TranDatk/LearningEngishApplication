@@ -137,6 +137,7 @@ dependencies {
     implementation "com.halilibo.compose-richtext:richtext-ui-material:${richtext_version}"
     implementation "com.halilibo.compose-richtext:richtext-ui-material3:${richtext_version}"
 
-    implementation 'com.squareup.picasso:picasso:2.8'
+    implementation "io.coil-kt:coil-compose:2.4.0"
+
 
 }

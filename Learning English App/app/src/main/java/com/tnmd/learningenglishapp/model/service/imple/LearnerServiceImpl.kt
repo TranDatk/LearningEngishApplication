@@ -38,6 +38,16 @@ constructor(private val firestore: FirebaseFirestore, private val accountService
         return learner!!
     }
 
+    override suspend fun getLearnerUsername(): String {
+        val learner = accountService.account.flatMapLatest { account ->
+            val learnerId = account?.learnerId.orEmpty()
+            firestore.collection(LEANER_COLLECTION)
+                .document(learnerId)
+                .dataObjects<Learner>()
+        }.firstOrNull()
+
+        return learner?.username.orEmpty()
+    }
     companion object {
         private const val LEANER_COLLECTION = "learner"
     }

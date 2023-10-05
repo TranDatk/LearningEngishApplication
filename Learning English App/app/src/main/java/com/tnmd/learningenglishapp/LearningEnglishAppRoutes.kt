@@ -26,5 +26,6 @@ const val LIST_COURSES_QUIZZ = "CoursesQuizzScreen"
 const val LIST_REVIEW_SCREEN = "ReviewScreen"
 
 const val EXTENSION_SCREEN = "ExtensionScreen"
+const val USERPROFILE_SCREEN = "UserProfileScreen"
 
 

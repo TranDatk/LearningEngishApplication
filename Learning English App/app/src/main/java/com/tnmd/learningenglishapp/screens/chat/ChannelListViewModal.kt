@@ -1,16 +1,22 @@
 package com.tnmd.learningenglishapp.screens.chat
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.tnmd.learningenglishapp.LOGIN_SCREEN
+import com.tnmd.learningenglishapp.LearningEnglishAppState
 import com.tnmd.learningenglishapp.R
 import com.tnmd.learningenglishapp.SETTINGS_SCREEN
+import com.tnmd.learningenglishapp.USERPROFILE_SCREEN
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
 import com.tnmd.learningenglishapp.data_streamchat.StreamTokenApi
+import com.tnmd.learningenglishapp.model.service.AccountService
 import com.tnmd.learningenglishapp.model.service.AuthenticationService
+import com.tnmd.learningenglishapp.model.service.LearnerService
 import com.tnmd.learningenglishapp.model.service.LogService
 import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
 import com.tnmd.learningenglishapp.screens.login.StreamTokenProvider
+import com.tnmd.learningenglishapp.screens.sign_up.SignUpUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.getstream.chat.android.client.ChatClient
 import io.getstream.chat.android.client.models.User
@@ -18,6 +24,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
@@ -27,21 +34,60 @@ class ChannelListViewModal @Inject constructor(
     private val client: ChatClient,
     private val authenticationService: AuthenticationService,
     logService: LogService,
+    private val learnerService: LearnerService
 ) : LearningEnglishAppViewModel(logService){
-
+    var uiState = mutableStateOf(ScreenUiState())
+        private set
     private val _createChannelEvent = MutableSharedFlow<CreateChannelEvent>()
     val createChannelEvent = _createChannelEvent.asSharedFlow()
     private val userid = authenticationService.currentUserId
+    private val currentUser = authenticationService.currentUser
     init {
         viewModelScope.launch {
-            getTokenAndConnectUser(userid)
-            Log.d("token",userid)
+            initializeUser()
         }
     }
 
+    private suspend fun initializeUser() {
+        try {
+            val username = learnerService.getLearnerUsername()
+            val avatar = authenticationService.getAccountAvatar(userid)
+            Log.d("avatar", avatar)
+            onUsernameChange(username)
+            onAvatarChange(avatar)
+            getTokenAndConnectUser(userid)
+            Log.d("token", userid)
+        } catch (e: Exception) {
+            handleInitializationError(e)
+        }
+    }
+
+    private fun handleInitializationError(exception: Exception) {
+        Log.e("Error", "Initialization error", exception)
+        // Handle the error as needed, e.g., show an error message to the user
+    }
+
+
     private val _drawerShouldBeOpened = MutableStateFlow(false)
     val drawerShouldBeOpened = _drawerShouldBeOpened.asStateFlow()
+    val isNextStep
+        get() = uiState.value.isNextStep
+    val username
+        get() = uiState.value.username
 
+    val avatar
+        get() = uiState.value.avatar
+
+
+    private fun onUsernameChange(newValue: String) {
+        uiState.value = uiState.value.copy(username = newValue)
+    }
+    private fun onAvatarChange(newValue: String) {
+        uiState.value = uiState.value.copy(avatar = newValue)
+    }
+    fun changeIsNextStep(isNextStep: Boolean) {
+        uiState.value = uiState.value.copy(isNextStep = isNextStep)
+    }
     fun openDrawer() {
         _drawerShouldBeOpened.value = true
     }
@@ -102,10 +148,21 @@ class ChannelListViewModal @Inject constructor(
         }
     }
 
-    fun onSignOutClick(openScreen: (String) -> Unit) {
+    fun onSignOutClick(restartApp: (String) -> Unit) {
         launchCatching {
             authenticationService.signOut()
-            openScreen(LOGIN_SCREEN)
+            restartApp(LOGIN_SCREEN)
+        }
+    }
+
+    fun openUserProfile(openScreen: (String) -> Unit) {
+        launchCatching {
+            openScreen(USERPROFILE_SCREEN)
+        }
+    }
+
+    fun onBackClick() {
+        viewModelScope.launch {
         }
     }
 

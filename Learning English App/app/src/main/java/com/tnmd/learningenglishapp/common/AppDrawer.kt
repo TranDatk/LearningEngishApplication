@@ -1,5 +1,6 @@
 package com.tnmd.learningenglishapp.common
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,6 +20,8 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.WbSunny
@@ -28,35 +31,54 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.tnmd.learningenglishapp.LOGIN_SCREEN
+import com.tnmd.learningenglishapp.R
 import com.tnmd.learningenglishapp.SETTINGS_SCREEN
+import com.tnmd.learningenglishapp.USERPROFILE_SCREEN
+import com.tnmd.learningenglishapp.activity.LoginActivity
+import com.tnmd.learningenglishapp.common.ext.card
+import com.tnmd.learningenglishapp.composable.DialogCancelButton
+import com.tnmd.learningenglishapp.composable.DialogConfirmButton
+import com.tnmd.learningenglishapp.composable.RegularCardEditor
 import com.tnmd.learningenglishapp.model.service.AuthenticationService
 import com.tnmd.learningenglishapp.screens.chat.ChannelListViewModal
 import com.tnmd.learningenglishapp.screens.chat.UrlLauncher
+import com.tnmd.learningenglishapp.screens.chat.UserProfileScreen
+import com.tnmd.learningenglishapp.screens.login.LoginScreen
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AppDrawer(
     viewModal: ChannelListViewModal = hiltViewModel(),
-    onIconClicked: () -> Unit = {}
+    onIconClicked: () -> Unit = {},
 ) {
+    val uiState by viewModal.uiState
     val context = LocalContext.current
-
+    var showWarningDialog by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
+        if (uiState.isNextStep == true) {
+            UserProfileScreen(viewModal = viewModal)
+        }
         Spacer(Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
         DrawerHeader(clickAction = onIconClicked)
         DividerItem()
@@ -76,12 +98,34 @@ fun AppDrawer(
         }
         DrawerItemHeader("Settings")
         ProfileItem(
+            "Thông tin cá nhân",
+            null,
+        ) {
+            viewModal.changeIsNextStep(true)
+        }
+        ProfileItem(
             "Đăng xuất",
             null,
         ) {
-            viewModal.onSignOutClick {
-                LOGIN_SCREEN
-            }
+            showWarningDialog = true
+        }
+        if (showWarningDialog) {
+            AlertDialog(
+                title = { androidx.compose.material.Text(stringResource(R.string.sign_out_title)) },
+                text = { androidx.compose.material.Text(stringResource(R.string.sign_out_description)) },
+                dismissButton = { DialogCancelButton(R.string.cancel) { showWarningDialog = false } },
+                confirmButton = {
+                    DialogConfirmButton(R.string.sign_out) {
+                        viewModal.onSignOutClick {
+                            viewModal.onSignOutClick { LOGIN_SCREEN }
+                            val intent = Intent(context, LoginActivity::class.java)
+                            context.startActivity(intent)
+                        }
+                        showWarningDialog = false
+                    }
+                },
+                onDismissRequest = { showWarningDialog = false }
+            )
         }
     }
 }
@@ -193,4 +237,12 @@ fun DividerItem(modifier: Modifier = Modifier) {
         modifier = modifier,
         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
     )
+}
+
+
+@ExperimentalMaterialApi
+@Composable
+private fun SignOutCard(signOut: () -> Unit) {
+
+
 }

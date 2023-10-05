@@ -37,5 +37,6 @@ constructor(private val firestore: FirebaseFirestore, private val auth: Authenti
 
     companion object {
         private const val ACCOUNT_COLLECTION = "account"
+
     }
 }
