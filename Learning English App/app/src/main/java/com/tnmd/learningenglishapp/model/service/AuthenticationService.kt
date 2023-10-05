@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface AuthenticationService {
   val currentUserId: String
+  val currentUserEmail: String
   val hasUser: Boolean
 
   val currentUser: Flow<Account>
@@ -19,6 +20,8 @@ interface AuthenticationService {
   suspend fun signOut()
 
   suspend fun getAccountAvatar(userId: String): String
+
+  suspend fun updateEmail(newEmail: String): Boolean
 }
 
 

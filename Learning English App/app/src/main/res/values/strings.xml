@@ -61,6 +61,8 @@
     <string name="sign_out_description">You will have to sign in again to see your tasks.</string>
     <string name="delete_account_title">Delete account?</string>
     <string name="delete_account_description">You will lose all your tasks and your account will be deleted. This action is irreversible.</string>
+    <string name="update_email_success">Cập nhật email thành công</string>
+    <string name="update_email_fail">Cập nhật email không thành công</string>
 
     <!-- FCM -->
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>

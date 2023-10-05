@@ -30,6 +30,9 @@ class AuthenticationServiceImpl @Inject constructor(private val auth: FirebaseAu
   override val currentUserId: String
     get() = auth.currentUser?.uid.orEmpty()
 
+  override val currentUserEmail: String
+    get() = auth.currentUser?.email.orEmpty()
+
   override val hasUser: Boolean
     get() = auth.currentUser != null
 
@@ -138,6 +141,16 @@ class AuthenticationServiceImpl @Inject constructor(private val auth: FirebaseAu
     } catch (e: Exception) {
       Log.e("GetAccountAvatar", "Lỗi khi lấy URL ảnh: ${e.message}")
       ""
+    }
+  }
+
+  override suspend fun updateEmail(newEmail: String): Boolean {
+    return try {
+      auth.currentUser?.updateEmail(newEmail)?.await()
+      true // Trả về true nếu cập nhật thành công
+    } catch (e: Exception) {
+      Log.e("UpdateEmail", "Lỗi khi cập nhật email: ${e.message}")
+      false // Trả về false nếu có lỗi xảy ra
     }
   }
 

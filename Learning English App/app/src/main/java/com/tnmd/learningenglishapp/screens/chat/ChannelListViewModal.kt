@@ -52,7 +52,8 @@ class ChannelListViewModal @Inject constructor(
         try {
             val username = learnerService.getLearnerUsername()
             val avatar = authenticationService.getAccountAvatar(userid)
-            Log.d("avatar", avatar)
+            val email = authenticationService.currentUserEmail
+            onEmailChange(email)
             onUsernameChange(username)
             onAvatarChange(avatar)
             getTokenAndConnectUser(userid)
@@ -64,7 +65,6 @@ class ChannelListViewModal @Inject constructor(
 
     private fun handleInitializationError(exception: Exception) {
         Log.e("Error", "Initialization error", exception)
-        // Handle the error as needed, e.g., show an error message to the user
     }
 
 
@@ -78,12 +78,18 @@ class ChannelListViewModal @Inject constructor(
     val avatar
         get() = uiState.value.avatar
 
+    val email
+        get() = uiState.value.email
+
 
     private fun onUsernameChange(newValue: String) {
         uiState.value = uiState.value.copy(username = newValue)
     }
     private fun onAvatarChange(newValue: String) {
         uiState.value = uiState.value.copy(avatar = newValue)
+    }
+    fun onEmailChange(newValue: String) {
+        uiState.value = uiState.value.copy(email = newValue)
     }
     fun changeIsNextStep(isNextStep: Boolean) {
         uiState.value = uiState.value.copy(isNextStep = isNextStep)
@@ -94,6 +100,16 @@ class ChannelListViewModal @Inject constructor(
 
     fun resetOpenDrawerAction() {
         _drawerShouldBeOpened.value = false
+    }
+
+    fun changeEmail() {
+        launchCatching {
+            if (authenticationService.updateEmail(email)) {
+                SnackbarManager.showMessage(R.string.update_email_success)
+            } else {
+                SnackbarManager.showMessage(R.string.update_email_fail)
+            }
+        }
     }
 
     private suspend fun getTokenAndConnectUser(username: String) {
@@ -152,17 +168,6 @@ class ChannelListViewModal @Inject constructor(
         launchCatching {
             authenticationService.signOut()
             restartApp(LOGIN_SCREEN)
-        }
-    }
-
-    fun openUserProfile(openScreen: (String) -> Unit) {
-        launchCatching {
-            openScreen(USERPROFILE_SCREEN)
-        }
-    }
-
-    fun onBackClick() {
-        viewModelScope.launch {
         }
     }
 

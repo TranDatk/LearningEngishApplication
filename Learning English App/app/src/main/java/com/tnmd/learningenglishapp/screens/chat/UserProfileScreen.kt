@@ -42,12 +42,14 @@ import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
+import com.tnmd.learningenglishapp.common.composable.EmailField
+import com.tnmd.learningenglishapp.common.ext.fieldModifier
 
 
 @Composable
 fun UserProfileScreen(viewModal: ChannelListViewModal = hiltViewModel()) {
     var isDialogVisible by remember { mutableStateOf(false) }
-    var user = "dat"
+    val uiState by viewModal.uiState
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -82,14 +84,9 @@ fun UserProfileScreen(viewModal: ChannelListViewModal = hiltViewModel()) {
         Spacer(modifier = Modifier.height(16.dp))
 
         // Hiển thị tên và địa chỉ email của người dùng
-        if (user != null) {
-            Text(text = "Tên: ${viewModal.username}", fontSize = 20.sp, textAlign = TextAlign.Center)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Email: ${user!!}", fontSize = 20.sp, textAlign = TextAlign.Center)
-
-        } else {
-            Text(text = "Không có thông tin người dùng", fontSize = 20.sp, textAlign = TextAlign.Center)
-        }
+        Text(text = "Tên: ${viewModal.username}", fontSize = 20.sp, textAlign = TextAlign.Center)
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(text = "Email: ${viewModal.email}", fontSize = 20.sp, textAlign = TextAlign.Center)
 
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "Tài khoản của bạn là tài khoản thường", fontSize = 20.sp, textAlign = TextAlign.Center)
@@ -110,7 +107,7 @@ fun UserProfileScreen(viewModal: ChannelListViewModal = hiltViewModel()) {
             },
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
-            Text(text = "Sửa thông tin người dùng")
+            Text(text = "Sửa thông tin email")
         }
 
         if (isDialogVisible) {
@@ -123,15 +120,12 @@ fun UserProfileScreen(viewModal: ChannelListViewModal = hiltViewModel()) {
                     Text(text = "Chỉnh sửa thông tin người dùng")
                 },
                 text = {
-                    // Nội dung dialog: các trường nhập liệu hoặc bất kỳ nội dung nào bạn muốn hiển thị
-                    // Ví dụ: TextField để nhập tên hoặc email mới
-                    // Gợi ý: Sử dụng một Composable function riêng để tạo giao diện nhập liệu
+                    EmailField(uiState.email, viewModal::onEmailChange, Modifier.fieldModifier())
                 },
                 confirmButton = {
                     Button(
                         onClick = {
-                            // Thực hiện hành động khi người dùng nhấn nút "Lưu"
-                            // Đóng dialog sau khi lưu thông tin
+                            viewModal.changeEmail()
                             isDialogVisible = false
                         }
                     ) {
