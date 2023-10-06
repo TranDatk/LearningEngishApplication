@@ -144,6 +144,33 @@ class AuthenticationServiceImpl @Inject constructor(private val auth: FirebaseAu
     }
   }
 
+  override suspend fun updateAndUploadImageToFirebase(userId: String, imageUri: Uri?): Boolean {
+    return try {
+      // Upload ảnh lên Firebase Storage
+      val imageUrl = imageUri?.let { uploadImageToFirebaseStorage(userId, it) }
+
+      // Kiểm tra xem imageUrl có giá trị không
+      if (imageUrl != null) {
+        // Cập nhật URL ảnh vào tài khoản trên Firestore
+        val accountRef = firestore.collection(ACCOUNT_COLLECTION).document(userId)
+        val updateData = hashMapOf("avatar" to imageUrl)
+
+        // Thực hiện cập nhật với MutableMap
+        accountRef.update(updateData as Map<String, Any>).await()
+
+        true // Trả về true nếu thành công
+      } else {
+        false // Trả về false nếu imageUrl là null
+      }
+    } catch (e: Exception) {
+      Log.e("UpdateImage", "Lỗi khi cập nhật ảnh: ${e.message}")
+      false // Trả về false nếu có lỗi
+    }
+  }
+
+
+
+
   override suspend fun updateEmail(newEmail: String): Boolean {
     return try {
       auth.currentUser?.updateEmail(newEmail)?.await()

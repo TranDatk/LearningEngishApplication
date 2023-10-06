@@ -7,4 +7,5 @@ interface LearnerService {
     val learner: Flow<Learner>
     suspend fun getLearner() : Learner?
     suspend fun getLearnerUsername() : String
+    suspend fun changeUsername(newUsername: String): Boolean
 }

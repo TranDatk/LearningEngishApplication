@@ -1,12 +1,12 @@
 package com.tnmd.learningenglishapp.screens.chat
 
+import android.net.Uri
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.tnmd.learningenglishapp.LOGIN_SCREEN
-import com.tnmd.learningenglishapp.LearningEnglishAppState
 import com.tnmd.learningenglishapp.R
-import com.tnmd.learningenglishapp.SETTINGS_SCREEN
 import com.tnmd.learningenglishapp.USERPROFILE_SCREEN
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
 import com.tnmd.learningenglishapp.data_streamchat.StreamTokenApi
@@ -82,10 +82,10 @@ class ChannelListViewModal @Inject constructor(
         get() = uiState.value.email
 
 
-    private fun onUsernameChange(newValue: String) {
+    fun onUsernameChange(newValue: String) {
         uiState.value = uiState.value.copy(username = newValue)
     }
-    private fun onAvatarChange(newValue: String) {
+    fun onAvatarChange(newValue: String) {
         uiState.value = uiState.value.copy(avatar = newValue)
     }
     fun onEmailChange(newValue: String) {
@@ -108,6 +108,25 @@ class ChannelListViewModal @Inject constructor(
                 SnackbarManager.showMessage(R.string.update_email_success)
             } else {
                 SnackbarManager.showMessage(R.string.update_email_fail)
+            }
+        }
+    }
+
+    fun changeUserName() {
+        launchCatching {
+            if (learnerService.changeUsername(username)) {
+                SnackbarManager.showMessage(R.string.update_username_success)
+            } else {
+                SnackbarManager.showMessage(R.string.update_username_fail)
+            }
+        }
+    }
+    fun updateAvatar(image: Uri?) {
+        launchCatching {
+            if (authenticationService.updateAndUploadImageToFirebase(userid,image)) {
+                SnackbarManager.showMessage(R.string.update_avatar_success)
+            } else {
+                SnackbarManager.showMessage(R.string.update_avatar_fail)
             }
         }
     }

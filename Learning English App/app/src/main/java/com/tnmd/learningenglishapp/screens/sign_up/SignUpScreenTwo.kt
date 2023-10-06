@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable;
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -34,6 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import com.tnmd.learningenglishapp.LOGIN_SCREEN
 import com.tnmd.learningenglishapp.R
 import com.tnmd.learningenglishapp.SETTINGS_SCREEN
@@ -54,26 +57,24 @@ fun SignUpScreenTwo(
     val context = LocalContext.current ?: return
 
     val imageUri = remember { mutableStateOf<Uri?>(null) }
+
     val bitmap = remember { mutableStateOf<Bitmap?>(null) }
     val hasCameraPermission = remember { mutableStateOf(false) }
 
-    val galleryLauncher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
-            imageUri.value = uri
-        }
-
-    val cameraLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success: Boolean ->
-            if (success) {
-                imageUri.value?.let { uri ->
-                    val source = ImageDecoder.createSource(
-                        context.contentResolver,
-                        uri
-                    )
-                    bitmap.value = ImageDecoder.decodeBitmap(source)
-                }
+    val galleryLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
+        imageUri.value = uri
+    }
+    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success: Boolean ->
+        if (success) {
+            imageUri.value?.let { uri ->
+                val source = ImageDecoder.createSource(
+                    context.contentResolver,
+                    uri
+                )
+                bitmap.value = ImageDecoder.decodeBitmap(source)
             }
         }
+    }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -110,16 +111,14 @@ fun SignUpScreenTwo(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Hiển thị hình ảnh đã chọn
-        imageUri.value?.let {
-            bitmap.value?.let { btm ->
-                Image(
-                    bitmap = btm.asImageBitmap(),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(400.dp)
-                        .padding(20.dp)
-                )
-            }
+        imageUri.value?.let { uri ->
+            Image(
+                painter = rememberAsyncImagePainter(model = uri),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(400.dp)
+                    .padding(20.dp)
+            )
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -167,6 +166,5 @@ fun Context.createImageFile(): File {
         ".jpg",
         externalCacheDir
     )
-
     return image
 }

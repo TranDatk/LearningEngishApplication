@@ -22,6 +22,7 @@ interface AuthenticationService {
   suspend fun getAccountAvatar(userId: String): String
 
   suspend fun updateEmail(newEmail: String): Boolean
+  suspend fun updateAndUploadImageToFirebase(userId: String, imageUri: Uri?): Boolean
 }
 
 
