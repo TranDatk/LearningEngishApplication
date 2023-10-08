@@ -67,6 +67,8 @@
     <string name="update_username_fail">Cập nhật tên không thành công</string>
     <string name="update_avatar_success">Cập nhật ảnh đại diện thành công</string>
     <string name="update_avatar_fail">Cập nhật  ảnh đại diện không thành công</string>
+    <string name="update_level_success">Nâng cấp thành công</string>
+    <string name="update_level_fail">Nâng cấp không thành công</string>
 
     <!-- FCM -->
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>

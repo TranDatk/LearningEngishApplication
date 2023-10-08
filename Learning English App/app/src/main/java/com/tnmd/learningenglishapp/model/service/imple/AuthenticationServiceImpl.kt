@@ -7,6 +7,7 @@ import android.net.Uri
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.tnmd.learningenglishapp.R
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import java.io.InputStream
+import java.util.Locale
 import javax.inject.Inject
 
 class AuthenticationServiceImpl @Inject constructor(private val auth: FirebaseAuth, private val firestore: FirebaseFirestore) : AuthenticationService {
@@ -100,19 +102,39 @@ class AuthenticationServiceImpl @Inject constructor(private val auth: FirebaseAu
         accountCollection.document(userId)
           .set(account)
           .addOnSuccessListener {
+            // Thêm dữ liệu vào bảng Account-AccountLevel khi tạo tài khoản thành công
+            addAccountToAccountAccountLevel(userId)
             SnackbarManager.showMessage(R.string.create_success)
           }
           .addOnFailureListener { e ->
-            Log.d("dat", "Lỗi khi đặt thông tin Account: ${e.message}")
+            Log.d("dat12313112", "Lỗi khi đặt thông tin Account: ${e.message}")
           }
         return true
       }
     } catch (e: FirebaseAuthException) {
-      Log.d("dat", "Đăng ký thất bại: ${e.message}")
+      Log.d("dat1231354", "Đăng ký thất bại: ${e.message}")
     }
     return false
   }
 
+  private fun addAccountToAccountAccountLevel(accountId: String) {
+    val accountLevelId = "0P3FWHCPVR44bgzJbSYy" // Id của AccountLevel bạn muốn lấy
+
+    val accountAccountLevelData = hashMapOf(
+      "accountId" to accountId,
+      "accountLevelId" to accountLevelId,
+      "dateJoin" to FieldValue.serverTimestamp()
+    )
+
+    val accountAccountLevelCollection = firestore.collection(ACCOUNT_ACCOUNT_LEVEL_COLLECTION)
+    accountAccountLevelCollection.add(accountAccountLevelData)
+      .addOnSuccessListener {
+        // Xử lý khi thêm dữ liệu vào Account-AccountLevel thành công
+      }
+      .addOnFailureListener { e ->
+        Log.d("dat1111", "Lỗi khi thêm dữ liệu vào Account-AccountLevel: ${e.message}")
+      }
+  }
   private suspend fun uploadImageToFirebaseStorage(userId: String, imageUri: Uri): String {
     val storageReference = FirebaseStorage.getInstance().reference.child("images/$userId.jpg")
     val inputStream: InputStream? = context.contentResolver.openInputStream(imageUri)
@@ -197,5 +219,7 @@ class AuthenticationServiceImpl @Inject constructor(private val auth: FirebaseAu
 
     private const val ACCOUNT_COLLECTION = "account"
     private const val LEARNER_COLLECTION = "learner"
+    private const val ACCOUNT_LEVEL_COLLECTION = "accountLevel"
+    private const val ACCOUNT_ACCOUNT_LEVEL_COLLECTION = "account_accountLevel"
   }
 }

@@ -2,21 +2,22 @@ package com.tnmd.learningenglishapp.screens.chat
 
 import android.net.Uri
 import android.util.Log
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.tnmd.learningenglishapp.LOGIN_SCREEN
 import com.tnmd.learningenglishapp.R
-import com.tnmd.learningenglishapp.USERPROFILE_SCREEN
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
 import com.tnmd.learningenglishapp.data_streamchat.StreamTokenApi
-import com.tnmd.learningenglishapp.model.service.AccountService
+import com.tnmd.learningenglishapp.model.AccountLevel
+import com.tnmd.learningenglishapp.model.service.AccountAccountLevelService
+import com.tnmd.learningenglishapp.model.service.AccountLevelService
 import com.tnmd.learningenglishapp.model.service.AuthenticationService
 import com.tnmd.learningenglishapp.model.service.LearnerService
 import com.tnmd.learningenglishapp.model.service.LogService
 import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
 import com.tnmd.learningenglishapp.screens.login.StreamTokenProvider
-import com.tnmd.learningenglishapp.screens.sign_up.SignUpUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.getstream.chat.android.client.ChatClient
 import io.getstream.chat.android.client.models.User
@@ -24,7 +25,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
@@ -34,7 +34,9 @@ class ChannelListViewModal @Inject constructor(
     private val client: ChatClient,
     private val authenticationService: AuthenticationService,
     logService: LogService,
-    private val learnerService: LearnerService
+    private val learnerService: LearnerService,
+    private val accountLevelService: AccountLevelService,
+    private val accountAccountLevelService: AccountAccountLevelService
 ) : LearningEnglishAppViewModel(logService){
     var uiState = mutableStateOf(ScreenUiState())
         private set
@@ -42,6 +44,9 @@ class ChannelListViewModal @Inject constructor(
     val createChannelEvent = _createChannelEvent.asSharedFlow()
     private val userid = authenticationService.currentUserId
     private val currentUser = authenticationService.currentUser
+
+    private val _accountLevels = MutableLiveData<List<AccountLevel>?>(emptyList())
+    val accountLevels: MutableLiveData<List<AccountLevel>?> get() = _accountLevels
     init {
         viewModelScope.launch {
             initializeUser()
@@ -53,9 +58,20 @@ class ChannelListViewModal @Inject constructor(
             val username = learnerService.getLearnerUsername()
             val avatar = authenticationService.getAccountAvatar(userid)
             val email = authenticationService.currentUserEmail
+            val accountLevelId = accountAccountLevelService.getAccountLevelId(userid)
+            val level = accountLevelId?.let { accountLevelService.getLevelAccount(it) }
+            val des = accountLevelId?.let { accountLevelService.getDescriptionLevel(it) }
+            val validity = accountLevelId?.let { accountLevelService.getValidityPeriod(it) }
+            loadAccountLevels()
+            Log.d("dattesst1213", accountLevels.value.toString())
             onEmailChange(email)
             onUsernameChange(username)
             onAvatarChange(avatar)
+            if (level != null && des != null && validity != null) {
+                onLevelChange(level)
+                onDescriptionChange(des)
+                onValidityChange(validity)
+            }
             getTokenAndConnectUser(userid)
             Log.d("token", userid)
         } catch (e: Exception) {
@@ -81,9 +97,30 @@ class ChannelListViewModal @Inject constructor(
     val email
         get() = uiState.value.email
 
+    val level
+        get() = uiState.value.level
+
+
+    val descriptionLevel
+        get() = uiState.value.descriptionLevel
+
+
+    val validityPeriod
+        get() = uiState.value.validityPeriod
 
     fun onUsernameChange(newValue: String) {
         uiState.value = uiState.value.copy(username = newValue)
+    }
+    fun onLevelChange(newValue: String) {
+        uiState.value = uiState.value.copy(level = newValue)
+    }
+
+    fun onDescriptionChange(newValue: String) {
+        uiState.value = uiState.value.copy(descriptionLevel = newValue)
+    }
+
+    fun onValidityChange(newValue: Int) {
+        uiState.value = uiState.value.copy(validityPeriod = newValue)
     }
     fun onAvatarChange(newValue: String) {
         uiState.value = uiState.value.copy(avatar = newValue)
@@ -110,6 +147,20 @@ class ChannelListViewModal @Inject constructor(
                 SnackbarManager.showMessage(R.string.update_email_fail)
             }
         }
+    }
+
+    fun updateAccountLevel(accountLevelId : String) {
+        launchCatching {
+            if (accountAccountLevelService.updateAccountLevelId(userid, accountLevelId)) {
+                SnackbarManager.showMessage(R.string.update_level_success)
+            } else {
+                SnackbarManager.showMessage(R.string.update_level_fail)
+            }
+        }
+    }
+    private suspend fun loadAccountLevels() {
+        val accountLevelsList = accountLevelService.getAllAccountLevels()
+        _accountLevels.value = accountLevelsList
     }
 
     fun changeUserName() {

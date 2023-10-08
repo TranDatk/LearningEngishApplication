@@ -8,11 +8,14 @@ import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,16 +26,23 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -40,8 +50,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -56,6 +68,7 @@ import com.tnmd.learningenglishapp.common.composable.EmailField
 import com.tnmd.learningenglishapp.common.composable.UsernameField
 import com.tnmd.learningenglishapp.common.ext.fieldModifier
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
+import com.tnmd.learningenglishapp.model.AccountLevel
 import com.tnmd.learningenglishapp.screens.sign_up.createImageFile
 import java.io.File
 import java.text.SimpleDateFormat
@@ -68,6 +81,11 @@ fun UserProfileScreen(viewModal: ChannelListViewModal = hiltViewModel()) {
     var isDialogVisible by remember { mutableStateOf(false) }
     var isDialogVisible2 by remember { mutableStateOf(false) }
     var isDialogVisible3 by remember { mutableStateOf(false) }
+    var isDialogVisible4 by remember { mutableStateOf(false) }
+
+    var showDialog by remember { mutableStateOf(false) }
+    var selectedAccountLevel by remember { mutableStateOf<AccountLevel?>(null) }
+    val accountLevels by viewModal.accountLevels.observeAsState()
     val uiState by viewModal.uiState
 
     val context = LocalContext.current ?: return
@@ -126,11 +144,13 @@ fun UserProfileScreen(viewModal: ChannelListViewModal = hiltViewModel()) {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
+            .background(MaterialTheme.colorScheme.background)
+
     ) {
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.CenterHorizontally)
+                .fillMaxWidth(),
+            contentAlignment = Alignment.CenterStart
         ) {
             IconButton(
                 onClick = {
@@ -142,55 +162,88 @@ fun UserProfileScreen(viewModal: ChannelListViewModal = hiltViewModel()) {
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.CenterHorizontally)
-                .padding(20.dp)
+                .padding(bottom = 16.dp),
+            contentAlignment = Alignment.Center
         ) {
-            NetworkImage(viewModal.avatar,null)
+            NetworkImage(viewModal.avatar, null)
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
 
-        // Hiển thị tên và địa chỉ email của người dùng
-        Text(text = "Tên: ${viewModal.username}", fontSize = 20.sp, textAlign = TextAlign.Center)
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(text = "Email: ${viewModal.email}", fontSize = 20.sp, textAlign = TextAlign.Center)
 
-        Spacer(modifier = Modifier.height(16.dp))
-        // Hiển thị nút sửa thông tin người dùng
-        Button(
-            onClick = {
-                isDialogVisible = true
-            },
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Sửa thông tin email")
+            Text(
+                text = "Level: ${viewModal.level}",
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center
+            )
+            Icon(imageVector = Icons.Default.Info, contentDescription = null, modifier = Modifier
+                .size(24.dp)
+                .clickable {
+                    isDialogVisible4 = true
+                })
         }
+        Spacer(modifier = Modifier.height(10.dp))
 
-        Button(
-            onClick = {
+
+        Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+        ) {
+        Text(text = "Name: ${viewModal.username}", fontSize = 20.sp, textAlign = TextAlign.Center)
+        Icon(imageVector = Icons.Default.Edit, contentDescription = null, modifier = Modifier
+            .size(24.dp)
+            .clickable {
                 isDialogVisible2 = true
-            },
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+            })
+    }
+        Spacer(modifier = Modifier.height(10.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Sửa thông tin tên người dùng")
+            Text(text = "Email: ${viewModal.email}", fontSize = 20.sp, textAlign = TextAlign.Center)
+            Icon(imageVector = Icons.Default.Edit, contentDescription = null, modifier = Modifier
+                .size(24.dp)
+                .clickable {
+                    isDialogVisible = true
+                })
         }
-
-
+        Spacer(modifier = Modifier.height(10.dp))
         Button(
             onClick = {
                 isDialogVisible3 = true
             },
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "Đổi ảnh đại diện")
+            Text(text = "Đổi ảnh đại diện")
         }
 
-        if (isDialogVisible) {
+        Button(
+            onClick = { showDialog = true },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = "Nâng cấp tài khoản")
+        }
+    }
+
+
+    if (isDialogVisible) {
             AlertDialog(
                 onDismissRequest = {
                     // Đóng dialog khi người dùng nhấn ra ngoài dialog
@@ -259,6 +312,46 @@ fun UserProfileScreen(viewModal: ChannelListViewModal = hiltViewModel()) {
                 }
             )
         }
+
+    if (isDialogVisible4) {
+        AlertDialog(
+            onDismissRequest = {
+                // Đóng dialog khi người dùng nhấn ra ngoài dialog
+                isDialogVisible4 = false
+            },
+            title = {
+                Text(text = "Thông tin tài khoản")
+            },
+            text = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+
+                ) {
+                    Text(
+                        text = "Mô tả: ${viewModal.descriptionLevel}",
+                        fontSize = 20.sp,
+                        textAlign = TextAlign.Center
+                    )
+                    Text(
+                        text = "Số ngày hết hạn: ${viewModal.validityPeriod}",
+                        fontSize = 20.sp,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+            ,
+            confirmButton = {
+                Button(
+                    onClick = {
+                        isDialogVisible4 = false
+                    }
+                ) {
+                    Text(text = "Thoát")
+                }
+            }
+        )
+    }
 
         if (isDialogVisible3) {
             AlertDialog(
@@ -345,7 +438,51 @@ fun UserProfileScreen(viewModal: ChannelListViewModal = hiltViewModel()) {
                 }
             )
         }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showDialog = false
+            },
+            title = {
+                Text(text = "Nâng cấp tài khoản")
+            },
+            text = {
+
+                LazyColumn {
+                    items(accountLevels.orEmpty()) { accountLevel ->
+                        AccountLevelItem(accountLevel) { selectedAccountLevel = it }
+                    }
+                }
+
+            }
+            ,
+            confirmButton = {
+                Button(
+                    onClick = {
+                        selectedAccountLevel?.let { selectedLevel ->
+                            viewModal.updateAccountLevel(selectedAccountLevel!!.id)
+                           Log.d("test123123", selectedAccountLevel!!.id.toString())
+                            showDialog = false
+                        }
+                    }
+                ) {
+                    Text(text = "Lưu")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        showDialog = false
+                    }
+                ) {
+                    Text(text = "Hủy")
+                }
+            }
+        )
     }
+
+
 }
 @Composable
 fun NetworkImage(url: String, contentDescription: String?, modifier: Modifier = Modifier) {
@@ -361,9 +498,10 @@ fun NetworkImage(url: String, contentDescription: String?, modifier: Modifier = 
         painter = painter,
         contentDescription = contentDescription,
         modifier = modifier
-            .size(100.dp)
+            .size(200.dp)
             .clip(CircleShape)
             .border(1.dp, Color.Gray, CircleShape),
+
         contentScale = ContentScale.Crop
     )
 }
@@ -377,4 +515,58 @@ fun Context.createImageFile(): File {
         externalCacheDir
     )
     return image
+}
+
+@Composable
+fun AccountLevelItem(accountLevel: AccountLevel,onItemClick: (AccountLevel) -> Unit) {
+    var isAlertDialogVisible by remember { mutableStateOf(false) }
+    Box(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+            .height(50.dp)
+            .background(MaterialTheme.colorScheme.background, shape = RoundedCornerShape(8.dp))
+
+            .clickable {
+                onItemClick(accountLevel)
+            }
+    ) {
+        if (isAlertDialogVisible) {
+            AlertDialog(
+                onDismissRequest = {
+                    isAlertDialogVisible = false
+                },
+                title = {
+                    Text(text = "Level ${accountLevel.level}")
+                },
+                text = {
+                    Column {
+                        Text(text = "Description: ${accountLevel.descriptionLevel}")
+                        Text(text = "Validity: ${accountLevel.validityPeriod}")
+                    }
+                },
+                confirmButton = {
+                }
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Hiển thị level và icon Info
+            Row(modifier = Modifier
+                .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = "Level ${accountLevel.level}", fontWeight = FontWeight.Bold)
+                Icon(imageVector = Icons.Default.Info, contentDescription = null, modifier = Modifier.clickable {
+                    isAlertDialogVisible = true
+                })
+            }
+        }
+    }
 }
