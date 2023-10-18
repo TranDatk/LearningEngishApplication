@@ -23,6 +23,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LearningEnglishApp"
         tools:targetApi="31"
+        tools:replace="android:theme"
         android:name=".LearningEnglishHiltApp">
         <activity
             android:name=".activity.LoginActivity"
@@ -39,8 +40,10 @@
         <activity
             android:name=".activity.MainActivity"
             android:theme="@style/Theme.LearningEnglishApp.NoActionBar">
-
-
+        </activity>
+        <activity
+            android:name=".activity.PayScreen"
+            android:theme="@style/Theme.LearningEnglishApp.NoActionBar">
         </activity>
 
         <provider

@@ -139,5 +139,7 @@ dependencies {
 
     implementation "io.coil-kt:coil-compose:2.4.0"
 
+    //momo
+    implementation 'com.github.momo-wallet:mobile-sdk:1.0.7'
 
 }

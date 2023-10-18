@@ -3,7 +3,6 @@ package com.tnmd.learningenglishapp.screens.chat
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.tnmd.learningenglishapp.LOGIN_SCREEN
@@ -26,6 +25,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.json.JSONException
+import org.json.JSONObject
+import vn.momo.momo_partner.AppMoMoLib
 import java.util.UUID
 import javax.inject.Inject
 
@@ -44,8 +46,15 @@ class ChannelListViewModal @Inject constructor(
     val createChannelEvent = _createChannelEvent.asSharedFlow()
     private val userid = authenticationService.currentUserId
     private val currentUser = authenticationService.currentUser
-
+    private var amount: String = "10000"
+    private var fee: String = "0"
+    private var environment: Int = 0 // developer default
+    private var merchantName: String = "Thanh toán đơn hàng"
+    private var merchantCode: String = "MOMOO41P20220925" // cái này fen xóa này
+    private var merchantNameLabel: String = "HotelRent"
+    private var description: String = "nạp tiền vào tài khoản"
     private val _accountLevels = MutableLiveData<List<AccountLevel>?>(emptyList())
+
     val accountLevels: MutableLiveData<List<AccountLevel>?> get() = _accountLevels
     init {
         viewModelScope.launch {
@@ -163,6 +172,9 @@ class ChannelListViewModal @Inject constructor(
         _accountLevels.value = accountLevelsList
     }
 
+
+
+
     fun changeUserName() {
         launchCatching {
             if (learnerService.changeUsername(username)) {
@@ -248,3 +260,4 @@ class ChannelListViewModal @Inject constructor(
 
 
 }
+

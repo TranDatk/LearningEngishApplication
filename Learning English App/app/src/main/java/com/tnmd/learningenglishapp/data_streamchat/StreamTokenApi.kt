@@ -14,7 +14,7 @@ interface StreamTokenApi {
         operator fun invoke(): StreamTokenApi {
             val retrofit = Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl("http://192.168.1.9:8080/")
+                .baseUrl("http://192.168.1.3:8080/")
                 .build()
             return retrofit.create(StreamTokenApi::class.java)
         }

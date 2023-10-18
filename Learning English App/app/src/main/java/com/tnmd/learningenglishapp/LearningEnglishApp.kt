@@ -25,6 +25,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.tnmd.learningenglishapp.activity.PayScreen
 import com.tnmd.learningenglishapp.screens.settings.SettingsScreen
 
 import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
@@ -44,6 +45,7 @@ import com.tnmd.learningenglishapp.ui.theme.LearningEnglishAppTheme
 import kotlinx.coroutines.CoroutineScope
 
 
+@RequiresApi(Build.VERSION_CODES.P)
 @Composable
 @ExperimentalMaterialApi
 fun LearningEnglishApp() {
@@ -218,5 +220,10 @@ fun NavGraphBuilder.learningEnglishGraph(appState: LearningEnglishAppState) {
     composable(USERPROFILE_SCREEN) {
         UserProfileScreen()
     }
+
+    composable("payScreen") {
+        PayScreen()
+    }
+
 }
 

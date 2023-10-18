@@ -3,6 +3,7 @@ package com.tnmd.learningenglishapp.screens.chat
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
@@ -30,6 +31,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
@@ -58,12 +60,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.tnmd.learningenglishapp.R
+import com.tnmd.learningenglishapp.activity.LoginActivity
+import com.tnmd.learningenglishapp.activity.PayScreen
 import com.tnmd.learningenglishapp.common.composable.EmailField
 import com.tnmd.learningenglishapp.common.composable.UsernameField
 import com.tnmd.learningenglishapp.common.ext.fieldModifier
@@ -75,6 +80,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 
+@OptIn(ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun UserProfileScreen(viewModal: ChannelListViewModal = hiltViewModel()) {
@@ -82,7 +88,7 @@ fun UserProfileScreen(viewModal: ChannelListViewModal = hiltViewModel()) {
     var isDialogVisible2 by remember { mutableStateOf(false) }
     var isDialogVisible3 by remember { mutableStateOf(false) }
     var isDialogVisible4 by remember { mutableStateOf(false) }
-
+    var showConfirmationDialog by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
     var selectedAccountLevel by remember { mutableStateOf<AccountLevel?>(null) }
     val accountLevels by viewModal.accountLevels.observeAsState()
@@ -440,48 +446,81 @@ fun UserProfileScreen(viewModal: ChannelListViewModal = hiltViewModel()) {
         }
 
     if (showDialog) {
-        AlertDialog(
-            onDismissRequest = {
-                showDialog = false
-            },
-            title = {
-                Text(text = "Nâng cấp tài khoản")
-            },
-            text = {
-
-                LazyColumn {
-                    items(accountLevels.orEmpty()) { accountLevel ->
-                        AccountLevelItem(accountLevel) { selectedAccountLevel = it }
+        if (showConfirmationDialog) {
+            AlertDialog(
+                onDismissRequest = {
+                    showDialog = false
+                    showConfirmationDialog = false
+                },
+                title = {
+                    Text(text = "Xác nhận nâng cấp tài khoản")
+                },
+                text = {
+                    Text(text = "Bạn chắc chắn muốn nâng cấp tài khoản?")
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            selectedAccountLevel?.let { selectedLevel ->
+                                // Thực hiện thanh toán Momo ở đây
+                                viewModal.updateAccountLevel(selectedAccountLevel!!.id)
+                                showDialog = false
+                                showConfirmationDialog = false
+                                val intent = Intent(context, PayScreen::class.java)
+                                context.startActivity(intent)
+                            }
+                        }
+                    ) {
+                        Text(text = "Đồng ý")
+                    }
+                },
+                dismissButton = {
+                    Button(
+                        onClick = {
+                            showDialog = false
+                            showConfirmationDialog = false
+                        }
+                    ) {
+                        Text(text = "Hủy")
                     }
                 }
-
-            }
-            ,
-            confirmButton = {
-                Button(
-                    onClick = {
-                        selectedAccountLevel?.let { selectedLevel ->
-                            viewModal.updateAccountLevel(selectedAccountLevel!!.id)
-                           Log.d("test123123", selectedAccountLevel!!.id.toString())
-                            showDialog = false
+            )
+        } else {
+            AlertDialog(
+                onDismissRequest = {
+                    showDialog = false
+                },
+                title = {
+                    Text(text = "Nâng cấp tài khoản")
+                },
+                text = {
+                    LazyColumn {
+                        items(accountLevels.orEmpty()) { accountLevel ->
+                            AccountLevelItem(accountLevel) { selectedAccountLevel = it }
                         }
                     }
-                ) {
-                    Text(text = "Lưu")
-                }
-            },
-            dismissButton = {
-                Button(
-                    onClick = {
-                        showDialog = false
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            showConfirmationDialog = true
+                        }
+                    ) {
+                        Text(text = "Lưu")
                     }
-                ) {
-                    Text(text = "Hủy")
+                },
+                dismissButton = {
+                    Button(
+                        onClick = {
+                            showDialog = false
+                        }
+                    ) {
+                        Text(text = "Hủy")
+                    }
                 }
-            }
-        )
+            )
+        }
     }
-
 
 }
 @Composable
@@ -543,6 +582,7 @@ fun AccountLevelItem(accountLevel: AccountLevel,onItemClick: (AccountLevel) -> U
                     Column {
                         Text(text = "Description: ${accountLevel.descriptionLevel}")
                         Text(text = "Validity: ${accountLevel.validityPeriod}")
+                        Text(text = "Price: 25.000$")
                     }
                 },
                 confirmButton = {
@@ -568,5 +608,8 @@ fun AccountLevelItem(accountLevel: AccountLevel,onItemClick: (AccountLevel) -> U
                 })
             }
         }
+
     }
 }
+
+
