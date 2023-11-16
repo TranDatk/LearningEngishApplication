@@ -117,7 +117,7 @@ constructor(
 
     fun submitUserStringToSapling() {
         val url = "https://api.sapling.ai/api/v1/edits"
-        val key = "X6H2XTJE9609EI6G09DVW238RVAEKCDU"
+        val key = "K8LKL3V9NT629MNTIPOTBLWI0QE9A55J"
         setIsLoading(true)
 
         val params =
