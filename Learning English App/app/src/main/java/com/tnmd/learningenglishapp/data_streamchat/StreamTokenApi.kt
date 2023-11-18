@@ -14,9 +14,13 @@ interface StreamTokenApi {
         operator fun invoke(): StreamTokenApi {
             val retrofit = Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl("http://192.168.1.3:8080/")
+                .baseUrl("http://192.168.1.9:8080/")
                 .build()
             return retrofit.create(StreamTokenApi::class.java)
         }
     }
 }
+
+// vào trong ip của mạng đang dùng để lấy ip
+// dán vào trong code
+// nếu chạy ra Server running on port 8080 là được và giữ nguyên để server chạy

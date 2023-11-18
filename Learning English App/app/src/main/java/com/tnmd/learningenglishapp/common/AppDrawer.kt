@@ -1,6 +1,8 @@
 package com.tnmd.learningenglishapp.common
 
 import android.content.Intent
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,7 +26,6 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -49,19 +50,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.tnmd.learningenglishapp.LOGIN_SCREEN
 import com.tnmd.learningenglishapp.R
-import com.tnmd.learningenglishapp.SETTINGS_SCREEN
-import com.tnmd.learningenglishapp.USERPROFILE_SCREEN
 import com.tnmd.learningenglishapp.activity.LoginActivity
-import com.tnmd.learningenglishapp.common.ext.card
-import com.tnmd.learningenglishapp.composable.DialogCancelButton
-import com.tnmd.learningenglishapp.composable.DialogConfirmButton
-import com.tnmd.learningenglishapp.composable.RegularCardEditor
-import com.tnmd.learningenglishapp.model.service.AuthenticationService
+import com.tnmd.learningenglishapp.common.composable.DialogCancelButton
+import com.tnmd.learningenglishapp.common.composable.DialogConfirmButton
 import com.tnmd.learningenglishapp.screens.chat.ChannelListViewModal
 import com.tnmd.learningenglishapp.screens.chat.UrlLauncher
 import com.tnmd.learningenglishapp.screens.chat.UserProfileScreen
-import com.tnmd.learningenglishapp.screens.login.LoginScreen
 
+@RequiresApi(Build.VERSION_CODES.P)
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AppDrawer(
@@ -76,7 +72,7 @@ fun AppDrawer(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        if (uiState.isNextStep == true) {
+        if (uiState.isNextStep) {
             UserProfileScreen(viewModal = viewModal)
         }
         Spacer(Modifier.windowInsetsTopHeight(WindowInsets.statusBars))

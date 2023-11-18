@@ -59,6 +59,7 @@ fun CoursesItem(
     Card(
         modifier = Modifier
             .cardCourses()
+
             .clickable { viewModel.onCourseItemClick(onCourseItemClick, id) },
         elevation = 4.dp
     ) {

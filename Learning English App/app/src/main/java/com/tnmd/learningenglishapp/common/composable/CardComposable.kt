@@ -19,10 +19,13 @@ package com.tnmd.learningenglishapp.composable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -39,7 +42,7 @@ fun DangerousCardEditor(
   modifier: Modifier,
   onEditClick: () -> Unit
 ) {
-  CardEditor(title, icon, content, onEditClick, MaterialTheme.colors.primary, modifier)
+  CardEditor(title, icon, content, onEditClick, MaterialTheme.colors.primary, modifier = modifier)
 }
 
 @ExperimentalMaterialApi
@@ -51,7 +54,7 @@ fun RegularCardEditor(
   modifier: Modifier,
   onEditClick: () -> Unit
 ) {
-  CardEditor(title, icon, content, onEditClick, MaterialTheme.colors.onSurface, modifier)
+  CardEditor(title, icon, content, onEditClick, MaterialTheme.colors.onSurface, modifier = modifier)
 }
 
 @ExperimentalMaterialApi
@@ -62,24 +65,45 @@ private fun CardEditor(
   content: String,
   onEditClick: () -> Unit,
   highlightColor: Color,
-  modifier: Modifier
+modifier: Modifier
 ) {
   Card(
-    backgroundColor = MaterialTheme.colors.onPrimary,
-    modifier = modifier,
-    onClick = onEditClick
+    backgroundColor = Color(0xFFFCFAF2),
+    elevation = 8.dp,
+    modifier = Modifier
+      .height(60.dp)
+      .fillMaxWidth()
+      .shadow(
+        elevation = 8.dp,
+        shape = RoundedCornerShape(
+          12.dp
+        )
+      )
+      .clip(
+        shape = RoundedCornerShape(
+         12.dp
+        )
+      ),
+    onClick = onEditClick,
+
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier.fillMaxWidth().padding(16.dp)
     ) {
-      Column(modifier = Modifier.weight(1f)) { Text(stringResource(title), color = highlightColor) }
+      Column(modifier = Modifier.weight(1f)) {
+        Text(stringResource(title), color = highlightColor)
+      }
 
       if (content.isNotBlank()) {
         Text(text = content, modifier = Modifier.padding(16.dp, 0.dp))
       }
 
-      Icon(painter = painterResource(icon), contentDescription = "Icon", tint = highlightColor)
+      Icon(
+        painter = painterResource(icon),
+        contentDescription = "Icon",
+        tint = highlightColor
+      )
     }
   }
 }

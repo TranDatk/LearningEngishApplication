@@ -22,7 +22,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,13 +35,9 @@ import com.tnmd.learningenglishapp.common.composable.RepeatPasswordField
 import com.tnmd.learningenglishapp.common.composable.UsernameField
 import com.tnmd.learningenglishapp.common.ext.basicButton
 import com.tnmd.learningenglishapp.common.ext.fieldModifier
-import com.tnmd.learningenglishapp.composable.BasicButton
+import com.tnmd.learningenglishapp.common.composable.BasicButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
-import com.tnmd.learningenglishapp.LOGIN_SCREEN
-import com.tnmd.learningenglishapp.SETTINGS_SCREEN
-import com.tnmd.learningenglishapp.SIGN_UP_SCREEN_TWO
-import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
 
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
@@ -57,7 +52,7 @@ fun SignUpScreen(
   // Biến để lưu giới tính được chọn, mặc định là "Nam"
   var selectedGender by remember { mutableStateOf("Nam") }
 
-    if(uiState.isNextStep == true){
+    if(uiState.isNextStep){
       SignUpScreenTwo(openScreen = openScreen, viewModel = viewModel)
     }else{
       BasicToolbar(AppText.create_account)
@@ -88,6 +83,7 @@ fun SignUpScreen(
             viewModel.changeIsNextStep(true)
           }
         }
+
     }
   }
 }

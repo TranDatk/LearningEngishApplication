@@ -119,7 +119,7 @@ fun NavGraphBuilder.loginGraph(appState: LearningEnglishAppState) {
     }
 
     composable(SIGN_UP_SCREEN_TWO) {
-        SignUpScreenTwo( openScreen = { route -> appState.navigate(route) })
+        SignUpScreenTwo(openScreen = { route -> appState.navigate(route) })
     }
 
     composable(SETTINGS_SCREEN) {

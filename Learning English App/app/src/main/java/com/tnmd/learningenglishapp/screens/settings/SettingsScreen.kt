@@ -3,31 +3,27 @@
 package com.tnmd.learningenglishapp.screens.settings
 
 import android.content.Intent
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.core.content.ContextCompat.startActivity
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.tnmd.learningenglishapp.activity.MainActivity
+import com.tnmd.learningenglishapp.common.composable.BasicToolbar
+import com.tnmd.learningenglishapp.common.ext.spacer
+import com.tnmd.learningenglishapp.composable.RegularCardEditor
 import com.tnmd.learningenglishapp.R.drawable as AppIcon
 import com.tnmd.learningenglishapp.R.string as AppText
-import com.tnmd.learningenglishapp.common.composable.*
-import com.tnmd.learningenglishapp.common.composable.BasicToolbar
-import com.tnmd.learningenglishapp.common.ext.card
-import com.tnmd.learningenglishapp.common.ext.spacer
-import com.tnmd.learningenglishapp.composable.DangerousCardEditor
-import com.tnmd.learningenglishapp.composable.DialogCancelButton
-import com.tnmd.learningenglishapp.composable.DialogConfirmButton
-import com.tnmd.learningenglishapp.composable.RegularCardEditor
-import com.tnmd.learningenglishapp.screens.settings.SettingsUiState
-import com.tnmd.learningenglishapp.screens.settings.SettingsViewModel
-import kotlin.reflect.KProperty
 
 @ExperimentalMaterialApi
 @Composable
@@ -40,81 +36,38 @@ fun SettingsScreen(
   val uiState by viewModel.uiState
 
   Column(
-    modifier = modifier.fillMaxWidth().fillMaxHeight().verticalScroll(rememberScrollState()),
-    horizontalAlignment = Alignment.CenterHorizontally
+    modifier = modifier
+      .fillMaxWidth()
+      .fillMaxHeight()
+      .verticalScroll(rememberScrollState()),
+    horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     BasicToolbar(AppText.settings)
 
     Spacer(modifier = Modifier.spacer())
 
-
-    if (uiState.isAnonymousAccount == false) {
-      RegularCardEditor(AppText.sign_in, AppIcon.ic_sign_in, "", Modifier.card()) {
-        viewModel.onLoginClick(openScreen)
+    Column(
+      modifier = modifier
+        .fillMaxWidth()
+        .fillMaxHeight()
+   .padding(20.dp),
+      horizontalAlignment = Alignment.CenterHorizontally,
+    )  {
+      if (!uiState.isAnonymousAccount) {
+        RegularCardEditor(AppText.sign_in, AppIcon.ic_sign_in, "", Modifier.padding(20.dp)) {
+          viewModel.onLoginClick(openScreen)
+        }
+        Spacer(modifier = Modifier.spacer())
+        RegularCardEditor(AppText.create_account, AppIcon.ic_create_account, "", Modifier.padding(20.dp)) {
+          viewModel.onSignUpClick(openScreen)
+        }
+      } else {
+        val intent = Intent(LocalContext.current, MainActivity::class.java)
+        LocalContext.current.startActivity(intent)
       }
-
-      RegularCardEditor(AppText.create_account, AppIcon.ic_create_account, "", Modifier.card()) {
-        viewModel.onSignUpClick(openScreen)
-      }
-    } else {
-      val intent = Intent(LocalContext.current, MainActivity::class.java)
-      LocalContext.current.startActivity(intent)
     }
+
   }
 }
 
 
-@ExperimentalMaterialApi
-@Composable
-private fun SignOutCard(signOut: () -> Unit) {
-  var showWarningDialog by remember { mutableStateOf(false) }
-
-  RegularCardEditor(AppText.sign_out, AppIcon.ic_exit, "", Modifier.card()) {
-    showWarningDialog = true
-  }
-
-  if (showWarningDialog) {
-    AlertDialog(
-      title = { Text(stringResource(AppText.sign_out_title)) },
-      text = { Text(stringResource(AppText.sign_out_description)) },
-      dismissButton = { DialogCancelButton(AppText.cancel) { showWarningDialog = false } },
-      confirmButton = {
-        DialogConfirmButton(AppText.sign_out) {
-          signOut()
-          showWarningDialog = false
-        }
-      },
-      onDismissRequest = { showWarningDialog = false }
-    )
-  }
-}
-
-@ExperimentalMaterialApi
-@Composable
-private fun DeleteMyAccountCard(deleteMyAccount: () -> Unit) {
-  var showWarningDialog by remember { mutableStateOf(false) }
-
-  DangerousCardEditor(
-    AppText.delete_my_account,
-    AppIcon.ic_delete_my_account,
-    "",
-    Modifier.card()
-  ) {
-    showWarningDialog = true
-  }
-
-  if (showWarningDialog) {
-    AlertDialog(
-      title = { Text(stringResource(AppText.delete_account_title)) },
-      text = { Text(stringResource(AppText.delete_account_description)) },
-      dismissButton = { DialogCancelButton(AppText.cancel) { showWarningDialog = false } },
-      confirmButton = {
-        DialogConfirmButton(AppText.delete_my_account) {
-          deleteMyAccount()
-          showWarningDialog = false
-        }
-      },
-      onDismissRequest = { showWarningDialog = false }
-    )
-  }
-}

@@ -31,7 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.tnmd.learningenglishapp.R.string as AppText
 import com.tnmd.learningenglishapp.common.ext.basicButton
-import com.tnmd.learningenglishapp.composable.BasicButton
+import com.tnmd.learningenglishapp.common.composable.BasicButton
 import kotlinx.coroutines.delay
 
 private const val SPLASH_TIMEOUT = 1000L

@@ -1,18 +1,4 @@
-/*
-Copyright 2022 Google LLC
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    https://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
- */
 
 package com.tnmd.learningenglishapp.screens.sign_up
 
@@ -20,7 +6,6 @@ import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.tnmd.learningenglishapp.LOGIN_SCREEN
-import com.tnmd.learningenglishapp.SETTINGS_SCREEN
 import com.tnmd.learningenglishapp.common.ext.isValidEmail
 import com.tnmd.learningenglishapp.common.ext.isValidPassword
 import com.tnmd.learningenglishapp.common.ext.passwordMatches
@@ -28,37 +13,30 @@ import com.tnmd.learningenglishapp.common.snackbar.SnackbarManager
 import com.tnmd.learningenglishapp.model.service.AuthenticationService
 import com.tnmd.learningenglishapp.model.service.LogService
 import com.tnmd.learningenglishapp.screens.LearningEnglishAppViewModel
-import com.tnmd.learningenglishapp.screens.login.LoginViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.getstream.chat.android.client.ChatClient
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import javax.inject.Inject
 import com.tnmd.learningenglishapp.R.string as AppText
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val authenticationService: AuthenticationService,
-    logService: LogService,
-    private val chatClient: ChatClient
+    logService: LogService
 ) : LearningEnglishAppViewModel(logService) {
     var uiState = mutableStateOf(SignUpUiState())
         private set
     private val _loginEvent = MutableSharedFlow<LogInEvent>()
-    val loginEvent = _loginEvent.asSharedFlow()
 
 
     val email
-        get() = uiState.value.email
+        get() = uiState.value.email.trim()
     val password
-        get() = uiState.value.password
+        get() = uiState.value.password.trim()
 
     val username
-        get() = uiState.value.username
+        get() = uiState.value.username.trim()
 
-    val isNextStep
-        get() = uiState.value.isNextStep
-    val gender
+    private val gender
         get() = uiState.value.gender
 
     fun onEmailChange(newValue: String) {
@@ -138,7 +116,6 @@ class SignUpViewModel @Inject constructor(
     }
 
     sealed class LogInEvent {
-        data class ErrorLogIn(val errorLogIn: String) : LogInEvent()
         object Success : LogInEvent()
     }
 }

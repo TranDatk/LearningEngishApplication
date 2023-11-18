@@ -3,6 +3,7 @@ package com.tnmd.learningenglishapp.screens.extension
 import android.annotation.SuppressLint
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.icons.Icons
@@ -28,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,37 +45,53 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 fun ExtensionScreen(viewModel : ExtensionViewModel = hiltViewModel()){
     val tabs = listOf("Kiểm tra ngữ pháp", "Tra từ", "Lịch học", "CHATGPT")
     val uiState by viewModel.uiState.collectAsState()
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(12.dp)
+    Scaffold(
+        topBar = {
+            androidx.compose.material.TopAppBar(
+                title = { androidx.compose.material.Text(text = "Trang tiện ích") },
+                actions = {
+                },
+                backgroundColor = Color(0xFFFFC000),
+                elevation = 8.dp, // Box shadow
+                modifier = Modifier.clip(RoundedCornerShape(0.dp, 0.dp, 15.dp, 15.dp))
+            )
+        },
     ) {
-        // Tab buttons
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 80.dp, start = 10.dp, end = 10.dp, bottom = 10.dp)
         ) {
-            items(tabs.size) { index ->
-                TabButton(
-                    text = tabs[index],
-                    selected = uiState.currentPage == index,
-                    onClick = { viewModel.changeTab(index) }
-                )
+            // Tab buttons
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(tabs.size) { index ->
+                    TabButton(
+                        text = tabs[index],
+                        selected = uiState.currentPage == index,
+                        onClick = { viewModel.changeTab(index) }
+                    )
+                }
             }
-        }
 
-        // Content for the selected tab
-        when (uiState.currentPage) {
-            0 -> {
-                CheckGrammarScreen(viewModel = viewModel)
-            }
-            1 -> {
-                SearchEngWords(viewModel = viewModel)
-            }
-            2 -> {
-                ScheduleScreen(viewModel = viewModel)
-            }
-            3 -> {
-                ChatGPTScreen(viewModel = viewModel)
+            // Content for the selected tab
+            when (uiState.currentPage) {
+                0 -> {
+                    CheckGrammarScreen(viewModel = viewModel)
+                }
+
+                1 -> {
+                    SearchEngWords(viewModel = viewModel)
+                }
+
+                2 -> {
+                    ScheduleScreen(viewModel = viewModel)
+                }
+
+                3 -> {
+                    ChatGPTScreen(viewModel = viewModel)
+                }
             }
         }
     }

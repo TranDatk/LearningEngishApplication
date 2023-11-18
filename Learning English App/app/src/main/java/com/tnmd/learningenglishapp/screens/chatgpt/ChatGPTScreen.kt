@@ -1,9 +1,13 @@
 package com.tnmd.learningenglishapp.screens.chatgpt
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -42,17 +47,36 @@ fun ChatGPTScreen(viewModel: ExtensionViewModel = hiltViewModel()) {
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
-                .padding(16.dp),
+                .padding(16.dp)
+                .fillMaxHeight(),
             reverseLayout = true
         ) {
             items(viewModel.messages.reversed()) { message ->
                 if (message.isUser) {
-                    MessageBubble(message.content, Alignment.End)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
+                        Arrangement.Start
+                    ) {
+                        MessageBubble(message.content)
+                        Spacer(modifier = Modifier.height(6.dp))
+                    }
                 } else {
-                    MessageBubble(message.content, Alignment.Start)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
+                        Arrangement.End
+                    ) {
+                        MessageBubble(message.content)
+                        Spacer(modifier = Modifier.height(6.dp))
+                    }
                 }
+                Spacer(modifier = Modifier.height(6.dp))
             }
         }
+
 
         // Hiển thị thông báo "Đang chờ phản hồi" nếu cần
         if (viewModel.isWaitingForResponse.value) {
@@ -77,7 +101,7 @@ fun ChatGPTScreen(viewModel: ExtensionViewModel = hiltViewModel()) {
                 onValueChange = { inputText = it },
                 modifier = Modifier.weight(1f),
                 colors = TextFieldDefaults.textFieldColors(),
-                label = { Text("Type a message") },
+                label = { Text("Nhập tin nhắn") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Send),
                 keyboardActions = KeyboardActions(onSend = {
@@ -102,17 +126,15 @@ fun ChatGPTScreen(viewModel: ExtensionViewModel = hiltViewModel()) {
 
 
 @Composable
-fun MessageBubble(text: String, alignment: Alignment.Horizontal) {
+fun MessageBubble(text: String) {
     Surface(
         shape = MaterialTheme.shapes.medium,
         tonalElevation = 4.dp,
-        modifier = Modifier
-            .padding(vertical = 4.dp)
-            .wrapContentWidth(alignment)
     ) {
         Text(
             text = text,
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier
+                .padding(16.dp),
             fontSize = 16.sp
         )
     }

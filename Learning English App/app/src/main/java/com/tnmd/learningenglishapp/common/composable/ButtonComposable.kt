@@ -1,14 +1,18 @@
 
 
-package com.tnmd.learningenglishapp.composable
+package com.tnmd.learningenglishapp.common.composable
 
 import androidx.annotation.StringRes
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
-import com.google.android.material.color.utilities.MaterialDynamicColors.onPrimary
 
 @Composable
 fun BasicTextButton(@StringRes text: Int, modifier: Modifier, action: () -> Unit) {
@@ -21,10 +25,10 @@ fun BasicButton(@StringRes text: Int, modifier: Modifier, action: () -> Unit) {
     onClick = action,
     modifier = modifier,
     colors =
-      ButtonDefaults.buttonColors(
-        backgroundColor = MaterialTheme.colors.primary,
-        contentColor = MaterialTheme.colors.onPrimary
-      )
+    ButtonDefaults.buttonColors(
+      backgroundColor = Color(0xFFFFC000),
+      contentColor = Color(0xFF262626)
+    )
   ) {
     Text(text = stringResource(text), fontSize = 16.sp)
   }

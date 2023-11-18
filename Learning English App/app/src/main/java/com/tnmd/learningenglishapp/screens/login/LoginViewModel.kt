@@ -39,9 +39,11 @@ class LoginViewModel @Inject constructor(
     get() = _loadingState
 
   private val email
-    get() = uiState.value.email
+    get() = uiState.value.email.trim()
+
   private val password
-    get() = uiState.value.password
+    get() = uiState.value.password.trim()
+
   val username: String
     get() {
       return if (email.contains("@")) {

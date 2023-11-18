@@ -3,6 +3,7 @@ package com.tnmd.learningenglishapp.screens.login
 import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -29,9 +30,10 @@ import com.tnmd.learningenglishapp.common.composable.EmailField
 import com.tnmd.learningenglishapp.common.composable.PasswordField
 import com.tnmd.learningenglishapp.common.ext.basicButton
 import com.tnmd.learningenglishapp.common.ext.fieldModifier
+import com.tnmd.learningenglishapp.common.ext.spacer
 import com.tnmd.learningenglishapp.common.ext.textButton
-import com.tnmd.learningenglishapp.composable.BasicButton
-import com.tnmd.learningenglishapp.composable.BasicTextButton
+import com.tnmd.learningenglishapp.common.composable.BasicButton
+import com.tnmd.learningenglishapp.common.composable.BasicTextButton
 
 
 
@@ -76,7 +78,6 @@ fun LoginScreen(
   }
 
   BasicToolbar(AppText.login_details)
-
   Column(
     modifier = modifier
       .fillMaxWidth()
@@ -86,15 +87,13 @@ fun LoginScreen(
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
     EmailField(uiState.email, viewModel::onEmailChange, Modifier.fieldModifier())
+    Spacer(modifier = Modifier.spacer())
     PasswordField(uiState.password, viewModel::onPasswordChange, Modifier.fieldModifier())
-
+    Spacer(modifier = Modifier.spacer())
+    Spacer(modifier = Modifier.spacer())
     BasicButton(AppText.sign_in, Modifier.basicButton()) {
       viewModel.onSignInClick(openAndPopUp)
      }
-    BasicButton(AppText.login_guest, Modifier.basicButton()) {
-      viewModel.loginGuestUser()
-    }
-
     BasicTextButton(AppText.forgot_password, Modifier.textButton()) {
       viewModel.onForgotPasswordClick()
     }

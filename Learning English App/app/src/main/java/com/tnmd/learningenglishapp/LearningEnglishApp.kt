@@ -3,6 +3,7 @@ package com.tnmd.learningenglishapp
 import android.content.res.Resources
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
@@ -14,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -104,40 +106,52 @@ private fun SootheBottomNavigation(
     modifier: Modifier = Modifier,
     navController: NavHostController
 ) {
-    val icons = listOf(
+    val iconsOutline = listOf(
         R.drawable.home_stroke,
         R.drawable.openbook_stroke,
         R.drawable.extension_stroke,
         R.drawable.chat_stroke
     )
 
-    val selectedIndex = remember { mutableStateOf(0) }
-    val selectedIcon = if (selectedIndex.value < icons.size) icons[selectedIndex.value] else R.drawable.home_stroke
+    val iconsFilled = listOf(
+        R.drawable.home,
+        R.drawable.openbook,
+        R.drawable.extension,
+        R.drawable.chat
+    )
+
+    val selectedItemIndex = remember { mutableStateOf(0) }
 
     NavigationBar(
-        containerColor = androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant,
+        containerColor = Color(0xFFFFC000),
         modifier = modifier
     ) {
-        icons.forEachIndexed { index, iconId ->
-            val isSelected = index == selectedIndex.value
+        iconsOutline.forEachIndexed { index, iconId ->
+            val isSelected = index == selectedItemIndex.value
+
             NavigationBarItem(
+                modifier = Modifier.background(Color.Transparent),
                 icon = {
-                    androidx.compose.material3.Icon(
-                        painter = painterResource(id = if (isSelected) iconId else iconId),
+                    Icon(
+                        painter = painterResource(id = if (isSelected) iconsFilled[index] else iconId),
                         contentDescription = "",
                         modifier = Modifier.size(24.dp)
                     )
                 },
                 selected = isSelected,
                 onClick = {
-                    selectedIndex.value = index
+                    selectedItemIndex.value = index
                     when (index) {
                         0 -> navController.navigate(LIST_COURSES)
                         1 -> navController.navigate(LIST_COURSES_QUIZZ)
                         2 -> navController.navigate(EXTENSION_SCREEN)
                         3 -> navController.navigate(CHAT_SCREEN)
                     }
-                }
+                },
+                colors = androidx.compose.material3.NavigationBarItemDefaults
+                    .colors(
+                        selectedIconColor =Color(0xFFFFC000),
+                        indicatorColor = Color(0xFFFFC000))
             )
         }
     }
@@ -159,7 +173,7 @@ fun NavGraphBuilder.learningEnglishGraph(appState: LearningEnglishAppState) {
     }
 
     composable(SIGN_UP_SCREEN_TWO) {
-        SignUpScreenTwo( openScreen = { route -> appState.navigate(route) })
+        SignUpScreenTwo(openScreen = { route -> appState.navigate(route) })
     }
 
     composable(LIST_COURSES) {
